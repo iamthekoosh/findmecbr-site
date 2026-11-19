@@ -54,7 +54,11 @@ export const telUrl = (phone) => (phone ? `tel:${phone.replace(/[^\d+]/g, '')}` 
 
 export const ACTION_WORDS = { book: 'Book', order: 'Order', reserve: 'Reserve', buy: 'Buy', enquire: 'Enquire' };
 
-export const CENTRE_KINDS = {
-  group_centre: 'Group centre', town_centre: 'Town centre', local_shops: 'Local shops',
-  shopping_mall: 'Shopping mall', precinct: 'Precinct', other: 'Named place',
+// Centre types: the label shown in breadcrumbs, the web address of the type page, and its heading.
+export const CENTRE_TYPES = {
+  local_shops: { label: 'Local Shops', slug: 'local-shops', heading: 'Local Shops' },
+  shopping_mall: { label: 'Shopping Centre/Mall', slug: 'shopping-centres', heading: 'Shopping Centres and Malls' },
+  town_centre: { label: 'Town Centre', slug: 'town-centres', heading: 'Town Centres' },
 };
+export const CENTRE_KINDS = Object.fromEntries(Object.entries(CENTRE_TYPES).map(([k, v]) => [k, v.label]));
+export const typeOf = (kind) => CENTRE_TYPES[kind] ?? CENTRE_TYPES.local_shops;

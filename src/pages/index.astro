@@ -12,11 +12,11 @@ const count = (slug) => site.places.filter((p) => p.suburb?.slug === slug).lengt
 ---
 <Base>
   <h1 class="blade">Canberra, suburb by suburb</h1>
-  <p class="lede">Local places, checked by hand and dated. Starting with Weston Creek.</p>
+  <p class="lede">Local places, checked by hand and dated. Starting with Weston Creek and Molonglo Valley.</p>
 
   {districts.map((d) => (
     <section class="section">
-      <h2>{d.name}</h2>
+      <a class="rowtile" href={`/districts/${d.slug}/`}><span><Icon name="compass" class="lead" /><span>{d.name}<small>Suburbs, shops and centres</small></span></span><Icon name="chevron-right" /></a>
       <div class="grid">
         {d.suburbs.map((s) => (
           <a class="gt" href={`/suburbs/${s.slug}/`}>

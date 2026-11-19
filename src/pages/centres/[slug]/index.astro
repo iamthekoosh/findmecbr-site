@@ -4,7 +4,8 @@ import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import { loadSite, byCategory } from '../../../lib/strapi.js';
-import { CENTRE_KINDS, directionsUrl } from '../../../lib/format.js';
+import Crumbs from '../../../components/Crumbs.astro';
+import { typeOf, directionsUrl } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -15,16 +16,16 @@ const { centre } = Astro.props;
 const site = await loadSite();
 const inside = site.places.filter((p) => p.centre?.slug === centre.slug);
 const groups = byCategory(inside);
-const kind = CENTRE_KINDS[centre.kind] ?? 'Named place';
+const type = typeOf(centre.kind);
+const crumbs = centre.district
+  ? [{ label: centre.district.name, href: `/districts/${centre.district.slug}/` }, { label: type.label, href: `/districts/${centre.district.slug}/${type.slug}/` }]
+  : [];
 const desc = centre.intro || `Every checked place in ${centre.name}${centre.suburb ? `, ${centre.suburb.name}` : ''}.`;
 const directions = directionsUrl({ address: centre.address || centre.name, suburb: centre.suburb });
 ---
 <Base title={centre.name} description={desc} noindex={!centre.live || inside.length === 0}>
-  <nav class="crumbs" aria-label="Breadcrumb">
-    <a class="chip" href="/"><Icon name="arrow-left" />Home</a>
-    {centre.suburb && <a class="chip" href={`/suburbs/${centre.suburb.slug}/`}>{centre.suburb.name}</a>}
-  </nav>
-  <p class="kicker">{kind}{centre.suburb && ` · ${centre.suburb.name}`}</p>
+  <Crumbs items={crumbs} />
+  {centre.suburb && <p class="kicker">{centre.suburb.name}</p>}
   <h1>{centre.name}</h1>
   {centre.image && <img class="photo tall" src={centre.image.src} alt={centre.image.alt} />}
   {centre.intro && <p class="lede">{centre.intro}</p>}

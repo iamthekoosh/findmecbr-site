@@ -1,0 +1,36 @@
+---
+// Every centre of one type in a district, for example Local Shops in Weston Creek.
+import Base from '../../../../layouts/Base.astro';
+import Icon from '../../../../components/Icon.astro';
+import Crumbs from '../../../../components/Crumbs.astro';
+import { loadSite } from '../../../../lib/strapi.js';
+import { CENTRE_TYPES } from '../../../../lib/format.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  const paths = [];
+  for (const district of site.districts) {
+    for (const [kind, type] of Object.entries(CENTRE_TYPES)) {
+      const centres = site.centres.filter((c) => c.district?.slug === district.slug && c.kind === kind);
+      if (centres.length) paths.push({ params: { district: district.slug, type: type.slug }, props: { district, type, centres } });
+    }
+  }
+  return paths;
+}
+
+const { district, type, centres } = Astro.props;
+const site = await loadSite();
+const count = (slug) => site.places.filter((p) => p.centre?.slug === slug).length;
+---
+<Base title={`${type.heading} in ${district.name}`} description={`${type.heading} in ${district.name}, Canberra, with a directory of checked places in each.`} noindex={centres.every((c) => count(c.slug) === 0)}>
+  <Crumbs items={[{ label: district.name, href: `/districts/${district.slug}/` }]} />
+  <h1>{type.heading} in {district.name}</h1>
+  <div class="stack">
+    {centres.map((c) => (
+      <a class="rowtile" href={`/centres/${c.slug}/`}>
+        <span><Icon name="store" class="lead" /><span>{c.name}<small>{[c.suburb?.name, count(c.slug) ? `${count(c.slug)} listed` : null].filter(Boolean).join(' · ')}</small></span></span>
+        <Icon name="chevron-right" />
+      </a>
+    ))}
+  </div>
+</Base>

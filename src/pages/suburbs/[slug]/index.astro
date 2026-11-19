@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
+import Crumbs from '../../../components/Crumbs.astro';
 import { loadSite, byCategory } from '../../../lib/strapi.js';
 
 export async function getStaticPaths() {
@@ -23,10 +24,7 @@ const desc = suburb.intro || `Local places in ${suburb.name}, ${suburb.district?
 const noindex = !suburb.live || here.length + servicing.length === 0;
 ---
 <Base title={`${suburb.name}, ${suburb.district?.name ?? 'Canberra'}`} description={desc} noindex={noindex}>
-  <nav class="crumbs" aria-label="Breadcrumb">
-    <a class="chip" href="/"><Icon name="arrow-left" />Home</a>
-  </nav>
-  <p class="kicker">{suburb.district?.name}</p>
+  {suburb.district && <Crumbs items={[{ label: suburb.district.name, href: `/districts/${suburb.district.slug}/` }]} />}
   <h1>{suburb.name}</h1>
   {suburb.image && <img class="photo tall" src={suburb.image.src} alt={suburb.image.alt} />}
   {suburb.intro && <p class="lede">{suburb.intro}</p>}

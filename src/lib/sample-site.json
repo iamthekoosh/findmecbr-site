@@ -96,10 +96,24 @@
   {
    "slug": "cooleman-court",
    "name": "Cooleman Court",
-   "kind": "group_centre",
+   "kind": "shopping_mall",
    "suburb": {
     "slug": "weston",
     "name": "Weston"
+   },
+   "address": "",
+   "intro": "",
+   "body": "",
+   "live": false,
+   "image": null
+  },
+  {
+   "slug": "coombs-shops",
+   "name": "Coombs Shops",
+   "kind": "local_shops",
+   "suburb": {
+    "slug": "coombs",
+    "name": "Coombs"
    },
    "address": "",
    "intro": "",

@@ -98,10 +98,10 @@ export function shapePlace(p) {
 
 let cached;
 
-// Suburbs that get a page: live ones, ones with listings, and the launch district's suburbs.
-const LAUNCH_DISTRICT = 'weston-creek';
+// Suburbs that get a page: live ones, ones with listings, and every suburb in a launch district.
+export const LAUNCH_DISTRICTS = ['weston-creek', 'molonglo-valley'];
 export function hasPage(suburb, places) {
-  return suburb.live || suburb.district?.slug === LAUNCH_DISTRICT || places.some((p) => p.suburb?.slug === suburb.slug);
+  return suburb.live || LAUNCH_DISTRICTS.includes(suburb.district?.slug) || places.some((p) => p.suburb?.slug === suburb.slug);
 }
 
 export async function loadSite() {
@@ -158,6 +158,13 @@ function finish(site) {
   site.pagedSuburbs = paged;
   for (const s of site.suburbs) s.neighbours = s.neighbours.filter((n) => paged.has(n.slug));
   for (const p of site.places) p.serviceAreas = p.serviceAreas.map((a) => ({ ...a, hasPage: paged.has(a.slug) }));
+  // A centre's district comes from its suburb.
+  for (const c of site.centres) c.district = site.suburbs.find((s) => s.slug === c.suburb?.slug)?.district ?? null;
+  // District pages exist for districts with a suburb page or a centre.
+  site.pagedDistricts = new Set([
+    ...site.suburbs.filter((s) => paged.has(s.slug)).map((s) => s.district?.slug),
+    ...site.centres.map((c) => c.district?.slug),
+  ].filter(Boolean));
   return site;
 }
 

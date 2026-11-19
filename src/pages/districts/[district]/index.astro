@@ -1,0 +1,47 @@
+---
+// A district: its suburbs, and its centres grouped by type.
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import { loadSite } from '../../../lib/strapi.js';
+import { CENTRE_TYPES } from '../../../lib/format.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.districts.filter((d) => site.pagedDistricts.has(d.slug)).map((district) => ({ params: { district: district.slug }, props: { district } }));
+}
+
+const { district } = Astro.props;
+const site = await loadSite();
+const suburbs = site.suburbs.filter((s) => s.district?.slug === district.slug && site.pagedSuburbs.has(s.slug));
+const centres = site.centres.filter((c) => c.district?.slug === district.slug);
+const types = Object.entries(CENTRE_TYPES)
+  .map(([kind, t]) => ({ ...t, count: centres.filter((c) => c.kind === kind).length }))
+  .filter((t) => t.count > 0);
+---
+<Base title={district.name} description={`Suburbs, local shops and centres in ${district.name}, Canberra.`} noindex={suburbs.length === 0}>
+  <p class="kicker">District</p>
+  <h1>{district.name}</h1>
+
+  {suburbs.length > 0 && (
+    <section class="section">
+      <h2>Suburbs</h2>
+      <div class="grid">
+        {suburbs.map((s) => <a class="gt" href={`/suburbs/${s.slug}/`}><Icon name="map" /><span>{s.name}</span></a>)}
+      </div>
+    </section>
+  )}
+
+  {types.length > 0 && (
+    <section class="section">
+      <h2>Shops and centres</h2>
+      <div class="stack">
+        {types.map((t) => (
+          <a class="rowtile" href={`/districts/${district.slug}/${t.slug}/`}>
+            <span><Icon name="store" class="lead" /><span>{t.heading}<small>{t.count} in {district.name}</small></span></span>
+            <Icon name="chevron-right" />
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</Base>
