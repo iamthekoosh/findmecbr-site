@@ -5,3 +5,5 @@ dist/
 .env.*
 !.env.example
 dist-sample/
+site-0/
+site-1/
