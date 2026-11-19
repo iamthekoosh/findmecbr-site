@@ -1,0 +1,163 @@
+// Reads everything the public site needs from Strapi, once per build.
+// Only published places are read, and Strapi never sends fields marked private.
+// Home addresses are removed here when "Show public address" is off.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
+const BASE = (process.env.STRAPI_URL || 'http://localhost:1337').replace(/\/$/, '');
+
+function token() {
+  if (process.env.STRAPI_TOKEN) return process.env.STRAPI_TOKEN.trim();
+  const file = path.join(os.homedir(), '.findmecbr', 'site-token.txt');
+  // The file may hold just the token, or a line like "token = abc123".
+  if (fs.existsSync(file)) return fs.readFileSync(file, 'utf8').trim().replace(/^[^=\s]+\s*=\s*/, '');
+  throw new Error('No Strapi token. Set STRAPI_TOKEN, or save a read-only token in ~/.findmecbr/site-token.txt');
+}
+
+// Turns { populate: { location: { populate: ['suburb'] } } } into Strapi's bracket query string.
+export function toQuery(obj, prefix = '') {
+  const parts = [];
+  for (const [k, v] of Object.entries(obj)) {
+    const key = prefix ? `${prefix}[${k}]` : k;
+    if (v === undefined || v === null) continue;
+    if (typeof v === 'object') parts.push(toQuery(v, key));
+    else parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
+  }
+  return parts.filter(Boolean).join('&');
+}
+
+async function getAll(collection, params = {}) {
+  const auth = { Authorization: `Bearer ${token()}` };
+  const rows = [];
+  for (let page = 1; ; page++) {
+    const q = toQuery({ ...params, pagination: { page, pageSize: 100 } });
+    const res = await fetch(`${BASE}/api/${collection}?${q}`, { headers: auth });
+    if (!res.ok) throw new Error(`Strapi ${collection}: ${res.status} ${(await res.text()).slice(0, 200)}`);
+    const json = await res.json();
+    rows.push(...json.data);
+    if (page >= (json.meta?.pagination?.pageCount ?? 1)) break;
+  }
+  return rows;
+}
+
+const image = (img) => (img?.file?.url
+  ? { src: img.file.url.startsWith('http') ? img.file.url : BASE + img.file.url, alt: img.alt_text ?? '', credit: img.credit ?? null, width: img.file.width, height: img.file.height }
+  : null);
+
+const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+// Shapes one place for the pages. Exported for tests.
+export function shapePlace(p) {
+  const loc = p.location ?? null;
+  const showAddress = loc ? loc.show_public_address !== false : false;
+  return {
+    slug: p.slug,
+    name: p.name,
+    category: p.primary_category ? { slug: p.primary_category.slug, label: p.primary_category.label, plural: p.primary_category.plural, icon: p.primary_category.icon } : null,
+    locationType: p.location_type,
+    short: p.description_short ?? '',
+    full: p.description_full ?? '',
+    ourTake: p.is_health ? '' : (p.our_take ?? ''),
+    isHealth: !!p.is_health,
+    basedIn: p.based_in ?? '',
+    phone: p.phone ?? '',
+    email: p.email ?? '',
+    website: p.website_url ?? '',
+    facebook: p.facebook_url ?? '',
+    checkedAt: p.checked_at ?? null,
+    suburb: loc?.suburb ? { slug: loc.suburb.slug, name: loc.suburb.name } : null,
+    centre: loc?.in_centre && loc?.centre ? { slug: loc.centre.slug, name: loc.centre.name } : null,
+    address: showAddress ? (loc?.public_address ?? '') : '',
+    postcode: loc?.postcode ?? '',
+    lat: showAddress && loc?.lat != null ? Number(loc.lat) : null,
+    lng: showAddress && loc?.lng != null ? Number(loc.lng) : null,
+    serviceAreas: (p.service_areas ?? []).filter((a) => a.suburb).map((a) => ({ slug: a.suburb.slug, name: a.suburb.name })),
+    facts: (p.facts ?? []).filter((f) => f.tag).map((f) => ({ label: f.tag.label, evidence: f.evidence, checkedAt: f.checked_at })),
+    hours: (p.opening_hours ?? [])
+      .map((h) => ({ day: WEEKDAYS.indexOf(h.weekday), opens: String(h.opens_at).slice(0, 5), closes: String(h.closes_at).slice(0, 5) }))
+      .sort((a, b) => a.day - b.day || a.opens.localeCompare(b.opens)),
+    exceptions: (p.hours_exceptions ?? []).map((x) => ({ date: x.on_date, closed: x.closed, opens: x.opens_at?.slice(0, 5), closes: x.closes_at?.slice(0, 5), note: x.note ?? '' })),
+    actions: (p.action_tiles ?? []).filter((t) => t.active && t.checked_at && /^https:\/\//.test(t.url ?? ''))
+      .map((t) => ({ action: t.action, label: t.label, provider: t.provider, url: t.url })),
+    logo: image(p.logo),
+    photos: (p.photos ?? []).map((ph) => ({ ...image(ph), primary: ph.is_primary })).filter((ph) => ph.src)
+      .sort((a, b) => Number(b.primary) - Number(a.primary)),
+  };
+}
+
+let cached;
+
+// Suburbs that get a page: live ones, ones with listings, and the launch district's suburbs.
+const LAUNCH_DISTRICT = 'weston-creek';
+export function hasPage(suburb, places) {
+  return suburb.live || suburb.district?.slug === LAUNCH_DISTRICT || places.some((p) => p.suburb?.slug === suburb.slug);
+}
+
+export async function loadSite() {
+  if (cached) return cached;
+  // Sample data for checking pages locally, without touching Strapi. Never used for a real build.
+  if (process.env.SITE_SAMPLE === '1') {
+    const sample = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'src', 'lib', 'sample-site.json'), 'utf8'));
+    cached = { ...sample, places: sample.places.map(shapePlace) };
+    return finish(cached);
+  }
+  const [districts, suburbs, centres, categories, places] = await Promise.all([
+    getAll('districts', { sort: 'name' }),
+    getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, hero_image: { populate: ['file'] } } }),
+    getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] } } }),
+    getAll('categories', { sort: 'label' }),
+    getAll('places', {
+      status: 'published',
+      sort: 'name',
+      populate: {
+        primary_category: true,
+        location: { populate: ['suburb', 'centre'] },
+        service_areas: { populate: ['suburb'] },
+        facts: { populate: ['tag'] },
+        opening_hours: true,
+        hours_exceptions: true,
+        action_tiles: true,
+        logo: { populate: ['file'] },
+        photos: { populate: ['file'] },
+      },
+    }),
+  ]);
+
+  const shaped = places.map(shapePlace);
+  cached = {
+    districts: districts.map((d) => ({ slug: d.slug, name: d.name })),
+    suburbs: suburbs.map((s) => ({
+      slug: s.slug, name: s.name, district: s.district ? { slug: s.district.slug, name: s.district.name } : null,
+      intro: s.intro ?? '', body: s.body ?? '', live: !!s.page_live, checkedAt: s.checked_at ?? null,
+      neighbours: (s.neighbours ?? []).map((n) => ({ slug: n.slug, name: n.name })), image: image(s.hero_image),
+    })),
+    centres: centres.map((c) => ({
+      slug: c.slug, name: c.name, kind: c.kind, suburb: c.suburb ? { slug: c.suburb.slug, name: c.suburb.name } : null,
+      address: c.public_address ?? '', intro: c.intro ?? '', body: c.body ?? '', live: !!c.page_live, image: image(c.hero_image),
+    })),
+    categories: categories.map((c) => ({ slug: c.slug, label: c.label, plural: c.plural, kind: c.kind, icon: c.icon, active: !!c.active })),
+    places: shaped,
+  };
+  return finish(cached);
+}
+
+// Marks which suburbs have pages, and drops links to suburbs that don't, so there are no broken links.
+function finish(site) {
+  const paged = new Set(site.suburbs.filter((s) => hasPage(s, site.places)).map((s) => s.slug));
+  site.pagedSuburbs = paged;
+  for (const s of site.suburbs) s.neighbours = s.neighbours.filter((n) => paged.has(n.slug));
+  for (const p of site.places) p.serviceAreas = p.serviceAreas.map((a) => ({ ...a, hasPage: paged.has(a.slug) }));
+  return site;
+}
+
+// Places grouped by category, in category order, for directory lists.
+export function byCategory(places) {
+  const groups = new Map();
+  for (const p of places) {
+    const key = p.category?.slug ?? 'other';
+    if (!groups.has(key)) groups.set(key, { category: p.category ?? { slug: 'other', label: 'Other', plural: 'Other places', icon: 'store' }, places: [] });
+    groups.get(key).places.push(p);
+  }
+  return [...groups.values()].sort((a, b) => a.category.plural.localeCompare(b.category.plural));
+}

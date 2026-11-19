@@ -1,0 +1,283 @@
+{
+ "_note": "SAMPLE DATA ONLY, for checking pages locally with SITE_SAMPLE=1. Businesses, phone numbers and details are made up.",
+ "districts": [
+  {
+   "slug": "weston-creek",
+   "name": "Weston Creek"
+  },
+  {
+   "slug": "molonglo-valley",
+   "name": "Molonglo Valley"
+  }
+ ],
+ "suburbs": [
+  {
+   "slug": "weston",
+   "name": "Weston",
+   "district": {
+    "slug": "weston-creek",
+    "name": "Weston Creek"
+   },
+   "intro": "",
+   "body": "",
+   "live": false,
+   "checkedAt": null,
+   "neighbours": [
+    {
+     "slug": "holder",
+     "name": "Holder"
+    },
+    {
+     "slug": "coombs",
+     "name": "Coombs"
+    }
+   ],
+   "image": null
+  },
+  {
+   "slug": "holder",
+   "name": "Holder",
+   "district": {
+    "slug": "weston-creek",
+    "name": "Weston Creek"
+   },
+   "intro": "",
+   "body": "",
+   "live": false,
+   "checkedAt": null,
+   "neighbours": [
+    {
+     "slug": "weston",
+     "name": "Weston"
+    }
+   ],
+   "image": null
+  },
+  {
+   "slug": "duffy",
+   "name": "Duffy",
+   "district": {
+    "slug": "weston-creek",
+    "name": "Weston Creek"
+   },
+   "intro": "",
+   "body": "",
+   "live": false,
+   "checkedAt": null,
+   "neighbours": [
+    {
+     "slug": "holder",
+     "name": "Holder"
+    }
+   ],
+   "image": null
+  },
+  {
+   "slug": "coombs",
+   "name": "Coombs",
+   "district": {
+    "slug": "molonglo-valley",
+    "name": "Molonglo Valley"
+   },
+   "intro": "",
+   "body": "",
+   "live": false,
+   "checkedAt": null,
+   "neighbours": [
+    {
+     "slug": "weston",
+     "name": "Weston"
+    }
+   ],
+   "image": null
+  }
+ ],
+ "centres": [
+  {
+   "slug": "cooleman-court",
+   "name": "Cooleman Court",
+   "kind": "group_centre",
+   "suburb": {
+    "slug": "weston",
+    "name": "Weston"
+   },
+   "address": "",
+   "intro": "",
+   "body": "",
+   "live": false,
+   "image": null
+  }
+ ],
+ "categories": [
+  {
+   "slug": "cafe",
+   "label": "Cafe",
+   "plural": "Cafes",
+   "kind": "venue",
+   "icon": "coffee",
+   "active": true
+  },
+  {
+   "slug": "cleaner",
+   "label": "Cleaner",
+   "plural": "Cleaners",
+   "kind": "service",
+   "icon": "sparkles",
+   "active": true
+  }
+ ],
+ "places": [
+  {
+   "slug": "sample-cafe",
+   "name": "Sample Cafe",
+   "location_type": "physical",
+   "description_short": "SAMPLE: coffee and toasties inside Cooleman Court.",
+   "description_full": "This is sample text.\n\nIt shows how a longer description reads.",
+   "our_take": "Good for a slow catch-up.",
+   "is_health": false,
+   "phone": "02 5550 0101",
+   "website_url": "https://example.com",
+   "checked_at": "2026-11-19",
+   "primary_category": {
+    "slug": "cafe",
+    "label": "Cafe",
+    "plural": "Cafes",
+    "icon": "coffee"
+   },
+   "location": {
+    "show_public_address": true,
+    "public_address": "Shop 1, Cooleman Court",
+    "postcode": "2611",
+    "lat": -35.34,
+    "lng": 149.056,
+    "suburb": {
+     "slug": "weston",
+     "name": "Weston"
+    },
+    "in_centre": true,
+    "centre": {
+     "slug": "cooleman-court",
+     "name": "Cooleman Court"
+    }
+   },
+   "facts": [
+    {
+     "tag": {
+      "label": "Step-free entry"
+     },
+     "evidence": "confirmed",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "label": "Dogs outside"
+     },
+     "evidence": "business_says",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "label": "Accessible toilet"
+     },
+     "evidence": "unknown"
+    }
+   ],
+   "opening_hours": [
+    {
+     "weekday": "monday",
+     "opens_at": "07:00:00.000",
+     "closes_at": "15:00:00.000"
+    },
+    {
+     "weekday": "tuesday",
+     "opens_at": "07:00:00.000",
+     "closes_at": "15:00:00.000"
+    },
+    {
+     "weekday": "wednesday",
+     "opens_at": "07:00:00.000",
+     "closes_at": "15:00:00.000"
+    },
+    {
+     "weekday": "thursday",
+     "opens_at": "07:00:00.000",
+     "closes_at": "15:00:00.000"
+    },
+    {
+     "weekday": "friday",
+     "opens_at": "07:00:00.000",
+     "closes_at": "15:00:00.000"
+    },
+    {
+     "weekday": "saturday",
+     "opens_at": "08:00:00.000",
+     "closes_at": "12:30:00.000"
+    }
+   ],
+   "hours_exceptions": [
+    {
+     "on_date": "2026-12-25",
+     "closed": true,
+     "note": "Christmas Day"
+    }
+   ],
+   "action_tiles": [
+    {
+     "action": "order",
+     "label": "Order ahead",
+     "provider": "Example Ordering",
+     "url": "https://example.com/order",
+     "active": true,
+     "checked_at": "2026-11-19"
+    }
+   ]
+  },
+  {
+   "slug": "sample-cleaning",
+   "name": "Sample Cleaning",
+   "location_type": "mobile",
+   "description_short": "SAMPLE: home and end-of-lease cleaning.",
+   "is_health": false,
+   "phone": "02 5550 0102",
+   "checked_at": "2026-11-19",
+   "based_in": "Duffy",
+   "primary_category": {
+    "slug": "cleaner",
+    "label": "Cleaner",
+    "plural": "Cleaners",
+    "icon": "sparkles"
+   },
+   "location": {
+    "show_public_address": false,
+    "public_address": "1 Private St",
+    "lat": -35.33,
+    "lng": 149.03,
+    "suburb": {
+     "slug": "duffy",
+     "name": "Duffy"
+    },
+    "in_centre": false
+   },
+   "service_areas": [
+    {
+     "suburb": {
+      "slug": "weston",
+      "name": "Weston"
+     }
+    },
+    {
+     "suburb": {
+      "slug": "holder",
+      "name": "Holder"
+     }
+    },
+    {
+     "suburb": {
+      "slug": "coombs",
+      "name": "Coombs"
+     }
+    }
+   ]
+  }
+ ]
+}

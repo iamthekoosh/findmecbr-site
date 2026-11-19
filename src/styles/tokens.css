@@ -1,0 +1,68 @@
+/* Find Me CBR design tokens, draft v0.3. See identity/colors.md for usage rules. */
+:root {
+  /* Colour: light */
+  --color-brand: #1F4D3A;
+  --color-on-brand: #F7F3E8;
+  --color-bg: #F7F3E8;
+  --color-surface: #FFFDF7;
+  --color-text: #1B2420;
+  --color-text-muted: #5C6259;
+  --color-border: #8A8C7E;
+  --color-line: #D8D2C1;
+  --color-sponsored-bg: #F2C94C;
+  --color-sponsored-text: #1B2420;
+  --color-confirmed: #1F6B45;
+  --color-unknown: #5C6259;
+  --color-warning: #7A5200;
+  --color-error: #A32A1C;
+  --color-info: #1E5A7E;
+
+  /* Type */
+  --font-display: "Familjen Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  /* Shape */
+  --radius: 4px;
+
+  /* Tap targets */
+  --tap-tile: 64px;
+  --tap-row: 60px;
+  --tap-button: 56px;
+  --tap-field: 48px;
+  --tap-chip: 44px;
+  --tap-gap: 8px;
+
+  /* Motion */
+  --motion-fast: 100ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-brand: #8FCBAA;
+    --color-on-brand: #143528;
+    --color-bg: #111916;
+    --color-surface: #1A2420;
+    --color-text: #EFEBDD;
+    --color-text-muted: #B3B5A8;
+    --color-border: #6F7A72;
+    --color-line: #39443E;
+    --color-confirmed: #8FCBAA;
+    --color-unknown: #B3B5A8;
+    --color-warning: #E7B75A;
+    --color-error: #F09A8C;
+    --color-info: #8CC4E6;
+    /* Sponsored label stays wattle with dark text in both modes */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+}

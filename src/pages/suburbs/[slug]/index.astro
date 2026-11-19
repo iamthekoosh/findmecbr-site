@@ -1,0 +1,75 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import PlaceCard from '../../../components/PlaceCard.astro';
+import { loadSite, byCategory } from '../../../lib/strapi.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.suburbs
+    .filter((s) => site.pagedSuburbs.has(s.slug))
+    .map((suburb) => ({ params: { slug: suburb.slug }, props: { suburb } }));
+}
+
+const { suburb } = Astro.props;
+const site = await loadSite();
+const here = site.places.filter((p) => p.suburb?.slug === suburb.slug);
+// Services that confirmed they come here, but aren't based here.
+const servicing = site.places.filter((p) => p.suburb?.slug !== suburb.slug && p.serviceAreas.some((a) => a.slug === suburb.slug));
+const centres = site.centres.filter((c) => c.suburb?.slug === suburb.slug);
+const groups = byCategory(here);
+const desc = suburb.intro || `Local places in ${suburb.name}, ${suburb.district?.name ?? 'Canberra'}, checked by hand.`;
+// Thin pages stay out of search until the page is live and has something useful on it.
+const noindex = !suburb.live || here.length + servicing.length === 0;
+---
+<Base title={`${suburb.name}, ${suburb.district?.name ?? 'Canberra'}`} description={desc} noindex={noindex}>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a class="chip" href="/"><Icon name="arrow-left" />Home</a>
+  </nav>
+  <p class="kicker">{suburb.district?.name}</p>
+  <h1>{suburb.name}</h1>
+  {suburb.image && <img class="photo tall" src={suburb.image.src} alt={suburb.image.alt} />}
+  {suburb.intro && <p class="lede">{suburb.intro}</p>}
+
+  {centres.length > 0 && (
+    <section class="section">
+      <h2>Shopping centres and local shops</h2>
+      <div class="stack">
+        {centres.map((c) => (
+          <a class="rowtile" href={`/centres/${c.slug}/`}>
+            <span><Icon name="store" class="lead" /><span>{c.name}<small>See every place inside</small></span></span>
+            <Icon name="chevron-right" />
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {groups.map((g) => (
+    <section class="section">
+      <h2 class="h2row"><Icon name={g.category.icon || 'store'} />{g.category.plural}</h2>
+      <div class="stack">{g.places.map((p) => <PlaceCard place={p} />)}</div>
+    </section>
+  ))}
+
+  {servicing.length > 0 && (
+    <section class="section">
+      <h2>Services that come to {suburb.name}</h2>
+      <p class="muted">These businesses confirmed they serve {suburb.name}.</p>
+      <div class="stack">{servicing.map((p) => <PlaceCard place={p} />)}</div>
+    </section>
+  )}
+
+  {here.length + servicing.length === 0 && (
+    <p class="empty">We haven't checked any places in {suburb.name} yet. Listings appear here once they've been checked by hand.</p>
+  )}
+
+  {suburb.neighbours.length > 0 && (
+    <section class="section">
+      <h2>Nearby suburbs</h2>
+      <div class="grid">
+        {suburb.neighbours.map((n) => <a class="gt" href={`/suburbs/${n.slug}/`}><Icon name="map" /><span>{n.name}</span></a>)}
+      </div>
+    </section>
+  )}
+</Base>

@@ -1,0 +1,124 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import { loadSite } from '../../../lib/strapi.js';
+import { shortDate, weekHours, evidenceText, directionsUrl, telUrl, ACTION_WORDS } from '../../../lib/format.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.places.map((place) => ({ params: { slug: place.slug }, props: { place } }));
+}
+
+const { place } = Astro.props;
+const hours = weekHours(place.hours);
+const directions = place.locationType === 'physical' ? directionsUrl(place) : '';
+const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+const where = [place.suburb?.name, 'ACT'].filter(Boolean).join(', ');
+const desc = place.short || `${place.name}, ${place.category?.label ?? 'local business'} in ${where}.`;
+
+// Structured data for search engines. Only facts we show on the page.
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: place.name,
+  description: place.short || undefined,
+  telephone: place.phone || undefined,
+  url: place.website || undefined,
+  address: place.address || place.suburb ? {
+    '@type': 'PostalAddress', streetAddress: place.address || undefined, addressLocality: place.suburb?.name, addressRegion: 'ACT', postalCode: place.postcode || undefined, addressCountry: 'AU',
+  } : undefined,
+  geo: place.lat != null ? { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } : undefined,
+};
+---
+<Base title={`${place.name}, ${place.suburb?.name ?? 'Canberra'}`} description={desc}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(ld)} />
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a class="chip" href="/"><Icon name="arrow-left" />Home</a>
+    {place.suburb && <a class="chip" href={`/suburbs/${place.suburb.slug}/`}>{place.suburb.name}</a>}
+  </nav>
+
+  <div class="place-head">
+    <span class="logo-slot lg">{place.logo ? <img src={place.logo.src} alt={place.logo.alt} /> : initials}</span>
+    <div>
+      <p class="kicker">{[place.category?.label, place.suburb?.name].filter(Boolean).join(' · ')}</p>
+      <h1>{place.name}</h1>
+    </div>
+  </div>
+
+  {place.photos[0] && <img class="photo tall" src={place.photos[0].src} alt={place.photos[0].alt} />}
+  {place.short && <p class="lede">{place.short}</p>}
+
+  {place.centre && (
+    <a class="rowtile" href={`/centres/${place.centre.slug}/`}>
+      <span><Icon name="store" class="lead" /><span>In {place.centre.name}<small>See every place in {place.centre.name}</small></span></span>
+      <Icon name="chevron-right" />
+    </a>
+  )}
+
+  {place.actions.length > 0 && (
+    <div class="stack">
+      {place.actions.map((a) => (
+        <a class="tile" href={a.url} rel="noopener">
+          <span><b>{a.label || ACTION_WORDS[a.action]}</b><small>on {a.provider}</small></span>
+          <Icon name="arrow-up-right" class="go-arrow" />
+        </a>
+      ))}
+    </div>
+  )}
+
+  {(directions || place.phone || place.website) && (
+    <div class="utils">
+      {directions && <a class="btn" href={directions} rel="noopener"><Icon name="navigation" />Directions</a>}
+      {place.phone && <a class="btn" href={telUrl(place.phone)}><Icon name="phone" />Call</a>}
+      {place.website && <a class="btn" href={place.website} rel="noopener"><Icon name="globe" />Website</a>}
+    </div>
+  )}
+
+  {place.facts.length > 0 && (
+    <section class="section">
+      <h2>What we know</h2>
+      <ul class="facts">
+        {place.facts.map((f) => { const e = evidenceText(f); return <li class={e.cls}>{e.mark && `${e.mark} `}{e.text}</li>; })}
+      </ul>
+    </section>
+  )}
+
+  {place.ourTake && (
+    <p class="take"><Icon name="message-square" /><span><b>Our take:</b> {place.ourTake}</span></p>
+  )}
+  {place.isHealth && <p class="muted health">We don't give opinions on health services. Check with the practice about your needs.</p>}
+
+  <section class="section">
+    <h2>Opening hours</h2>
+    {hours.length
+      ? <dl class="hours">{hours.map((h) => <><dt>{h.day}</dt><dd>{h.text}</dd></>)}</dl>
+      : <p class="muted">Hours not confirmed yet. Check with the business before you go.</p>}
+    {place.exceptions.length > 0 && (
+      <ul class="muted">{place.exceptions.map((x) => <li>{shortDate(x.date)}: {x.closed ? 'Closed' : `${x.opens} to ${x.closes}`}{x.note && ` (${x.note})`}</li>)}</ul>
+    )}
+  </section>
+
+  {(place.address || place.serviceAreas.length > 0 || place.basedIn) && (
+    <section class="section">
+      <h2>Where</h2>
+      {place.address && <p>{[place.address, place.suburb?.name, `ACT ${place.postcode}`.trim()].filter(Boolean).join(', ')}</p>}
+      {!place.address && place.locationType === 'physical' && place.suburb && <p>{place.suburb.name}. The street address isn't shown.</p>}
+      {place.basedIn && <p class="muted">Based in {place.basedIn}.</p>}
+      {place.serviceAreas.length > 0 && (
+        <>
+          <p class="muted">Confirmed to serve:</p>
+          <div class="chips">{place.serviceAreas.map((a) => a.hasPage ? <a class="chip" href={`/suburbs/${a.slug}/`}>{a.name}</a> : <span class="badge">{a.name}</span>)}</div>
+        </>
+      )}
+    </section>
+  )}
+
+  {place.full && (
+    <section class="section prose">
+      <h2>About</h2>
+      <Fragment set:html={place.full.split(/\n{2,}/).map((para) => `<p>${para.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c])}</p>`).join('')} />
+    </section>
+  )}
+
+  {place.checkedAt && <p class="stamp">Checked by hand on {shortDate(place.checkedAt)}.</p>}
+</Base>

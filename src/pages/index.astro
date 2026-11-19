@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { loadSite } from '../lib/strapi.js';
+
+const site = await loadSite();
+const districts = site.districts
+  .map((d) => ({ ...d, suburbs: site.suburbs.filter((s) => s.district?.slug === d.slug && site.pagedSuburbs.has(s.slug)) }))
+  .filter((d) => d.suburbs.length);
+const centres = site.centres;
+const count = (slug) => site.places.filter((p) => p.suburb?.slug === slug).length;
+---
+<Base>
+  <h1 class="blade">Canberra, suburb by suburb</h1>
+  <p class="lede">Local places, checked by hand and dated. Starting with Weston Creek.</p>
+
+  {districts.map((d) => (
+    <section class="section">
+      <h2>{d.name}</h2>
+      <div class="grid">
+        {d.suburbs.map((s) => (
+          <a class="gt" href={`/suburbs/${s.slug}/`}>
+            <Icon name="map" />
+            <span>{s.name}{count(s.slug) > 0 && <small>{count(s.slug)} listed</small>}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  {centres.length > 0 && (
+    <section class="section">
+      <h2>Shopping centres and local shops</h2>
+      <div class="stack">
+        {centres.map((c) => (
+          <a class="rowtile" href={`/centres/${c.slug}/`}>
+            <span><Icon name="store" class="lead" /><span>{c.name}{c.suburb && <small>{c.suburb.name}</small>}</span></span>
+            <Icon name="chevron-right" />
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</Base>

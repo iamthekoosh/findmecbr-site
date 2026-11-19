@@ -1,0 +1,49 @@
+---
+// Page frame: header with the lockup, main content, footer. Mobile first.
+import '@fontsource/familjen-grotesk/700.css';
+import '@fontsource/atkinson-hyperlegible-next/400.css';
+import '@fontsource/atkinson-hyperlegible-next/700.css';
+import '@fontsource/atkinson-hyperlegible-mono/400.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+const { title, description = 'Canberra, suburb by suburb. Checked.', noindex = false } = Astro.props;
+const fullTitle = title ? `${title} | Find Me CBR` : 'Find Me CBR: Canberra, suburb by suburb. Checked.';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#1F4D3A" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="top">
+      <a class="logo" href="/" aria-label="Find Me CBR home">
+        <img class="logo-light" src="/lockup-horizontal-eucalypt.svg" alt="Find Me CBR" width="160" height="24" />
+        <img class="logo-dark" src="/lockup-horizontal-paper.svg" alt="" width="160" height="24" />
+      </a>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="foot">
+      <div class="stack">
+        <p class="muted">Find Me CBR acknowledges the Ngunnawal people, the Traditional Custodians of the land we live and work on, and pays respect to Elders past and present.</p>
+        <p class="muted">Independent. Not a government service. Listings are checked by hand and dated.</p>
+      </div>
+    </footer>
+  </body>
+</html>

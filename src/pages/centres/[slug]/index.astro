@@ -1,0 +1,48 @@
+---
+// A named place, such as Cooleman Court: a directory of every published place inside it.
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import PlaceCard from '../../../components/PlaceCard.astro';
+import { loadSite, byCategory } from '../../../lib/strapi.js';
+import { CENTRE_KINDS, directionsUrl } from '../../../lib/format.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.centres.map((centre) => ({ params: { slug: centre.slug }, props: { centre } }));
+}
+
+const { centre } = Astro.props;
+const site = await loadSite();
+const inside = site.places.filter((p) => p.centre?.slug === centre.slug);
+const groups = byCategory(inside);
+const kind = CENTRE_KINDS[centre.kind] ?? 'Named place';
+const desc = centre.intro || `Every checked place in ${centre.name}${centre.suburb ? `, ${centre.suburb.name}` : ''}.`;
+const directions = directionsUrl({ address: centre.address || centre.name, suburb: centre.suburb });
+---
+<Base title={centre.name} description={desc} noindex={!centre.live || inside.length === 0}>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a class="chip" href="/"><Icon name="arrow-left" />Home</a>
+    {centre.suburb && <a class="chip" href={`/suburbs/${centre.suburb.slug}/`}>{centre.suburb.name}</a>}
+  </nav>
+  <p class="kicker">{kind}{centre.suburb && ` · ${centre.suburb.name}`}</p>
+  <h1>{centre.name}</h1>
+  {centre.image && <img class="photo tall" src={centre.image.src} alt={centre.image.alt} />}
+  {centre.intro && <p class="lede">{centre.intro}</p>}
+  <div class="utils">
+    <a class="btn" href={directions} rel="noopener"><Icon name="navigation" />Directions</a>
+  </div>
+
+  <section class="section">
+    <h2>Directory</h2>
+    {inside.length === 0
+      ? <p class="empty">We haven't checked any places in {centre.name} yet. They'll appear here, grouped by type, once they have been.</p>
+      : <p class="muted">{inside.length} checked {inside.length === 1 ? 'place' : 'places'} in {centre.name}.</p>}
+  </section>
+
+  {groups.map((g) => (
+    <section class="section">
+      <h2 class="h2row"><Icon name={g.category.icon || 'store'} />{g.category.plural}</h2>
+      <div class="stack">{g.places.map((p) => <PlaceCard place={p} showCentre={false} />)}</div>
+    </section>
+  ))}
+</Base>
