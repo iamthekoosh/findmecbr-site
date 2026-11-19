@@ -7,7 +7,10 @@ import '@fontsource/atkinson-hyperlegible-mono/400.css';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
-const { title, description = 'Canberra, suburb by suburb. Checked.', noindex = false } = Astro.props;
+import { STAGE } from '../lib/strapi.js';
+const { title, description = 'Canberra, suburb by suburb. Checked.' } = Astro.props;
+const testing = STAGE !== 'live';
+const noindex = Astro.props.noindex || testing;
 const fullTitle = title ? `${title} | Find Me CBR` : 'Find Me CBR: Canberra, suburb by suburb. Checked.';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -30,6 +33,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
+    {testing && <p class="proto">{STAGE.toUpperCase()}: a test version. Listings may be incomplete.</p>}
     <header class="top">
       <a class="logo" href="/" aria-label="Find Me CBR home">
         <img class="logo-light" src="/lockup-horizontal-eucalypt.svg" alt="Find Me CBR" width="160" height="24" />

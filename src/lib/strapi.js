@@ -41,9 +41,19 @@ async function getAll(collection, params = {}) {
   return rows;
 }
 
-const image = (img) => (img?.file?.url
-  ? { src: img.file.url.startsWith('http') ? img.file.url : BASE + img.file.url, alt: img.alt_text ?? '', credit: img.credit ?? null, width: img.file.width, height: img.file.height }
-  : null);
+// Images are copied into the site at build time (see src/pages/media/[file].js), because Strapi itself
+// isn't reachable from the public internet. Pages point at /media/<file name>.
+export const mediaFiles = new Map(); // file name → Strapi URL
+const image = (img) => {
+  if (!img?.file?.url) return null;
+  const source = img.file.url.startsWith('http') ? img.file.url : BASE + img.file.url;
+  const name = source.split('/').pop().split('?')[0];
+  mediaFiles.set(name, source);
+  return { src: `/media/${name}`, alt: img.alt_text ?? '', credit: img.credit ?? null, width: img.file.width, height: img.file.height };
+};
+
+// "alpha" while testing on the server's IP address: every page is noindex and labelled as a test.
+export const STAGE = process.env.SITE_STAGE || 'live';
 
 const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
