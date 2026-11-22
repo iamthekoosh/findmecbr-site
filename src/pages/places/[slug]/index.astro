@@ -79,6 +79,7 @@ const features = place.facts.filter((f) => f.group !== "occasion");
       {place.menu?.kind === 'images' && <a class="btn" href={`/places/${place.slug}/menu/`}><Icon name="book-open" />Menu</a>}
     </div>
   )}
+  {place.menu?.kind === 'link' && place.menu.validAsOf && <p class="valid-as-of"><Icon name="calendar" />Menu valid as of: <b>{shortDate(place.menu.validAsOf)}</b></p>}
 
   {place.ourTake && (
     <p class="take"><Icon name="message-square" /><span><b>Our take:</b> {place.ourTake}</span></p>

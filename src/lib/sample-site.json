@@ -428,7 +428,8 @@
       "height": 1100,
       "alternativeText": "Sample menu, page 2: food"
      }
-    ]
+    ],
+    "valid_as_of": "2026-11-01"
    }
   },
   {
@@ -482,7 +483,8 @@
     "kind": "link",
     "url": "https://example.com/prices",
     "checked_at": "2026-11-19",
-    "images": []
+    "images": [],
+    "valid_as_of": "2026-10-15"
    }
   }
  ],

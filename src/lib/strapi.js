@@ -65,9 +65,9 @@ function shapeMenu(p) {
   if (!m?.show || !m.checked_at) return null;
   if (m.kind === 'images') {
     const pages = (m.images ?? []).map((file, i) => image({ file, alt_text: file.alternativeText || `${p.name} menu, page ${i + 1}` })).filter(Boolean);
-    return pages.length ? { kind: 'images', pages, checkedAt: m.checked_at } : null;
+    return pages.length ? { kind: 'images', pages, checkedAt: m.checked_at, validAsOf: m.valid_as_of ?? null } : null;
   }
-  return /^https:\/\//.test(m.url ?? '') ? { kind: 'link', url: m.url, checkedAt: m.checked_at } : null;
+  return /^https:\/\//.test(m.url ?? '') ? { kind: 'link', url: m.url, checkedAt: m.checked_at, validAsOf: m.valid_as_of ?? null } : null;
 }
 
 export const STAGE = process.env.SITE_STAGE || 'live';

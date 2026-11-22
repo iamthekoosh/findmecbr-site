@@ -18,6 +18,7 @@ const pages = place.menu.pages;
     <a class="chip" href={`/places/${place.slug}/`}><Icon name="arrow-left" />{place.name}</a>
   </nav>
   <h1>Menu</h1>
+  {place.menu.validAsOf && <p class="valid-as-of"><Icon name="calendar" />Valid as of: <b>{shortDate(place.menu.validAsOf)}</b></p>}
   <p class="muted">{place.name}. Prices and dishes can change, so check with them before you go.</p>
   <ol class="menu-pages">
     {pages.map((p, i) => (
