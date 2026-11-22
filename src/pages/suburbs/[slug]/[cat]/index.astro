@@ -1,0 +1,32 @@
+---
+// One category in one suburb, e.g. Cafes in Weston, or Electricians who service Rivett.
+// Built only where there's at least one published place, so there are no empty pages.
+import Base from '../../../../layouts/Base.astro';
+import Crumbs from '../../../../components/Crumbs.astro';
+import PlaceCard from '../../../../components/PlaceCard.astro';
+import { loadSite, placesFor } from '../../../../lib/strapi.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  const paths = [];
+  for (const suburb of site.suburbs.filter((s) => site.pagedSuburbs.has(s.slug))) {
+    for (const category of site.categories.filter((c) => c.active)) {
+      const places = placesFor(site, suburb, category);
+      if (places.length) paths.push({ params: { slug: suburb.slug, cat: category.slug }, props: { suburb, category, places } });
+    }
+  }
+  return paths;
+}
+
+const { suburb, category, places } = Astro.props;
+const title = category.kind === 'service' ? `${category.plural} who service ${suburb.name}` : `${category.plural} in ${suburb.name}`;
+---
+<Base title={title} description={`${title}, Canberra. Checked by hand, with the date we last checked.`} noindex={!suburb.live}>
+  <Crumbs items={[
+    ...(suburb.district ? [{ label: suburb.district.name, href: `/districts/${suburb.district.slug}/` }] : []),
+    { label: suburb.name, href: `/suburbs/${suburb.slug}/` },
+  ]} />
+  <h1>{title}</h1>
+  {category.kind === 'service' && <p class="muted">Each of these confirmed they serve {suburb.name}. Where they're based doesn't count.</p>}
+  <div class="stack">{places.map((p) => <PlaceCard place={p} />)}</div>
+</Base>

@@ -1,0 +1,31 @@
+---
+// Businesses and services: categories split by whether they come to you or you go to them.
+// A category shows only when it's switched on in Strapi and has at least one published place.
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import SearchBox from '../components/SearchBox.astro';
+import { loadSite } from '../lib/strapi.js';
+
+const site = await loadSite();
+const count = (slug) => site.places.filter((p) => p.category?.slug === slug).length;
+const shown = site.categories.filter((c) => c.active && count(c.slug) > 0);
+const come = shown.filter((c) => c.kind === 'service');
+const go = shown.filter((c) => c.kind === 'venue');
+---
+<Base title="Businesses and services" description="Find GPs, tradies, cleaners and local shops in Weston Creek and Molonglo Valley, with checked details.">
+  <h1>Businesses and services</h1>
+  <SearchBox />
+  {come.length > 0 && (
+    <section class="section">
+      <h2>Come to you</h2>
+      <div class="grid">{come.map((c) => <a class="gt" href={`/search/?cat=${c.slug}`}><Icon name={c.icon || 'store'} /><span>{c.plural}<small>{count(c.slug)} listed</small></span></a>)}</div>
+    </section>
+  )}
+  {go.length > 0 && (
+    <section class="section">
+      <h2>Go to them</h2>
+      <div class="grid">{go.map((c) => <a class="gt" href={`/search/?cat=${c.slug}`}><Icon name={c.icon || 'store'} /><span>{c.plural}<small>{count(c.slug)} listed</small></span></a>)}</div>
+    </section>
+  )}
+  {come.length + go.length === 0 && <p class="empty">Businesses appear here once enough in a category have been checked.</p>}
+</Base>

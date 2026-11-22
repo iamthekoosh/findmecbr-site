@@ -8,6 +8,7 @@ import '../styles/tokens.css';
 import '../styles/global.css';
 
 import { STAGE } from '../lib/strapi.js';
+import Icon from '../components/Icon.astro';
 const { title, description = 'Canberra, suburb by suburb. Checked.' } = Astro.props;
 const testing = STAGE !== 'live';
 const noindex = Astro.props.noindex || testing;
@@ -40,11 +41,24 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <img class="logo-dark" src="/lockup-horizontal-paper.svg" alt="" width="160" height="24" />
       </a>
     </header>
+    <nav class="menu" aria-label="Main">
+      <a href="/discover/"><Icon name="compass" />Discover</a>
+      <a href="/services/"><Icon name="store" />Businesses</a>
+      <a href="/search/"><Icon name="search" />Search</a>
+    </nav>
     <main id="main" tabindex="-1">
       <slot />
     </main>
     <footer class="foot">
       <div class="stack">
+        <nav class="chips" aria-label="About this site">
+          <a class="chip" href="/about/">About</a>
+          <a class="chip" href="/how-we-check/">How we check</a>
+          <a class="chip" href="/suggest/">Suggest a place</a>
+          <a class="chip" href="/corrections/">Corrections</a>
+          <a class="chip" href="/privacy/">Privacy</a>
+          <a class="chip" href="/advertise/">Advertise</a>
+        </nav>
         <p class="muted">Find Me CBR acknowledges those Traditional Custodians with connections to Country in what we now call Canberra and the ACT. We pay our respect to Elders past and present.</p>
         <p class="muted">Independent. Not a government service. Listings are checked by hand and dated.</p>
       </div>

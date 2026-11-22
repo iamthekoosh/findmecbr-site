@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+---
+<Base title="How we check" description="What confirmed, business says and not confirmed mean on Find Me CBR.">
+  <div class="prose">
+    <h1>How we check</h1>
+    <p>Every place shows the date we last checked it. Each fact says how we know it:</p>
+    <ul class="facts">
+      <li class="yes">✓ Confirmed: we saw it ourselves, or tested it in person.</li>
+      <li class="biz">Business says: the business told us, or it's on their own website.</li>
+      <li class="biz">Our take: our opinion, clearly marked. It's never paid for, and we don't give opinions on health services.</li>
+      <li class="unk">? Not confirmed: we don't know yet. We never guess.</li>
+    </ul>
+    <p>A service, such as a cleaner or electrician, only appears for a suburb they've told us they cover. Where they're based doesn't count.</p>
+    <p>Sponsored places are labelled, appear at most once in the first five results, and still have to match everything you searched for.</p>
+  </div>
+  <a class="rowtile" href="/report/"><span><Icon name="flag" class="lead" /><span>Spotted something wrong?<small>Tell us and we'll check it</small></span></span><Icon name="chevron-right" /></a>
+</Base>

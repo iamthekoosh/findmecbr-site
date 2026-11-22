@@ -3,7 +3,7 @@ import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import Crumbs from '../../../components/Crumbs.astro';
-import { loadSite, byCategory } from '../../../lib/strapi.js';
+import { loadSite, byCategory, placesFor } from '../../../lib/strapi.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -19,6 +19,8 @@ const here = site.places.filter((p) => p.suburb?.slug === suburb.slug);
 const servicing = site.places.filter((p) => p.suburb?.slug !== suburb.slug && p.serviceAreas.some((a) => a.slug === suburb.slug));
 const centres = site.centres.filter((c) => c.suburb?.slug === suburb.slug);
 const groups = byCategory(here);
+// Category tiles at the top, for categories that are switched on and have places for this suburb.
+const catTiles = site.categories.filter((c) => c.active).map((c) => ({ c, n: placesFor(site, suburb, c).length })).filter((x) => x.n > 0);
 const desc = suburb.intro || `Local places in ${suburb.name}, ${suburb.district?.name ?? 'Canberra'}, checked by hand.`;
 // Thin pages stay out of search until the page is live and has something useful on it.
 const noindex = !suburb.live || here.length + servicing.length === 0;
@@ -28,6 +30,13 @@ const noindex = !suburb.live || here.length + servicing.length === 0;
   <h1>{suburb.name}</h1>
   {suburb.image && <img class="photo tall" src={suburb.image.src} alt={suburb.image.alt} />}
   {suburb.intro && <p class="lede">{suburb.intro}</p>}
+
+  {catTiles.length > 0 && (
+    <section class="section">
+      <h2>Find in {suburb.name}</h2>
+      <div class="grid">{catTiles.map(({ c, n }) => <a class="gt" href={`/suburbs/${suburb.slug}/${c.slug}/`}><Icon name={c.icon || 'store'} /><span>{c.plural}<small>{n} listed</small></span></a>)}</div>
+    </section>
+  )}
 
   {centres.length > 0 && (
     <section class="section">

@@ -168,6 +168,14 @@ function finish(site) {
   return site;
 }
 
+// Places in one category for one suburb. Services count when they confirmed they serve the suburb.
+export function placesFor(site, suburb, category) {
+  return site.places.filter((p) => p.category?.slug === category.slug && (
+    category.kind === 'service'
+      ? p.serviceAreas.some((a) => a.slug === suburb.slug) || p.suburb?.slug === suburb.slug
+      : p.suburb?.slug === suburb.slug));
+}
+
 // Places grouped by category, in category order, for directory lists.
 export function byCategory(places) {
   const groups = new Map();

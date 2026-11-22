@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+const items = [['Quick Boost', '$30', '7 days', 'Search placement'], ['Extended Boost', '$50', '14 days', 'Search placement'], ['Suburb Sponsor', '$99', '30 days', 'Suburb page'], ['Suburb Spotlight', '$149', '30 days', 'Local guide']];
+---
+<Base title="Advertise with us" description="Free listings, and one-off sponsored placements that are always labelled.">
+  <h1>Advertise with us</h1>
+  <p>Your basic listing is free. Promotions are one-off payments that don't renew, and they're always labelled Sponsored.</p>
+  <p>We'll show you impressions and clicks, but we can't promise sales.</p>
+  <div class="grid two">
+    {items.map(([n, price, d, what]) => <span class="gt stacked"><Icon name="megaphone" /><span>{n}, {price}<small>{d}. {what}</small></span></span>)}
+  </div>
+  <p class="muted">Prices are draft, and GST and refund terms are still to be decided. Promotions aren't on sale yet.</p>
+</Base>

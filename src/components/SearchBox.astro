@@ -1,0 +1,8 @@
+---
+import Icon from './Icon.astro';
+const { value = '', placeholder = 'Cleaner servicing Rivett' } = Astro.props;
+---
+<form class="searchform" action="/search/" method="get" role="search">
+  <input id="q" name="q" type="search" aria-label="Search Find Me CBR" placeholder={placeholder} value={value} autocomplete="off" required />
+  <button class="go" type="submit" aria-label="Search"><Icon name="search" /></button>
+</form>
