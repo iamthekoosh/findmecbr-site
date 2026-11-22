@@ -241,10 +241,19 @@ label{display:grid;gap:4px;font-weight:600}
 .status-info_online{color:var(--color-info)}
 .status-unverified{color:var(--color-warning)}
 
-/* Live open status under the photos. Colour plus words. */
-.live{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 0}
+/* Live open status under the photos: a dropdown that shows the week's hours. Colour plus words. */
+.live{margin:12px 0 0;border:1px solid var(--color-line);border-radius:var(--radius);background:var(--color-surface)}
+.live summary{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:var(--tap-row);padding:8px 12px;cursor:pointer;list-style:none}
+.live summary::-webkit-details-marker{display:none}
+.live-now{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .live-tag{display:inline-block;padding:4px 10px;border:1px solid currentColor;border-radius:999px;font:700 15px/20px var(--font-body);background:color-mix(in srgb,currentColor 12%,transparent)}
 .live-detail{font-size:15px;color:var(--color-text-muted)}
-.live-open .live-tag{color:var(--color-confirmed)}
-.live-closing .live-tag,.live-opening .live-tag{color:var(--color-warning)}
-.live-closed .live-tag{color:var(--color-error)}
+.live[data-state="open"] .live-tag{color:var(--color-confirmed)}
+.live[data-state="closing"] .live-tag,.live[data-state="opening"] .live-tag{color:var(--color-warning)}
+.live[data-state="closed"] .live-tag{color:var(--color-error)}
+.live-chev{flex:none;transition:transform var(--motion-base) var(--motion-ease)}
+.live[open] .live-chev{transform:rotate(90deg)}
+.live-hours{margin:0;padding:4px 12px 12px;border-top:1px solid var(--color-line);padding-top:12px}
+.live-hours .today{font-weight:700;color:var(--color-text)}
+.live-hours dd.today::after{content:" · today";font-weight:400;color:var(--color-text-muted)}
+.live-exceptions{margin:0;padding:0 12px 12px 32px}

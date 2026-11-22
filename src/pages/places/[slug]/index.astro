@@ -115,15 +115,12 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
     </section>
   )}
 
-  <section class="section">
-    <h2>Opening hours</h2>
-    {hours.length
-      ? <dl class="hours">{hours.map((h) => <><dt>{h.day}</dt><dd>{h.text}</dd></>)}</dl>
-      : <p class="muted">Hours not confirmed yet. Check with the business before you go.</p>}
-    {place.exceptions.length > 0 && (
-      <ul class="muted">{place.exceptions.map((x) => <li>{shortDate(x.date)}: {x.closed ? 'Closed' : `${x.opens} to ${x.closes}`}{x.note && ` (${x.note})`}</li>)}</ul>
-    )}
-  </section>
+  {hours.length === 0 && (
+    <section class="section">
+      <h2>Opening hours</h2>
+      <p class="muted">Hours not confirmed yet. Check with the business before you go.</p>
+    </section>
+  )}
 
   {(place.address || place.serviceAreas.length > 0 || place.basedIn) && (
     <section class="section">
