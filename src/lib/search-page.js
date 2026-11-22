@@ -76,13 +76,19 @@ function chips(params, cond, site) {
     const on = !!cond[key];
     return `<a class="chip" role="button" aria-pressed="${on}" href="${link(params, { [key]: on ? null : true })}">${ic(icon)}${label}</a>`;
   };
-  const suburbOpts = site.suburbs.map((s) => `<option value="${esc(s.slug)}"${cond.suburb === s.slug ? ' selected' : ''}>${esc(s.name)}</option>`).join('');
-  return `<div class="chips">
-      ${chip('open', 'clock', 'Open now')}${chip('step', 'accessibility', 'Step-free')}${chip('dogs', 'dog', 'Dogs welcome')}${chip('free', 'ticket', 'Free')}
-    </div>
-    <div class="locrow">
-      <select id="suburb-pick" aria-label="Suburb"><option value="">Any suburb</option>${suburbOpts}</select>
+  // Suburbs grouped under a labelled heading for each district, both sorted by name.
+  const groups = new Map();
+  for (const s of [...site.suburbs].sort((a, b) => a.name.localeCompare(b.name))) {
+    const d = s.districtName || 'Other';
+    if (!groups.has(d)) groups.set(d, []);
+    groups.get(d).push(s);
+  }
+  const suburbOpts = [...groups].sort(([a], [b]) => a.localeCompare(b)).map(([d, subs]) => `<optgroup label="${esc(d)}">${
+    subs.map((s) => `<option value="${esc(s.slug)}"${cond.suburb === s.slug ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</optgroup>`).join('');
+  return `<div class="locrow">
       <button class="chip" type="button" id="near-me" aria-pressed="${!!cond.near}">${ic('locate')}Near me</button>
+      ${chip('open', 'clock', 'Open now')}
+      <select id="suburb-pick" aria-label="Suburb"><option value="">Suburb</option>${suburbOpts}</select>
     </div>`;
 }
 

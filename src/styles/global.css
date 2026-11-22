@@ -9,7 +9,20 @@ a,button,input,select,textarea{touch-action:manipulation}
 :focus-visible{outline:3px solid var(--color-brand);outline-offset:2px}
 
 .top{display:flex;justify-content:center;border-bottom:2px solid var(--color-brand)}
-.logo{display:flex;align-items:center;min-height:56px;width:100%;max-width:560px;padding:0 16px}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:560px;padding:0 16px}
+.logo{display:flex;align-items:center;min-height:56px}
+.menu-btn{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap-chip);padding:6px 12px;border:1px solid var(--color-border);border-radius:var(--radius);background:transparent;color:var(--color-text);font:600 15px/20px var(--font-body);cursor:pointer}
+.menu-btn .ic{color:var(--color-brand)}
+.menu-btn[aria-expanded="true"]{background:var(--color-brand);border-color:var(--color-brand);color:var(--color-on-brand)}
+.menu-btn[aria-expanded="true"] .ic{color:var(--color-on-brand)}
+.menu-btn .when-open,.menu-btn[aria-expanded="true"] .when-shut{display:none}
+.menu-btn[aria-expanded="true"] .when-open{display:block}
+html:not(.js) .menu-btn{display:none}
+.js .menu-wrap{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:0fr;transition:grid-template-rows .25s ease}
+.js .menu-wrap.open{grid-template-rows:1fr}
+.js .menu-wrap>.menu{width:100%;box-sizing:border-box;overflow:hidden;min-height:0;padding-bottom:0;transition:padding .25s ease}
+.js .menu-wrap:not(.open)>.menu{padding-top:0}
+@media (prefers-reduced-motion:reduce){.js .menu-wrap,.js .menu-wrap>.menu{transition:none}}
 .logo img{display:block;height:24px;width:auto}
 .logo-dark{display:none!important}
 @media (prefers-color-scheme:dark){.logo-light{display:none!important}.logo-dark{display:block!important}}
@@ -31,9 +44,10 @@ textarea{min-height:110px}
 label{display:grid;gap:4px;font-weight:600}
 .err{color:var(--color-error);font-size:15px;font-weight:600}
 
-.locrow{display:flex;gap:8px;align-items:stretch}
-.locrow select{flex:1;min-width:0}
-.locrow .chip{flex:none;white-space:nowrap}
+.locrow{display:flex;gap:6px;align-items:stretch}
+.locrow select{flex:1;min-width:0;padding:8px 6px 8px 10px}
+.locrow .chip{flex:none;white-space:nowrap;padding:6px 10px}
+@media (max-width:359px){.locrow .chip .ic{display:none}}
 
 /* Buttons and tiles */
 .go{min-height:var(--tap-field);padding:8px 16px;border:0;border-radius:var(--radius);background:var(--color-brand);color:var(--color-on-brand);font:700 16px/24px var(--font-body);cursor:pointer}

@@ -235,7 +235,7 @@ function finish(site) {
 export function publicData(site) {
   const days = (hours) => hours.map((h) => [h.day, h.opens, h.closes]);
   return {
-    suburbs: site.suburbs.filter((s) => site.pagedSuburbs.has(s.slug)).map((s) => ({ slug: s.slug, name: s.name, lat: s.lat ?? null, lng: s.lng ?? null })),
+    suburbs: site.suburbs.filter((s) => site.pagedSuburbs.has(s.slug)).map((s) => ({ slug: s.slug, name: s.name, district: s.district?.slug ?? null, districtName: s.district?.name ?? '', lat: s.lat ?? null, lng: s.lng ?? null })),
     categories: site.categories.filter((c) => c.active).map(({ slug, label, plural, kind, icon }) => ({ slug, label, plural, kind, icon })),
     tags: site.tags.filter((t) => t.active).map(({ slug, label, group, question, icon }) => ({ slug, label, group, question, icon })),
     synonyms: site.synonyms,

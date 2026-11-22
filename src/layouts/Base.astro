@@ -14,11 +14,18 @@ const testing = STAGE !== 'live';
 const noindex = Astro.props.noindex || testing;
 const fullTitle = title ? `${title} | Find Me CBR` : 'Find Me CBR: Canberra, suburb by suburb. Checked.';
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const here = Astro.url.pathname;
+const menu = [
+  { href: '/discover/', icon: 'compass', label: 'Discover' },
+  { href: '/services/', icon: 'store', label: 'Businesses' },
+  { href: '/search/', icon: 'search', label: 'Search' },
+];
 ---
 <!doctype html>
 <html lang="en-AU">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -36,16 +43,19 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <a class="skip" href="#main">Skip to content</a>
     {testing && <p class="proto">{STAGE.toUpperCase()}: a test version. Listings may be incomplete.</p>}
     <header class="top">
-      <a class="logo" href="/" aria-label="Find Me CBR home">
-        <img class="logo-light" src="/lockup-horizontal-eucalypt.svg" alt="Find Me CBR" width="160" height="24" />
-        <img class="logo-dark" src="/lockup-horizontal-paper.svg" alt="" width="160" height="24" />
-      </a>
+      <div class="top-in">
+        <a class="logo" href="/" aria-label="Find Me CBR home">
+          <img class="logo-light" src="/lockup-horizontal-eucalypt.svg" alt="Find Me CBR" width="160" height="24" />
+          <img class="logo-dark" src="/lockup-horizontal-paper.svg" alt="" width="160" height="24" />
+        </a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="main-menu"><Icon name="menu" class="when-shut" /><Icon name="x" class="when-open" />Menu</button>
+      </div>
     </header>
-    <nav class="menu" aria-label="Main">
-      <a href="/discover/"><Icon name="compass" />Discover</a>
-      <a href="/services/"><Icon name="store" />Businesses</a>
-      <a href="/search/"><Icon name="search" />Search</a>
-    </nav>
+    <div class="menu-wrap" id="main-menu">
+      <nav class="menu" aria-label="Main">
+        {menu.map((m) => <a href={m.href} aria-current={here.startsWith(m.href) ? 'page' : undefined}><Icon name={m.icon} />{m.label}</a>)}
+      </nav>
+    </div>
     <main id="main" tabindex="-1">
       <slot />
     </main>
@@ -64,5 +74,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <p class="copyright">© {new Date().getFullYear()} Find Me CBR. All rights reserved.</p>
       </div>
     </footer>
+    <script>
+      // The main menu slides down from the header. Escape or a tap elsewhere closes it.
+      const btn = document.querySelector('.menu-btn');
+      const wrap = document.getElementById('main-menu');
+      const set = (open) => { btn.setAttribute('aria-expanded', String(open)); wrap.classList.toggle('open', open); wrap.inert = !open; };
+      set(false);
+      btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && wrap.classList.contains('open')) { set(false); btn.focus(); } });
+      document.addEventListener('click', (e) => { if (wrap.classList.contains('open') && !wrap.contains(e.target) && !btn.contains(e.target)) set(false); });
+    </script>
   </body>
 </html>
