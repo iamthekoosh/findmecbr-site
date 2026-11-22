@@ -60,7 +60,41 @@
    ],
    "image": null,
    "lat": -35.34,
-   "lng": 149.05
+   "lng": 149.05,
+   "stats": [
+    {
+     "value": "SAMPLE 3,800",
+     "label": "People",
+     "icon": "users",
+     "source": "Sample source",
+     "year": 2021,
+     "url": "https://example.com"
+    },
+    {
+     "value": "40",
+     "label": "Median age",
+     "icon": "cake",
+     "source": "Sample source",
+     "year": 2021,
+     "url": null
+    },
+    {
+     "value": "1,500",
+     "label": "Homes",
+     "icon": "house",
+     "source": "Sample source",
+     "year": 2021,
+     "url": null
+    },
+    {
+     "value": "12%",
+     "label": "Families with young kids",
+     "icon": "baby",
+     "source": "Sample source",
+     "year": 2021,
+     "url": null
+    }
+   ]
   },
   {
    "slug": "holder",

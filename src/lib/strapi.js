@@ -133,7 +133,7 @@ export async function loadSite() {
   }
   const [districts, suburbs, centres, categories, places, tags, synonyms] = await Promise.all([
     getAll('districts', { sort: 'name', populate: { hero_image: { populate: ['file'] }, photos: { populate: ['file'] } } }),
-    getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, hero_image: { populate: ['file'] } } }),
+    getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, stats: true, hero_image: { populate: ['file'] } } }),
     getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] } } }),
     getAll('categories', { sort: 'label' }),
     getAll('places', {
@@ -166,6 +166,7 @@ export async function loadSite() {
       slug: s.slug, name: s.name, lat: s.lat != null ? Number(s.lat) : null, lng: s.lng != null ? Number(s.lng) : null, district: s.district ? { slug: s.district.slug, name: s.district.name } : null,
       intro: s.intro ?? '', body: s.body ?? '', live: !!s.page_live, checkedAt: s.checked_at ?? null,
       neighbours: (s.neighbours ?? []).map((n) => ({ slug: n.slug, name: n.name })), image: image(s.hero_image),
+      stats: (s.stats ?? []).filter((x) => x.value && x.label).map((x) => ({ value: x.value, label: x.label, icon: x.icon ?? null, source: x.source ?? '', year: x.year ?? null, url: (x.source_url ?? '').startsWith('https://') ? x.source_url : null })),
     })),
     centres: centres.map((c) => ({
       slug: c.slug, name: c.name, kind: c.kind, suburb: c.suburb ? { slug: c.suburb.slug, name: c.suburb.name } : null,

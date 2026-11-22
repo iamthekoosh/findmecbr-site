@@ -211,3 +211,13 @@ label{display:grid;gap:4px;font-weight:600}
 .district-tile.has-img::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgb(0 0 0 / .78),rgb(0 0 0 / .15) 60%,rgb(0 0 0 / .05))}
 .district-tile.has-img,.district-tile.has-img small,.district-tile.has-img .ic{color:#fff}
 .district-tile.has-img{border-color:transparent}
+
+/* Statistic tiles on suburb pages: two per row on a phone, three wider. The figure is the biggest thing. */
+.stat-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;list-style:none;margin:0;padding:0}
+@media (min-width:640px){.stat-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.stat-tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:120px;padding:12px;border:1px solid var(--color-border);border-radius:var(--radius);background:var(--color-surface);overflow-wrap:anywhere}
+.stat-tile .ic{width:24px;height:24px;color:var(--color-brand);margin-bottom:6px}
+.stat-value{font:700 28px/32px var(--font-display);color:var(--color-text)}
+.stat-label{font:600 14px/18px var(--font-body);color:var(--color-text)}
+.stat-tile small{margin-top:auto;padding-top:6px;font:400 12px/16px var(--font-mono);color:var(--color-text-muted)}
+.stat-tile small a{color:inherit;text-decoration:underline;text-underline-offset:2px}
