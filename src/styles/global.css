@@ -234,3 +234,9 @@ label{display:grid;gap:4px;font-weight:600}
 .cat-tab[aria-selected="true"] .ic,.cat-tab[aria-selected="true"] small{color:var(--color-on-brand)}
 .cat-panel{display:grid;gap:8px;margin-top:8px}
 .cat-panel h3{font:700 18px/22px var(--font-display);margin:0}
+
+/* Post status tag under a place's name. Colour plus words, never colour alone. */
+.status{display:inline-block;margin-top:4px;padding:2px 8px;border:1px solid currentColor;border-radius:999px;font:700 13px/18px var(--font-body);background:color-mix(in srgb,currentColor 12%,transparent)}
+.status-verified{color:var(--color-confirmed)}
+.status-info_online{color:var(--color-info)}
+.status-unverified{color:var(--color-warning)}

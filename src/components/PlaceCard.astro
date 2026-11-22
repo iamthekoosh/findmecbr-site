@@ -1,6 +1,7 @@
 ---
 // A place in a list. The whole head is a tile to the place page. Utility buttons sit below.
 import Icon from './Icon.astro';
+import StatusTag from './StatusTag.astro';
 import { shortDate, directionsUrl, telUrl } from '../lib/format.js';
 const { place, showCentre = true } = Astro.props;
 const where = [place.centre && showCentre ? place.centre.name : null, place.suburb?.name].filter(Boolean).join(', ');
@@ -15,6 +16,7 @@ const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slic
       </span>
       <span>
         <span class="name">{place.name}</span>
+        <StatusTag status={place.postStatus} />
         <span class="sub">{[place.category?.label, where].filter(Boolean).join(' · ')}</span>
       </span>
     </span>

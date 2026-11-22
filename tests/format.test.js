@@ -97,3 +97,9 @@ test('a place shows in the district section that matches its class', async () =>
   assert.equal(services.list.length, 0);
   assert.deepEqual(businesses.list.map((c) => c.slug), ['cafe']);
 });
+
+test('post status defaults to unverified and keeps known values', () => {
+  assert.equal(shapePlace({ slug: 'a', name: 'A' }).postStatus, 'unverified');
+  assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'info_online' }).postStatus, 'info_online');
+  assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'nonsense' }).postStatus, 'unverified');
+});

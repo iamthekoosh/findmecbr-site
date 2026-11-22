@@ -1,6 +1,7 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
+import StatusTag from '../../../components/StatusTag.astro';
 import FactTile from '../../../components/FactTile.astro';
 import PhotoCarousel from '../../../components/PhotoCarousel.astro';
 import { loadSite, STAGE } from '../../../lib/strapi.js';
@@ -46,6 +47,7 @@ const features = place.facts.filter((f) => f.group !== "occasion");
     <div>
       <p class="kicker">{[place.category?.label, place.suburb?.name].filter(Boolean).join(' · ')}</p>
       <h1>{place.name}</h1>
+      <StatusTag status={place.postStatus} />
     </div>
   </div>
 

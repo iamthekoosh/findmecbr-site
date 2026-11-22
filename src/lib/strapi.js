@@ -81,6 +81,14 @@ export const CLASSES = {
   business: { key: 'businesses', title: 'Businesses', note: 'Shops, cafes and places to visit.' },
 };
 
+// How far a listing has been checked, shown as a coloured tag under the name.
+// A place saved before the field existed counts as unverified.
+export const POST_STATUSES = {
+  verified: { label: 'Verified', note: 'We confirmed this with the business or in person.' },
+  info_online: { label: 'Info from online', note: 'Taken from public online sources. Not yet confirmed with the business.' },
+  unverified: { label: 'Unverified', note: 'Not checked yet.' },
+};
+
 // Shapes one place for the pages. Exported for tests.
 export function shapePlace(p) {
   const loc = p.location ?? null;
@@ -91,6 +99,7 @@ export function shapePlace(p) {
     name: p.name,
     category: p.primary_category ? { slug: p.primary_category.slug, label: p.primary_category.label, plural: p.primary_category.plural, icon: p.primary_category.icon } : null,
     locationType: p.location_type,
+    postStatus: POST_STATUSES[p.post_status] ? p.post_status : 'unverified',
     placeClass: CLASSES[p.place_class] ? p.place_class : (p.primary_category?.kind === 'service' ? 'service' : 'business'),
     short: p.description_short ?? '',
     full: p.description_full ?? '',
