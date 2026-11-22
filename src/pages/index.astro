@@ -20,11 +20,11 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
   <section class="section">
     <h2>Choose a district</h2>
-    <div class="stack">
+    <div class="grid">
       {districts.map((d) => (
-        <a class="rowtile" href={`/districts/${d.slug}/`}>
-          <span><Icon name="compass" class="lead" /><span>{d.name}<small>{[plural(d.suburbs, "suburb"), d.centres && plural(d.centres, "shopping area")].filter(Boolean).join(" · ")}</small></span></span>
-          <Icon name="chevron-right" />
+        <a class="gt big" href={`/districts/${d.slug}/`}>
+          <Icon name="compass" />
+          <span>{d.name}<small>{plural(d.suburbs, "suburb")}{d.centres > 0 && <><br />{plural(d.centres, "shopping area")}</>}</small></span>
         </a>
       ))}
     </div>
