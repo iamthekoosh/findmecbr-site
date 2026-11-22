@@ -125,3 +125,17 @@ test('tile sets: match by category, keep tile order, mark missing ones unconfirm
   assert.equal(tileSetsFor({ category: { slug: 'cafe' }, otherCategories: [{ slug: 'service-station' }], facts: [] }, [extras]).length, 1);
   assert.equal(tileSetsFor({ category: { slug: 'grocery' }, facts: [] }, [known]).length, 0, 'a set with nothing to show is dropped');
 });
+
+test('tile sets picked on a place replace the ones for its type, and hidden tiles are left out', async () => {
+  const { shapeTileSet, tileSetsFor } = await import('../src/lib/format.js');
+  const extras = shapeTileSet({ name: 'Extras', heading: 'Extra services', active: true, categories: [{ slug: 'grocery' }], tags: [{ slug: 'ice', label: 'Ice' }, { slug: 'lpg-swap', label: 'LPG swap' }, { slug: 'lotto', label: 'Lotto' }] });
+  const deli = shapeTileSet({ name: 'Deli', heading: 'At the deli', active: true, categories: [], tags: [{ slug: 'sliced-meats', label: 'Sliced meats' }] });
+  const off = shapeTileSet({ name: 'Off', heading: 'Draft', active: false, categories: [], tags: [{ slug: 'ice', label: 'Ice' }] });
+  const base = { category: { slug: 'grocery' }, facts: [] };
+
+  assert.deepEqual(tileSetsFor(base, [extras, deli]).map((s) => s.heading), ['Extra services'], 'by type when nothing is picked');
+  assert.deepEqual(tileSetsFor({ ...base, tileSetChoice: ['Deli'] }, [extras, deli]).map((s) => s.heading), ['At the deli'], 'picked sets replace the type ones');
+  assert.deepEqual(tileSetsFor({ ...base, tileSetChoice: ['Deli', 'Extras'] }, [extras, deli]).length, 2);
+  assert.equal(tileSetsFor({ ...base, tileSetChoice: ['Off'] }, [off]).length, 0, 'a set that is off never shows');
+  assert.deepEqual(tileSetsFor({ ...base, hiddenTiles: ['lpg-swap'] }, [extras])[0].tiles.map((x) => x.slug), ['ice', 'lotto']);
+});

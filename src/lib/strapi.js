@@ -98,6 +98,9 @@ export function shapePlace(p) {
     id: p.documentId ?? null,
     slug: p.slug,
     name: p.name,
+    // Tile sets picked on the place itself (by name), and tiles to leave out of its sets.
+    tileSetChoice: (p.tile_sets ?? []).map((s) => s.name),
+    hiddenTiles: (p.hidden_tiles ?? []).map((t) => t.slug),
     otherCategories: (p.other_categories ?? []).map((c) => ({ slug: c.slug })),
     category: p.primary_category ? { slug: p.primary_category.slug, label: p.primary_category.label, plural: p.primary_category.plural, icon: p.primary_category.icon } : null,
     locationType: p.location_type,
@@ -165,6 +168,8 @@ export async function loadSite() {
         location: { populate: ['suburb', 'centre'] },
         service_areas: { populate: ['suburb'] },
         facts: { populate: ['tag'] },
+        tile_sets: true,
+        hidden_tiles: true,
         opening_hours: true,
         hours_exceptions: true,
         action_tiles: true,

@@ -82,7 +82,9 @@ export const CENTRE_KINDS = Object.fromEntries(Object.entries(CENTRE_TYPES).map(
 export const typeOf = (kind) => CENTRE_TYPES[kind] ?? CENTRE_TYPES.local_shops;
 
 // Tile sets come from Strapi: each one names the place types (categories) it applies to and its tiles (tags), in order.
-// A place gets every active set that matches its main or other categories, lowest position first.
+// A place gets every active set that matches its main or other categories, lowest position first,
+// unless sets were picked on the place itself: then exactly those (still only active ones).
+// Tiles hidden on the place are left out.
 // A tile the place has a fact for shows that fact's evidence. One it hasn't shows as unconfirmed,
 // or is left out when the set's "show missing" is off. Sets with no tiles to show are dropped.
 export function shapeTileSet(s) {
@@ -95,12 +97,14 @@ export function shapeTileSet(s) {
 
 export function tileSetsFor(place, sets = []) {
   const cats = new Set([place.category?.slug, ...(place.otherCategories ?? []).map((c) => c.slug)].filter(Boolean));
+  const chosen = place.tileSetChoice ?? [];
+  const hidden = new Set(place.hiddenTiles ?? []);
   return sets
-    .filter((s) => s.active && s.categories.some((c) => cats.has(c)))
+    .filter((s) => s.active && (chosen.length ? chosen.includes(s.name) : s.categories.some((c) => cats.has(c))))
     .sort((a, b) => a.position - b.position || a.heading.localeCompare(b.heading))
     .map((s) => ({
       heading: s.heading,
-      tiles: s.tags.map((tag) => {
+      tiles: s.tags.filter((tag) => !hidden.has(tag.slug)).map((tag) => {
         const fact = place.facts.find((f) => f.slug === tag.slug);
         if (fact) return { ...fact, icon: fact.icon || tag.icon };
         return s.showMissing ? { slug: tag.slug, label: tag.label, icon: tag.icon, subtitle: '', evidence: 'unknown' } : null;
