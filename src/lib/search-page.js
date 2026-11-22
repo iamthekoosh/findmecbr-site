@@ -4,7 +4,7 @@ import { search } from './search.js';
 import icons from './icons.json';
 
 const PAGE = 10;
-const KEYS = ['q', 'cat', 'occ', 'suburb', 'radius', 'step', 'open', 'dogs', 'free', 'near', 'more'];
+const KEYS = ['q', 'cat', 'occ', 'suburb', 'radius', 'step', 'open', 'dogs', 'free', 'has', 'near', 'more'];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const ic = (name, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${icons[name] ?? icons.store}</svg>`;
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

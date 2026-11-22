@@ -62,6 +62,8 @@ export function parseQuery(raw, site) {
     else if (t.tag === FILTER_TAGS.step) { out.step = true; take(t.term); }
     else if (t.tag === FILTER_TAGS.dogs) { out.dogs = true; take(t.term); }
     else if (t.tag && site.tags.some((x) => x.slug === t.tag && x.group === 'occasion') && !out.occ && !out.cat) { out.occ = t.tag; take(t.term); }
+    // A synonym for a tile, such as "beer" for Liquor: places that have that tile.
+    else if (t.tag && !site.tags.some((x) => x.slug === t.tag && x.group === 'occasion') && !out.has) { out.has = t.tag; take(t.term); }
   }
   if (/(^|\s)dogs?($|\s)/.test(text)) { out.dogs = true; text = text.replace(/dogs?/, ' '); }
   if (/wheelchair|step[- ]free/.test(text)) { out.step = true; text = text.replace(/wheelchair( access(ible)?)?|step[- ]free/, ' '); }
@@ -85,6 +87,7 @@ export function search(params, site, opts = {}) {
     open: !!(params.open || parsed.open),
     dogs: !!(params.dogs || parsed.dogs),
     free: !!params.free,
+    has: params.has || parsed.has || null,
     near: !!params.near && !!opts.origin,
     words: parsed.words,
   };
@@ -116,6 +119,8 @@ export function search(params, site, opts = {}) {
     if (cond.open && isOpenNow(p, now) !== true) return false;
     if (cond.dogs && !['confirmed', 'business_says'].includes(p.facts[FILTER_TAGS.dogs])) return false;
     if (cond.free && p.facts[FILTER_TAGS.free] !== 'confirmed') return false;
+    // A tile asked for by name: Verified or Info from online. Unconfirmed tiles don't count.
+    if (cond.has && !['confirmed', 'business_says'].includes(p.facts[cond.has])) return false;
     return true;
   });
 
@@ -124,7 +129,7 @@ export function search(params, site, opts = {}) {
     const levels = Object.values(p.facts);
     const confirmed = levels.length ? levels.filter((l) => l === 'confirmed').length / levels.length : 0;
     const filled = [p.short, p.phone, p.website, p.hours.length].filter(Boolean).length / 4;
-    const match = cond.cat || cond.occ ? 1 : cond.words.length ? 0.5 : 0.25;
+    const match = cond.cat || cond.occ || cond.has ? 1 : cond.words.length ? 0.5 : 0.25;
     const d = isService ? null : distanceTo(p);
     const proximity = d == null ? 0 : Math.max(0, 1 - d / PROXIMITY_KM);
     return WEIGHTS.match * match + WEIGHTS.proximity * proximity + WEIGHTS.features * confirmed + WEIGHTS.quality * filled;
