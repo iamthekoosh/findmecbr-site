@@ -192,7 +192,8 @@
       "icon": "square-parking"
      },
      "evidence": "confirmed",
-     "checked_at": "2026-11-19"
+     "checked_at": "2026-11-19",
+     "subtitle": "2 spaces behind the shop"
     },
     {
      "tag": {
@@ -247,7 +248,8 @@
       "icon": "sun"
      },
      "evidence": "confirmed",
-     "checked_at": "2026-11-19"
+     "checked_at": "2026-11-19",
+     "subtitle": "Covered deck, 6 tables"
     },
     {
      "tag": {

@@ -43,14 +43,15 @@ export function evidenceText(fact) {
   return { mark: '?', text: `${fact.label}: not confirmed`, cls: 'unk' };
 }
 
-// A fact as a badge: an icon, the fact, and how we know it underneath.
+// A fact as a tile: its icon, the fact, an optional subtitle, and a colour-coded tag for how we know it.
 // The tag's own icon is used when it has one, otherwise one that shows the evidence.
+export const EVIDENCE_TAGS = { confirmed: 'Verified', business_says: 'Info from online', unknown: 'Unconfirmed' };
 export function evidenceBadge(fact, knownIcons = {}) {
-  const status = { confirmed: 'Confirmed', business_says: 'Business says' }[fact.evidence] ?? 'Not confirmed';
+  const status = EVIDENCE_TAGS[fact.evidence] ?? EVIDENCE_TAGS.unknown;
   const cls = { confirmed: 'yes', business_says: 'biz' }[fact.evidence] ?? 'unk';
-  const fallback = { confirmed: 'check', business_says: 'store' }[fact.evidence] ?? 'circle-help';
+  const fallback = { confirmed: 'check', business_says: 'globe' }[fact.evidence] ?? 'circle-help';
   const icon = fact.icon && knownIcons[fact.icon] ? fact.icon : fallback;
-  return { icon, label: fact.label, status, cls };
+  return { icon, label: fact.label, subtitle: (fact.subtitle ?? '').trim(), status, cls };
 }
 
 // A listing shows its facts as one set of tiles, no headings, in this order: getting there first, occasions ("good for") last.
