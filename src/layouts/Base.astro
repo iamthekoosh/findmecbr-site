@@ -51,16 +51,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </main>
     <footer class="foot">
       <div class="stack">
-        <nav class="chips" aria-label="About this site">
-          <a class="chip" href="/about/">About</a>
-          <a class="chip" href="/how-we-check/">How we check</a>
-          <a class="chip" href="/suggest/">Suggest a place</a>
-          <a class="chip" href="/corrections/">Corrections</a>
-          <a class="chip" href="/privacy/">Privacy</a>
-          <a class="chip" href="/advertise/">Advertise</a>
+        <nav class="foot-links" aria-label="About this site">
+          <a href="/about/">About</a>
+          <a href="/how-we-check/">How we check</a>
+          <a href="/suggest/">Suggest a place</a>
+          <a href="/corrections/">Corrections</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/advertise/">Advertise</a>
         </nav>
         <p class="muted">Find Me CBR acknowledges those Traditional Custodians with connections to Country in what we now call Canberra and the ACT. We pay our respect to Elders past and present.</p>
         <p class="muted">Independent. Not a government service. Listings are checked by hand and dated.</p>
+        <p class="copyright">© {new Date().getFullYear()} Find Me CBR. All rights reserved.</p>
       </div>
     </footer>
   </body>

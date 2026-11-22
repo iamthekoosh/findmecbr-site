@@ -1,6 +1,7 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
+import FactBadge from '../../../components/FactBadge.astro';
 import { loadSite } from '../../../lib/strapi.js';
 import { shortDate, weekHours, evidenceText, directionsUrl, telUrl, ACTION_WORDS } from '../../../lib/format.js';
 
@@ -77,8 +78,8 @@ const ld = {
   {place.facts.length > 0 && (
     <section class="section">
       <h2>What we know</h2>
-      <ul class="facts">
-        {place.facts.map((f) => { const e = evidenceText(f); return <li class={e.cls}>{e.mark && `${e.mark} `}{e.text}</li>; })}
+      <ul class="fact-badges">
+        {place.facts.map((f) => <FactBadge fact={f} />)}
       </ul>
     </section>
   )}

@@ -1,0 +1,12 @@
+---
+// A fact about a place as a badge: icon, the fact, and how we know it.
+import Icon from './Icon.astro';
+import icons from '../lib/icons.json';
+import { evidenceBadge } from '../lib/format.js';
+const { fact } = Astro.props;
+const b = evidenceBadge(fact, icons);
+---
+<li class={`fact-badge ${b.cls}`}>
+  <Icon name={b.icon} />
+  <span>{b.label}<small>{b.status}</small></span>
+</li>

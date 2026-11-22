@@ -43,6 +43,16 @@ export function evidenceText(fact) {
   return { mark: '?', text: `${fact.label}: not confirmed`, cls: 'unk' };
 }
 
+// A fact as a badge: an icon, the fact, and how we know it underneath.
+// The tag's own icon is used when it has one, otherwise one that shows the evidence.
+export function evidenceBadge(fact, knownIcons = {}) {
+  const status = { confirmed: 'Confirmed', business_says: 'Business says' }[fact.evidence] ?? 'Not confirmed';
+  const cls = { confirmed: 'yes', business_says: 'biz' }[fact.evidence] ?? 'unk';
+  const fallback = { confirmed: 'check', business_says: 'store' }[fact.evidence] ?? 'circle-help';
+  const icon = fact.icon && knownIcons[fact.icon] ? fact.icon : fallback;
+  return { icon, label: fact.label, status, cls };
+}
+
 // A maps hand-off for the Directions button. Uses coordinates when the address is public, else the suburb.
 export function directionsUrl(place) {
   if (place.lat != null && place.lng != null) return `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
