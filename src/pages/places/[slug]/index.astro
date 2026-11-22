@@ -2,7 +2,8 @@
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import FactTile from '../../../components/FactTile.astro';
-import { loadSite } from '../../../lib/strapi.js';
+import PhotoCarousel from '../../../components/PhotoCarousel.astro';
+import { loadSite, STAGE } from '../../../lib/strapi.js';
 import { shortDate, weekHours, directionsUrl, telUrl, ACTION_WORDS, orderFacts } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
@@ -48,7 +49,7 @@ const features = place.facts.filter((f) => f.group !== "occasion");
     </div>
   </div>
 
-  {place.photos[0] && <img class="photo tall" src={place.photos[0].src} alt={place.photos[0].alt} />}
+  <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />
   {place.short && <p class="lede">{place.short}</p>}
 
   {place.centre && (

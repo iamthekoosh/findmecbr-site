@@ -374,6 +374,41 @@
      "active": true,
      "checked_at": "2026-11-19"
     }
+   ],
+   "photos": [
+    {
+     "file": {
+      "url": "/sample/cafe-counter.svg",
+      "width": 1200,
+      "height": 900
+     },
+     "alt_text": "Sample: the counter",
+     "credit": null,
+     "permission": "Sample",
+     "is_primary": false
+    },
+    {
+     "file": {
+      "url": "/sample/cafe-front.svg",
+      "width": 1200,
+      "height": 900
+     },
+     "alt_text": "Sample: the shopfront",
+     "credit": "Find Me CBR",
+     "permission": "Sample",
+     "is_primary": true
+    },
+    {
+     "file": {
+      "url": "/sample/cafe-deck.svg",
+      "width": 1200,
+      "height": 900
+     },
+     "alt_text": "Sample: the outdoor deck",
+     "credit": null,
+     "permission": "Sample",
+     "is_primary": false
+    }
    ]
   },
   {

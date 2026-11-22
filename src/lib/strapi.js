@@ -51,6 +51,7 @@ async function getAll(collection, params = {}) {
 export const mediaFiles = new Map(); // file name → Strapi URL
 const image = (img) => {
   if (!img?.file?.url) return null;
+  if (img.file.url.startsWith('/sample/')) return { src: img.file.url, alt: img.alt_text ?? '', credit: img.credit ?? null, width: img.file.width, height: img.file.height };
   const source = img.file.url.startsWith('http') ? img.file.url : BASE + img.file.url;
   const name = source.split('/').pop().split('?')[0];
   mediaFiles.set(name, source);
