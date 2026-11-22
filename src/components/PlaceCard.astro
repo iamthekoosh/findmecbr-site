@@ -3,7 +3,8 @@
 import Icon from './Icon.astro';
 import StatusTag from './StatusTag.astro';
 import { shortDate, directionsUrl, telUrl } from '../lib/format.js';
-const { place, showCentre = true } = Astro.props;
+const { place, showCentre = true, showChildren = true } = Astro.props;
+const kids = showChildren ? (place.children ?? []) : [];
 const where = [place.parent?.name ?? (place.centre && showCentre ? place.centre.name : null), place.suburb?.name].filter(Boolean).join(', ');
 const directions = place.locationType === 'physical' ? directionsUrl(place) : '';
 const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
@@ -23,6 +24,16 @@ const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slic
     <Icon name="chevron-right" />
   </a>
   {place.short && <p>{place.short}</p>}
+  {kids.length > 0 && (
+    <div class="card-kids">
+      <p class="kicker">{kids.length} {kids.length === 1 ? 'place' : 'places'} inside</p>
+      <ul>
+        {kids.map((c) => (
+          <li><a class="kid" href={`/places/${c.slug}/`}><span><b>{c.name}</b>{c.category && <small>{c.category.label}</small>}</span><Icon name="chevron-right" /></a></li>
+        ))}
+      </ul>
+    </div>
+  )}
   {(place.phone || directions || place.website) && (
     <div class="utils">
       {directions && <a class="btn" href={directions} rel="noopener"><Icon name="navigation" />Directions</a>}

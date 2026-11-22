@@ -5,13 +5,14 @@ import Base from '../../../../layouts/Base.astro';
 import Crumbs from '../../../../components/Crumbs.astro';
 import PlaceCard from '../../../../components/PlaceCard.astro';
 import { loadSite, placesFor } from '../../../../lib/strapi.js';
+import { hideListedChildren } from '../../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
   const paths = [];
   for (const suburb of site.suburbs.filter((s) => site.pagedSuburbs.has(s.slug))) {
     for (const category of site.categories.filter((c) => c.active)) {
-      const places = placesFor(site, suburb, category);
+      const places = hideListedChildren(placesFor(site, suburb, category));
       if (places.length) paths.push({ params: { slug: suburb.slug, cat: category.slug }, props: { suburb, category, places } });
     }
   }

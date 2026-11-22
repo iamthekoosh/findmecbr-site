@@ -130,3 +130,13 @@ test('a place keeps the place it is inside', () => {
   assert.deepEqual(shapePlace({ slug: 'a', name: 'A', parent_place: { slug: 'suite', name: 'Holder Consulting Suite', id: 3 } }).parent, { slug: 'suite', name: 'Holder Consulting Suite' });
   assert.equal(shapePlace({ slug: 'a', name: 'A' }).parent, null);
 });
+
+test('a child is hidden from a summary list when its parent is on the same page', async () => {
+  const { hideListedChildren } = await import('../src/lib/format.js');
+  const suite = { slug: 'suite', parent: null };
+  const clinic = { slug: 'clinic', parent: { slug: 'suite' } };
+  const shop = { slug: 'shop', parent: null };
+  assert.deepEqual(hideListedChildren([suite, clinic, shop]).map((p) => p.slug), ['suite', 'shop']);
+  assert.deepEqual(hideListedChildren([clinic, shop]).map((p) => p.slug), ['clinic', 'shop'], 'parent not on the page: the child stays');
+  assert.deepEqual(hideListedChildren([clinic], [suite, clinic]).map((p) => p.slug), [], 'parent elsewhere on the same page');
+});

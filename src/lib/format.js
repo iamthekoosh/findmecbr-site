@@ -108,3 +108,10 @@ export function tileSetsFor(place, sets = []) {
     }))
     .filter((s) => s.tiles.length);
 }
+
+// Summary pages show a parent place with the places inside it on its card, so a child is left out
+// of a list when its parent is shown on the same page. "shown" is every place on the page.
+export function hideListedChildren(places, shown = places) {
+  const slugs = new Set(shown.map((p) => p.slug));
+  return places.filter((p) => !(p.parent && slugs.has(p.parent.slug)));
+}

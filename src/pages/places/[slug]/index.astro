@@ -111,7 +111,7 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
     <section class="section">
       <h2>Places inside</h2>
       <p class="muted">{place.children.length} {place.children.length === 1 ? 'place' : 'places'} in {place.name}.</p>
-      <div class="stack">{place.children.map((c) => <PlaceCard place={{ ...c, parent: null }} showCentre={false} />)}</div>
+      <div class="stack">{place.children.map((c) => <PlaceCard place={{ ...c, parent: null }} showCentre={false} showChildren={false} />)}</div>
     </section>
   )}
 

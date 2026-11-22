@@ -5,7 +5,7 @@ import Icon from '../../../components/Icon.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import { loadSite, byCategory } from '../../../lib/strapi.js';
 import Crumbs from '../../../components/Crumbs.astro';
-import { typeOf, directionsUrl } from '../../../lib/format.js';
+import { typeOf, directionsUrl, hideListedChildren } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -15,7 +15,8 @@ export async function getStaticPaths() {
 const { centre } = Astro.props;
 const site = await loadSite();
 const inside = site.places.filter((p) => p.centre?.slug === centre.slug);
-const groups = byCategory(inside);
+// A place inside another place here shows on its parent's card, not on its own.
+const groups = byCategory(hideListedChildren(inside));
 const type = typeOf(centre.kind);
 const crumbs = centre.district
   ? [{ label: centre.district.name, href: `/districts/${centre.district.slug}/` }, { label: type.label, href: `/districts/${centre.district.slug}/${type.slug}/` }]

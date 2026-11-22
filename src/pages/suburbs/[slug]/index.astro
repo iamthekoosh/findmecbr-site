@@ -5,6 +5,7 @@ import Icon from '../../../components/Icon.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import Crumbs from '../../../components/Crumbs.astro';
 import { loadSite, placesFor, STAGE } from '../../../lib/strapi.js';
+import { hideListedChildren } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -20,7 +21,10 @@ const here = site.places.filter((p) => p.suburb?.slug === suburb.slug);
 const servicing = site.places.filter((p) => p.suburb?.slug !== suburb.slug && p.serviceAreas.some((a) => a.slug === suburb.slug));
 const centres = site.centres.filter((c) => c.suburb?.slug === suburb.slug);
 // One tab per category with places for this suburb: based here, or a service that confirmed it serves here.
-const tabs = site.categories.map((c) => ({ c, places: placesFor(site, suburb, c) })).filter((t) => t.places.length > 0)
+// A place inside another place on this page shows on its parent's card instead of on its own.
+const allTabs = site.categories.map((c) => ({ c, places: placesFor(site, suburb, c) }));
+const onPage = allTabs.flatMap((t) => t.places);
+const tabs = allTabs.map((t) => ({ ...t, places: hideListedChildren(t.places, onPage) })).filter((t) => t.places.length > 0)
   .sort((x, y) => x.c.plural.localeCompare(y.c.plural));
 // The description as plain paragraphs: a blank line starts a new one. Markdown marks are shown as typed, and HTML is escaped.
 const paragraphs = (text) => text.trim().split(/\n{2,}/).map((p) => `<p>${p.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]).replace(/\n/g, "<br>")}</p>`).join("");

@@ -5,6 +5,7 @@ import Base from '../../../../../layouts/Base.astro';
 import Crumbs from '../../../../../components/Crumbs.astro';
 import PlaceCard from '../../../../../components/PlaceCard.astro';
 import { loadSite, placesInDistrict, CLASSES } from '../../../../../lib/strapi.js';
+import { hideListedChildren } from '../../../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -12,7 +13,7 @@ export async function getStaticPaths() {
   for (const district of site.districts.filter((d) => site.pagedDistricts.has(d.slug))) {
     for (const [placeClass, section] of Object.entries(CLASSES)) {
       for (const category of site.categories.filter((c) => c.active)) {
-        const places = placesInDistrict(site, district, category, placeClass);
+        const places = hideListedChildren(placesInDistrict(site, district, category, placeClass));
         if (places.length) paths.push({ params: { district: district.slug, section: section.key, cat: category.slug }, props: { district, category, placeClass, places } });
       }
     }
