@@ -104,38 +104,24 @@ test('post status defaults to unverified and keeps known values', () => {
   assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'nonsense' }).postStatus, 'unverified');
 });
 
-test('tile sets: match by category, keep tile order, mark missing ones unconfirmed', async () => {
+test('tile sets group the tiles a place has, in set order; other tiles are left for What we know', async () => {
   const { shapeTileSet, tileSetsFor } = await import('../src/lib/format.js');
-  const extras = shapeTileSet({
-    name: 'Extras', heading: 'Extra services', position: 10, show_missing: true, active: true,
-    categories: [{ slug: 'grocery' }, { slug: 'service-station' }],
-    tags: [{ slug: 'ice', label: 'Ice', icon: 'snowflake' }, { slug: 'liquor', label: 'Liquor', icon: 'wine' }, { slug: 'lotto', label: 'Lotto', icon: 'ticket' }],
-  });
-  const known = shapeTileSet({ name: 'Known', heading: 'At the counter', position: 5, show_missing: false, active: true, categories: [{ slug: 'grocery' }], tags: [{ slug: 'lotto', label: 'Lotto' }, { slug: 'liquor', label: 'Liquor' }] });
-  const off = shapeTileSet({ name: 'Off', heading: 'Draft set', active: false, categories: [{ slug: 'grocery' }], tags: [{ slug: 'ice', label: 'Ice' }] });
-  const grocery = { category: { slug: 'grocery' }, facts: [{ slug: 'liquor', label: 'Liquor', evidence: 'business_says', icon: null }] };
-
-  const sets = tileSetsFor(grocery, [extras, known, off]);
-  assert.deepEqual(sets.map((s) => s.heading), ['At the counter', 'Extra services'], 'lower position first; inactive sets left out');
-  assert.deepEqual(sets[0].tiles.map((t) => t.slug), ['liquor'], 'show missing off: only tiles with a fact');
-  assert.deepEqual(sets[1].tiles.map((t) => [t.label, t.evidence]), [['Ice', 'unknown'], ['Liquor', 'business_says'], ['Lotto', 'unknown']]);
-  assert.equal(sets[1].tiles[1].icon, 'wine', "a fact without its own icon uses the tag's");
-
-  assert.equal(tileSetsFor({ category: { slug: 'cafe' }, facts: [] }, [extras]).length, 0);
-  assert.equal(tileSetsFor({ category: { slug: 'cafe' }, otherCategories: [{ slug: 'service-station' }], facts: [] }, [extras]).length, 1);
-  assert.equal(tileSetsFor({ category: { slug: 'grocery' }, facts: [] }, [known]).length, 0, 'a set with nothing to show is dropped');
-});
-
-test('tile sets picked on a place replace the ones for its type, and hidden tiles are left out', async () => {
-  const { shapeTileSet, tileSetsFor } = await import('../src/lib/format.js');
-  const extras = shapeTileSet({ name: 'Extras', heading: 'Extra services', active: true, categories: [{ slug: 'grocery' }], tags: [{ slug: 'ice', label: 'Ice' }, { slug: 'lpg-swap', label: 'LPG swap' }, { slug: 'lotto', label: 'Lotto' }] });
-  const deli = shapeTileSet({ name: 'Deli', heading: 'At the deli', active: true, categories: [], tags: [{ slug: 'sliced-meats', label: 'Sliced meats' }] });
-  const off = shapeTileSet({ name: 'Off', heading: 'Draft', active: false, categories: [], tags: [{ slug: 'ice', label: 'Ice' }] });
-  const base = { category: { slug: 'grocery' }, facts: [] };
-
-  assert.deepEqual(tileSetsFor(base, [extras, deli]).map((s) => s.heading), ['Extra services'], 'by type when nothing is picked');
-  assert.deepEqual(tileSetsFor({ ...base, tileSetChoice: ['Deli'] }, [extras, deli]).map((s) => s.heading), ['At the deli'], 'picked sets replace the type ones');
-  assert.deepEqual(tileSetsFor({ ...base, tileSetChoice: ['Deli', 'Extras'] }, [extras, deli]).length, 2);
-  assert.equal(tileSetsFor({ ...base, tileSetChoice: ['Off'] }, [off]).length, 0, 'a set that is off never shows');
-  assert.deepEqual(tileSetsFor({ ...base, hiddenTiles: ['lpg-swap'] }, [extras])[0].tiles.map((x) => x.slug), ['ice', 'lotto']);
+  const extras = shapeTileSet({ name: 'Extras', heading: 'Extra services', position: 10, active: true, tags: [{ slug: 'ice', label: 'Ice', icon: 'snowflake' }, { slug: 'liquor', label: 'Liquor', icon: 'wine' }, { slug: 'lotto', label: 'Lotto' }] });
+  const deli = shapeTileSet({ name: 'Deli', heading: 'At the deli', position: 5, active: true, tags: [{ slug: 'sliced-meats', label: 'Sliced meats' }, { slug: 'liquor', label: 'Liquor' }] });
+  const off = shapeTileSet({ name: 'Off', heading: 'Draft', active: false, tags: [{ slug: 'ice', label: 'Ice' }] });
+  const place = {
+    tileSetChoice: ['Extras', 'Deli', 'Off'],
+    facts: [
+      { slug: 'liquor', label: 'Liquor', evidence: 'business_says', icon: null },
+      { slug: 'ice', label: 'Ice', evidence: 'unknown', icon: null },
+      { slug: 'sliced-meats', label: 'Sliced meats', evidence: 'confirmed', icon: null },
+    ],
+  };
+  const sets = tileSetsFor(place, [extras, deli, off]);
+  assert.deepEqual(sets.map((s) => s.heading), ['At the deli', 'Extra services'], 'lower position first; sets that are off left out');
+  assert.deepEqual(sets[0].tiles.map((t) => t.slug), ['sliced-meats', 'liquor']);
+  assert.deepEqual(sets[1].tiles.map((t) => [t.label, t.evidence]), [['Ice', 'unknown']], 'a tile shows once, and removed tiles (Lotto) do not show');
+  assert.equal(sets[0].tiles[1].icon, null, 'no icon on the fact or the deli tag');
+  assert.equal(sets[1].tiles[0].icon, 'snowflake', "a fact without its own icon uses the tag's");
+  assert.equal(tileSetsFor({ ...place, tileSetChoice: [] }, [extras]).length, 0, 'no sets picked: no set sections');
 });

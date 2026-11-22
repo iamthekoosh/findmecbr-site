@@ -81,33 +81,29 @@ export const CENTRE_TYPES = {
 export const CENTRE_KINDS = Object.fromEntries(Object.entries(CENTRE_TYPES).map(([k, v]) => [k, v.label]));
 export const typeOf = (kind) => CENTRE_TYPES[kind] ?? CENTRE_TYPES.local_shops;
 
-// Tile sets come from Strapi: each one names the place types (categories) it applies to and its tiles (tags), in order.
-// A place gets every active set that matches its main or other categories, lowest position first,
-// unless sets were picked on the place itself: then exactly those (still only active ones).
-// Tiles hidden on the place are left out.
-// A tile the place has a fact for shows that fact's evidence. One it hasn't shows as unconfirmed,
-// or is left out when the set's "show missing" is off. Sets with no tiles to show are dropped.
+// Tile sets come from Strapi. A place's tiles are its facts; the sets picked on the place group them
+// under the sets' headings, in the sets' order. Tiles not in any of its sets show under "What we know".
+// Only sets that are on are used, lowest position first, and a set with none of its tiles on the place is dropped.
 export function shapeTileSet(s) {
   return {
-    name: s.name, heading: s.heading, position: s.position ?? 10, showMissing: s.show_missing !== false, active: !!s.active,
-    categories: (s.categories ?? []).map((c) => c.slug),
+    name: s.name, heading: s.heading, position: s.position ?? 10, active: !!s.active,
     tags: (s.tags ?? []).map((t) => ({ slug: t.slug, label: t.label, icon: t.icon ?? null })),
   };
 }
 
 export function tileSetsFor(place, sets = []) {
-  const cats = new Set([place.category?.slug, ...(place.otherCategories ?? []).map((c) => c.slug)].filter(Boolean));
   const chosen = place.tileSetChoice ?? [];
-  const hidden = new Set(place.hiddenTiles ?? []);
+  const used = new Set();
   return sets
-    .filter((s) => s.active && (chosen.length ? chosen.includes(s.name) : s.categories.some((c) => cats.has(c))))
+    .filter((s) => s.active && chosen.includes(s.name))
     .sort((a, b) => a.position - b.position || a.heading.localeCompare(b.heading))
     .map((s) => ({
       heading: s.heading,
-      tiles: s.tags.filter((tag) => !hidden.has(tag.slug)).map((tag) => {
+      tiles: s.tags.map((tag) => {
         const fact = place.facts.find((f) => f.slug === tag.slug);
-        if (fact) return { ...fact, icon: fact.icon || tag.icon };
-        return s.showMissing ? { slug: tag.slug, label: tag.label, icon: tag.icon, subtitle: '', evidence: 'unknown' } : null;
+        if (!fact || used.has(tag.slug)) return null;
+        used.add(tag.slug);
+        return { ...fact, icon: fact.icon || tag.icon };
       }).filter(Boolean),
     }))
     .filter((s) => s.tiles.length);
