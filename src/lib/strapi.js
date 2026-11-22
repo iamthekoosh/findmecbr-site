@@ -67,6 +67,7 @@ export function shapePlace(p) {
   const loc = p.location ?? null;
   const showAddress = loc ? loc.show_public_address !== false : false;
   return {
+    id: p.documentId ?? null,
     slug: p.slug,
     name: p.name,
     category: p.primary_category ? { slug: p.primary_category.slug, label: p.primary_category.label, plural: p.primary_category.plural, icon: p.primary_category.icon } : null,
@@ -186,7 +187,7 @@ export function publicData(site) {
     tags: site.tags.filter((t) => t.active).map(({ slug, label, group, question, icon }) => ({ slug, label, group, question, icon })),
     synonyms: site.synonyms,
     places: site.places.map((p) => ({
-      slug: p.slug, name: p.name, cat: p.category?.slug ?? null, type: p.locationType, sub: p.suburb?.slug ?? null, subName: p.suburb?.name ?? '',
+      id: p.id, slug: p.slug, name: p.name, cat: p.category?.slug ?? null, type: p.locationType, sub: p.suburb?.slug ?? null, subName: p.suburb?.name ?? '',
       centre: p.centre?.name ?? null, lat: p.lat, lng: p.lng, areas: p.serviceAreas.map((a) => a.slug), short: p.short, phone: p.phone, website: p.website,
       checked: p.checkedAt, hours: days(p.hours), logo: p.logo?.src ?? null,
       facts: Object.fromEntries(p.facts.filter((f) => f.group === 'feature').map((f) => [f.slug, f.evidence])),

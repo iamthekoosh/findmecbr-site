@@ -12,6 +12,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { handleForm } from './forms.mjs';
 
 const ROOT = process.cwd();
 const PORT = Number(process.env.PORT || 4321);
@@ -78,6 +79,7 @@ function send(res, file, status = 200) {
 
 http.createServer((req, res) => {
   if (!live) { res.writeHead(503, { 'Content-Type': 'text/plain', 'Retry-After': '30' }); return res.end('Starting up. Try again in a moment.'); }
+  if (req.method === 'POST' && /^\/api\/forms\/(report|suggest|claim)$/.test(req.url.split('?')[0])) return handleForm(req, res, live);
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end(); }
   let p;
   try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400); return res.end(); }

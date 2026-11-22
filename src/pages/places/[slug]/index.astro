@@ -121,4 +121,9 @@ const ld = {
   )}
 
   {place.checkedAt && <p class="stamp">Checked by hand on {shortDate(place.checkedAt)}.</p>}
+
+  <div class="stack">
+    <a class="rowtile" href={`/report/?place=${place.slug}`}><span><Icon name="flag" class="lead" /><span>Something wrong?<small>Tell us and we'll check it</small></span></span><Icon name="chevron-right" /></a>
+    <a class="rowtile" href={`/claim/?place=${place.slug}`}><span><Icon name="badge-check" class="lead" /><span>Is this your business?<small>Claim it to send us updates</small></span></span><Icon name="chevron-right" /></a>
+  </div>
 </Base>

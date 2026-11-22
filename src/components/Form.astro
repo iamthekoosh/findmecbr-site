@@ -1,0 +1,87 @@
+---
+// A public form. Checks input in the browser, then posts to /api/forms/<kind> on the site's own server.
+// A hidden "website" field catches bots, and the time on the page is sent so instant submissions are dropped.
+import Icon from './Icon.astro';
+const { kind, fields, needsPlace = false } = Astro.props;
+---
+<form class="stack" data-form={kind} data-needs-place={needsPlace ? '1' : undefined} novalidate>
+  <p class="notice" data-place hidden></p>
+  {fields.map((f) => (
+    <label>{f.label}
+      {f.type === 'textarea'
+        ? <textarea name={f.name} required={f.required} maxlength={f.max || 2000}></textarea>
+        : <input name={f.name} type={f.type || 'text'} required={f.required} maxlength={f.max || 200} autocomplete={f.autocomplete || 'off'} />}
+      <span class="err" data-err={f.name} hidden></span>
+    </label>
+  ))}
+  <label class="trap" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off" /></label>
+  <p class="err" data-err="form" hidden></p>
+  <button class="tile" type="submit"><span><b>Send</b></span><Icon name="send" /></button>
+  <div class="notice" data-done role="status" hidden></div>
+</form>
+<script>
+  const started = Date.now();
+  const placeSlug = new URLSearchParams(location.search).get('place') || '';
+
+  document.querySelectorAll('form[data-form]').forEach(async (form) => {
+    const f = form as HTMLFormElement;
+    const placeNote = f.querySelector('[data-place]') as HTMLElement;
+    // Show which listing this is about, from the public site data.
+    if (placeSlug) {
+      try {
+        const data = await (await fetch('/data/site.json')).json();
+        const place = data.places.find((p: any) => p.slug === placeSlug);
+        if (place) { placeNote.textContent = `About: ${place.name}`; placeNote.hidden = false; }
+      } catch {}
+    } else if (f.dataset.needsPlace) {
+      placeNote.textContent = "Open this form from the business's own page, using the \"Is this your business?\" button.";
+      placeNote.hidden = false;
+    }
+
+    const showErrors = (errors: Record<string, string>) => {
+      f.querySelectorAll('[data-err]').forEach((el) => { const e = el as HTMLElement; e.hidden = true; e.textContent = ''; });
+      let first: HTMLElement | null = null;
+      for (const [name, msg] of Object.entries(errors)) {
+        const el = f.querySelector(`[data-err="${name}"]`) as HTMLElement | null;
+        if (!el) continue;
+        el.textContent = msg; el.hidden = false;
+        const input = f.querySelector(`[name="${name}"]`) as HTMLElement | null;
+        input?.setAttribute('aria-invalid', 'true');
+        if (!first) first = input || el;
+      }
+      (first as HTMLElement | null)?.focus();
+    };
+
+    f.addEventListener('input', (e) => (e.target as HTMLElement).removeAttribute('aria-invalid'));
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errors: Record<string, string> = {};
+      f.querySelectorAll('input:not([name=website]),textarea').forEach((el) => {
+        const i = el as HTMLInputElement;
+        const v = i.value.trim();
+        if (i.required && !v) errors[i.name] = 'Add this so we can check it.';
+        else if (i.type === 'email' && v && !/^\S+@\S+\.\S{2,}$/.test(v)) errors[i.name] = "That email doesn't look right. Check it and try again.";
+      });
+      if (Object.keys(errors).length) return showErrors(errors);
+
+      const body: Record<string, any> = Object.fromEntries(new FormData(f) as any);
+      body.place = placeSlug;
+      body.elapsed = Math.round((Date.now() - started) / 1000);
+      const button = f.querySelector('button[type=submit]') as HTMLButtonElement;
+      button.disabled = true;
+      try {
+        const r = await fetch(`/api/forms/${f.dataset.form}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const json = await r.json().catch(() => ({}));
+        if (!r.ok) { showErrors(json.errors || { form: "We couldn't send that. Try again later." }); button.disabled = false; return; }
+        f.querySelectorAll('label, button, [data-err]').forEach((el) => ((el as HTMLElement).hidden = true));
+        const done = f.querySelector('[data-done]') as HTMLElement;
+        done.textContent = "Thanks, we've got it. A person checks every message before anything changes.";
+        done.hidden = false;
+        done.focus();
+      } catch {
+        showErrors({ form: "We couldn't send that. Check your connection and try again." });
+        button.disabled = false;
+      }
+    });
+  });
+</script>

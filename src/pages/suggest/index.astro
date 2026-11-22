@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import Form from '../../components/Form.astro';
+---
+<Base title="Suggest a place" noindex>
+  <h1>Suggest a place</h1>
+  <p>We check every suggestion before it's published.</p>
+  <Form kind="suggest" fields={[
+    { name: 'name', label: 'Name of the place or business', required: true },
+    { name: 'suburbs', label: 'Suburb, or suburbs they service', required: true },
+    { name: 'contact', label: 'Website or phone number', required: true },
+  ]} />
+</Base>

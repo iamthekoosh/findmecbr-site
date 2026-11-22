@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import Form from '../../components/Form.astro';
+---
+<Base title="Is this your business?" noindex>
+  <h1>Is this your business?</h1>
+  <p>We need to confirm you can act for the business. A person reviews every claim. Once it's approved, you can send us your logo and photos.</p>
+  <Form kind="claim" needsPlace fields={[
+    { name: 'person', label: 'Your name', required: true, autocomplete: 'name' },
+    { name: 'email', label: 'Your work email', type: 'email', required: true, autocomplete: 'email' },
+    { name: 'role', label: 'Your role at the business', required: true },
+  ]} />
+</Base>
