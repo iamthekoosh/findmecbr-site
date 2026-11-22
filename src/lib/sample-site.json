@@ -3,7 +3,14 @@
  "districts": [
   {
    "slug": "weston-creek",
-   "name": "Weston Creek"
+   "name": "Weston Creek",
+   "image": {
+    "src": "/sample/district-weston-creek.svg",
+    "alt": "Sample: hills over Weston Creek",
+    "credit": null,
+    "width": 800,
+    "height": 1000
+   }
   },
   {
    "slug": "molonglo-valley",

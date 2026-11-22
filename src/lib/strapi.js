@@ -132,7 +132,7 @@ export async function loadSite() {
     return finish(cached);
   }
   const [districts, suburbs, centres, categories, places, tags, synonyms] = await Promise.all([
-    getAll('districts', { sort: 'name' }),
+    getAll('districts', { sort: 'name', populate: { hero_image: { populate: ['file'] } } }),
     getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, hero_image: { populate: ['file'] } } }),
     getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] } } }),
     getAll('categories', { sort: 'label' }),
@@ -158,7 +158,7 @@ export async function loadSite() {
 
   const shaped = places.map(shapePlace);
   cached = {
-    districts: districts.map((d) => ({ slug: d.slug, name: d.name })),
+    districts: districts.map((d) => ({ slug: d.slug, name: d.name, image: image(d.hero_image) })),
     suburbs: suburbs.map((s) => ({
       slug: s.slug, name: s.name, lat: s.lat != null ? Number(s.lat) : null, lng: s.lng != null ? Number(s.lng) : null, district: s.district ? { slug: s.district.slug, name: s.district.name } : null,
       intro: s.intro ?? '', body: s.body ?? '', live: !!s.page_live, checkedAt: s.checked_at ?? null,
