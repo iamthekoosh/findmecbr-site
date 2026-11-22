@@ -104,14 +104,24 @@ test('post status defaults to unverified and keeps known values', () => {
   assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'nonsense' }).postStatus, 'unverified');
 });
 
-test('extra service tiles only for groceries and service stations, unconfirmed unless a fact says otherwise', async () => {
-  const { extraServiceTiles } = await import('../src/lib/format.js');
+test('tile sets: match by category, keep tile order, mark missing ones unconfirmed', async () => {
+  const { shapeTileSet, tileSetsFor } = await import('../src/lib/format.js');
+  const extras = shapeTileSet({
+    name: 'Extras', heading: 'Extra services', position: 10, show_missing: true, active: true,
+    categories: [{ slug: 'grocery' }, { slug: 'service-station' }],
+    tags: [{ slug: 'ice', label: 'Ice', icon: 'snowflake' }, { slug: 'liquor', label: 'Liquor', icon: 'wine' }, { slug: 'lotto', label: 'Lotto', icon: 'ticket' }],
+  });
+  const known = shapeTileSet({ name: 'Known', heading: 'At the counter', position: 5, show_missing: false, active: true, categories: [{ slug: 'grocery' }], tags: [{ slug: 'lotto', label: 'Lotto' }, { slug: 'liquor', label: 'Liquor' }] });
+  const off = shapeTileSet({ name: 'Off', heading: 'Draft set', active: false, categories: [{ slug: 'grocery' }], tags: [{ slug: 'ice', label: 'Ice' }] });
   const grocery = { category: { slug: 'grocery' }, facts: [{ slug: 'liquor', label: 'Liquor', evidence: 'business_says', icon: null }] };
-  const tiles = extraServiceTiles(grocery);
-  assert.deepEqual(tiles.map((t) => t.label), ['Ice', 'LPG swap', 'Firewood', 'Bait', 'Postal services', 'Liquor', 'Lotto']);
-  assert.equal(tiles[5].evidence, 'business_says');
-  assert.equal(tiles[5].icon, 'wine');
-  assert.equal(tiles[0].evidence, 'unknown');
-  assert.equal(extraServiceTiles({ category: { slug: 'cafe' }, facts: [] }).length, 0);
-  assert.equal(extraServiceTiles({ category: { slug: 'cafe' }, otherCategories: [{ slug: 'service-station' }], facts: [] }).length, 7);
+
+  const sets = tileSetsFor(grocery, [extras, known, off]);
+  assert.deepEqual(sets.map((s) => s.heading), ['At the counter', 'Extra services'], 'lower position first; inactive sets left out');
+  assert.deepEqual(sets[0].tiles.map((t) => t.slug), ['liquor'], 'show missing off: only tiles with a fact');
+  assert.deepEqual(sets[1].tiles.map((t) => [t.label, t.evidence]), [['Ice', 'unknown'], ['Liquor', 'business_says'], ['Lotto', 'unknown']]);
+  assert.equal(sets[1].tiles[1].icon, 'wine', "a fact without its own icon uses the tag's");
+
+  assert.equal(tileSetsFor({ category: { slug: 'cafe' }, facts: [] }, [extras]).length, 0);
+  assert.equal(tileSetsFor({ category: { slug: 'cafe' }, otherCategories: [{ slug: 'service-station' }], facts: [] }, [extras]).length, 1);
+  assert.equal(tileSetsFor({ category: { slug: 'grocery' }, facts: [] }, [known]).length, 0, 'a set with nothing to show is dropped');
 });

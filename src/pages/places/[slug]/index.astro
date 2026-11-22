@@ -6,7 +6,7 @@ import FactTile from '../../../components/FactTile.astro';
 import PhotoCarousel from '../../../components/PhotoCarousel.astro';
 import LiveStatus from '../../../components/LiveStatus.astro';
 import { loadSite, STAGE } from '../../../lib/strapi.js';
-import { shortDate, weekHours, directionsUrl, telUrl, ACTION_WORDS, orderFacts, extraServiceTiles, isExtraService } from '../../../lib/format.js';
+import { shortDate, weekHours, directionsUrl, telUrl, ACTION_WORDS, orderFacts } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -34,8 +34,9 @@ const ld = {
   geo: place.lat != null ? { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } : undefined,
 };
 const goodFor = place.facts.filter((f) => f.group === "occasion");
-const extras = extraServiceTiles(place);
-const features = place.facts.filter((f) => f.group !== "occasion" && !(extras.length && isExtraService(f)));
+// Facts shown in a tile set aren't repeated under "What we know".
+const inSets = new Set(place.tileSets.flatMap((s) => s.tiles.map((t) => t.slug)));
+const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has(f.slug));
 ---
 <Base title={`${place.name}, ${place.suburb?.name ?? 'Canberra'}`} description={desc}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(ld)} />
@@ -98,13 +99,13 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !(extras.le
     </section>
   )}
 
-  {extras.length > 0 && (
+  {place.tileSets.map((set) => (
     <section class="section">
-      <h2>Extra services</h2>
-      <ul class="fact-tiles">{extras.map((f) => <FactTile fact={f} />)}</ul>
+      <h2>{set.heading}</h2>
+      <ul class="fact-tiles">{set.tiles.map((f) => <FactTile fact={f} />)}</ul>
       <a class="foot-key" href="/how-we-check/">What these mean</a>
     </section>
-  )}
+  ))}
 
   {features.length > 0 && (
     <section class="section">

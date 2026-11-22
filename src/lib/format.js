@@ -81,27 +81,30 @@ export const CENTRE_TYPES = {
 export const CENTRE_KINDS = Object.fromEntries(Object.entries(CENTRE_TYPES).map(([k, v]) => [k, v.label]));
 export const typeOf = (kind) => CENTRE_TYPES[kind] ?? CENTRE_TYPES.local_shops;
 
-// Extra services shown as their own set of tiles on groceries, supermarkets and service stations.
-// Each is a feature tag in Strapi with the same slug. One the place has no fact for shows as unconfirmed.
-export const EXTRA_SERVICES = [
-  { slug: 'ice', label: 'Ice', icon: 'snowflake' },
-  { slug: 'lpg-swap', label: 'LPG swap', icon: 'cylinder' },
-  { slug: 'firewood', label: 'Firewood', icon: 'axe' },
-  { slug: 'bait', label: 'Bait', icon: 'fish' },
-  { slug: 'postal-services', label: 'Postal services', icon: 'mail' },
-  { slug: 'liquor', label: 'Liquor', icon: 'wine' },
-  { slug: 'lotto', label: 'Lotto', icon: 'ticket' },
-];
-export const EXTRA_SERVICE_CATEGORIES = ['grocery', 'supermarket', 'service-station'];
-const EXTRA_SLUGS = new Set(EXTRA_SERVICES.map((s) => s.slug));
-export const isExtraService = (fact) => EXTRA_SLUGS.has(fact.slug);
+// Tile sets come from Strapi: each one names the place types (categories) it applies to and its tiles (tags), in order.
+// A place gets every active set that matches its main or other categories, lowest position first.
+// A tile the place has a fact for shows that fact's evidence. One it hasn't shows as unconfirmed,
+// or is left out when the set's "show missing" is off. Sets with no tiles to show are dropped.
+export function shapeTileSet(s) {
+  return {
+    name: s.name, heading: s.heading, position: s.position ?? 10, showMissing: s.show_missing !== false, active: !!s.active,
+    categories: (s.categories ?? []).map((c) => c.slug),
+    tags: (s.tags ?? []).map((t) => ({ slug: t.slug, label: t.label, icon: t.icon ?? null })),
+  };
+}
 
-// The tiles for a place, or [] when its category doesn't get them.
-export function extraServiceTiles(place) {
-  const cats = [place.category?.slug, ...(place.otherCategories ?? []).map((c) => c.slug)];
-  if (!cats.some((c) => EXTRA_SERVICE_CATEGORIES.includes(c))) return [];
-  return EXTRA_SERVICES.map((s) => {
-    const fact = place.facts.find((f) => f.slug === s.slug);
-    return fact ? { ...fact, icon: fact.icon || s.icon } : { slug: s.slug, label: s.label, icon: s.icon, subtitle: '', evidence: 'unknown' };
-  });
+export function tileSetsFor(place, sets = []) {
+  const cats = new Set([place.category?.slug, ...(place.otherCategories ?? []).map((c) => c.slug)].filter(Boolean));
+  return sets
+    .filter((s) => s.active && s.categories.some((c) => cats.has(c)))
+    .sort((a, b) => a.position - b.position || a.heading.localeCompare(b.heading))
+    .map((s) => ({
+      heading: s.heading,
+      tiles: s.tags.map((tag) => {
+        const fact = place.facts.find((f) => f.slug === tag.slug);
+        if (fact) return { ...fact, icon: fact.icon || tag.icon };
+        return s.showMissing ? { slug: tag.slug, label: tag.label, icon: tag.icon, subtitle: '', evidence: 'unknown' } : null;
+      }).filter(Boolean),
+    }))
+    .filter((s) => s.tiles.length);
 }

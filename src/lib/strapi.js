@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { shapeTileSet, tileSetsFor } from './format.js';
 
 const BASE = (process.env.STRAPI_URL || 'http://localhost:1337').replace(/\/$/, '');
 
@@ -29,7 +30,7 @@ export function toQuery(obj, prefix = '') {
 
 // Like getAll, but returns [] when the token isn't allowed to read it, so the site still builds.
 async function getOptional(collection, params = {}) {
-  try { return await getAll(collection, params); } catch (e) { if (/: 40[13] /.test(e.message)) { console.warn(`Skipping ${collection}: the site token can't read it.`); return []; } throw e; }
+  try { return await getAll(collection, params); } catch (e) { if (/: 40[134] /.test(e.message)) { console.warn(`Skipping ${collection}: the site token can't read it, or Strapi doesn't have it yet.`); return []; } throw e; }
 }
 
 async function getAll(collection, params = {}) {
@@ -150,7 +151,7 @@ export async function loadSite() {
     cached = { ...sample, places: sample.places.map(shapePlace) };
     return finish(cached);
   }
-  const [districts, suburbs, centres, categories, places, tags, synonyms] = await Promise.all([
+  const [districts, suburbs, centres, categories, places, tags, synonyms, tileSets] = await Promise.all([
     getAll('districts', { sort: 'name', populate: { hero_image: { populate: ['file'] }, photos: { populate: ['file'] } } }),
     getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, stats: true, hero_image: { populate: ['file'] } } }),
     getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] } } }),
@@ -174,6 +175,7 @@ export async function loadSite() {
     }),
     getOptional('tags', { sort: 'label' }),
     getOptional('search-synonyms', { populate: ['category', 'suburb', 'tag'] }),
+    getOptional('tile-sets', { populate: ['categories', 'tags'] }),
   ]);
 
   const shaped = places.map(shapePlace);
@@ -195,6 +197,7 @@ export async function loadSite() {
     categories: categories.map((c) => ({ slug: c.slug, label: c.label, plural: c.plural, kind: c.kind, icon: c.icon, active: !!c.active })),
     places: shaped,
     tags: tags.map((t) => ({ slug: t.slug, label: t.label, group: t.group, question: t.question ?? null, icon: t.icon ?? null, active: !!t.active })),
+    tileSets: tileSets.map(shapeTileSet),
     synonyms: synonyms.map((x) => ({ term: x.term, category: x.category?.slug ?? null, suburb: x.suburb?.slug ?? null, tag: x.tag?.slug ?? null })),
   };
   return finish(cached);
@@ -204,6 +207,8 @@ export async function loadSite() {
 function finish(site) {
   const paged = new Set(site.suburbs.filter((s) => hasPage(s, site.places)).map((s) => s.slug));
   site.pagedSuburbs = paged;
+  // Each place's tile sections, from the tile sets in Strapi.
+  for (const p of site.places) p.tileSets = tileSetsFor(p, site.tileSets ?? []);
   for (const s of site.suburbs) s.neighbours = s.neighbours.filter((n) => paged.has(n.slug));
   for (const p of site.places) p.serviceAreas = p.serviceAreas.map((a) => ({ ...a, hasPage: paged.has(a.slug) }));
   // A centre's district comes from its suburb.
