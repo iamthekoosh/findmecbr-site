@@ -1,0 +1,45 @@
+---
+// Discover: browse by the five questions. Each shows only ideas with places behind them.
+// Picking one opens search, where more ideas can be added to narrow it down.
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { loadSite } from '../lib/strapi.js';
+
+const QUESTIONS = [
+  ['occasion', "What's the occasion?"],
+  ['who', "Who's coming?"],
+  ['feel', 'What do you feel like?'],
+  ['budget', "What's your budget?"],
+  ['when', 'When?'],
+];
+const site = await loadSite();
+const placeCount = (slug) => site.places.filter((p) => p.facts.some((f) => f.slug === slug && f.evidence !== 'unknown')).length;
+const groups = QUESTIONS
+  .map(([key, label]) => ({ label, tags: site.tags.filter((t) => t.active && t.group === 'occasion' && t.question === key).map((t) => ({ t, n: placeCount(t.slug) })).filter((x) => x.n > 0) }))
+  .filter((g) => g.tags.length > 0);
+const venues = site.categories.filter((c) => c.active && c.kind === 'venue' && site.places.some((p) => p.category?.slug === c.slug));
+---
+<Base title="Discover" description="Ideas for where to go in Weston Creek and Molonglo Valley: by occasion, who's coming, what you feel like, budget and time.">
+  <h1>What are you after?</h1>
+  <p class="lede">Pick one to start. You can add more on the next screen to narrow it down.</p>
+
+  {groups.map((g) => (
+    <section class="section">
+      <h2>{g.label}</h2>
+      <div class="grid">
+        {g.tags.map(({ t, n }) => <a class="gt" href={`/search/?occ=${t.slug}`}><Icon name={t.icon || 'compass'} /><span>{t.label}<small>{n} {n === 1 ? 'place' : 'places'}</small></span></a>)}
+      </div>
+    </section>
+  ))}
+
+  {venues.length > 0 && (
+    <section class="section">
+      <h2>Places to go</h2>
+      <div class="grid">{venues.map((c) => <a class="gt" href={`/search/?cat=${c.slug}`}><Icon name={c.icon || 'store'} /><span>{c.plural}</span></a>)}</div>
+    </section>
+  )}
+
+  {groups.length === 0 && venues.length === 0 && (
+    <p class="empty">Ideas appear here as we check places and tag what they're good for.</p>
+  )}
+</Base>

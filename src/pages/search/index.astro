@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import SearchBox from '../../components/SearchBox.astro';
+---
+<Base title="Search" description="Search checked places and services in Weston Creek and Molonglo Valley." noindex>
+  <h1 id="search-title">Search</h1>
+  <SearchBox />
+  <div id="results" class="section" aria-live="polite"><p class="muted">Loading results.</p></div>
+  <noscript><p class="notice">Search needs JavaScript. You can still browse from the home page or Businesses.</p></noscript>
+</Base>
+<script>
+  import { initSearch } from '../../lib/search-page.js';
+  initSearch();
+</script>

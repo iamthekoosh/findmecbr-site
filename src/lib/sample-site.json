@@ -32,7 +32,9 @@
      "name": "Coombs"
     }
    ],
-   "image": null
+   "image": null,
+   "lat": -35.34,
+   "lng": 149.05
   },
   {
    "slug": "holder",
@@ -51,7 +53,9 @@
      "name": "Weston"
     }
    ],
-   "image": null
+   "image": null,
+   "lat": -35.34,
+   "lng": 149.05
   },
   {
    "slug": "duffy",
@@ -70,7 +74,9 @@
      "name": "Holder"
     }
    ],
-   "image": null
+   "image": null,
+   "lat": -35.34,
+   "lng": 149.05
   },
   {
    "slug": "coombs",
@@ -89,7 +95,9 @@
      "name": "Weston"
     }
    ],
-   "image": null
+   "image": null,
+   "lat": -35.34,
+   "lng": 149.05
   }
  ],
  "centres": [
@@ -177,23 +185,59 @@
    "facts": [
     {
      "tag": {
-      "label": "Step-free entry"
+      "slug": "step-free-entry",
+      "label": "Step-free entry",
+      "group": "feature"
      },
      "evidence": "confirmed",
      "checked_at": "2026-11-19"
     },
     {
      "tag": {
-      "label": "Dogs outside"
+      "slug": "dogs-welcome",
+      "label": "Dogs welcome",
+      "group": "feature"
      },
      "evidence": "business_says",
      "checked_at": "2026-11-19"
     },
     {
      "tag": {
-      "label": "Accessible toilet"
+      "slug": "accessible-toilet",
+      "label": "Accessible toilet",
+      "group": "feature"
      },
      "evidence": "unknown"
+    },
+    {
+     "tag": {
+      "slug": "coffee-catch-up",
+      "label": "Coffee catch-up",
+      "group": "occasion",
+      "question": "occasion"
+     },
+     "evidence": "confirmed",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "slug": "with-kids",
+      "label": "With kids",
+      "group": "occasion",
+      "question": "who"
+     },
+     "evidence": "business_says",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "slug": "weekend-morning",
+      "label": "Weekend morning",
+      "group": "occasion",
+      "question": "when"
+     },
+     "evidence": "confirmed",
+     "checked_at": "2026-11-19"
     }
    ],
    "opening_hours": [
@@ -292,6 +336,68 @@
      }
     }
    ]
+  }
+ ],
+ "tags": [
+  {
+   "slug": "step-free-entry",
+   "label": "Step-free entry",
+   "group": "feature",
+   "question": null,
+   "icon": null,
+   "active": true
+  },
+  {
+   "slug": "dogs-welcome",
+   "label": "Dogs welcome",
+   "group": "feature",
+   "question": null,
+   "icon": null,
+   "active": true
+  },
+  {
+   "slug": "coffee-catch-up",
+   "label": "Coffee catch-up",
+   "group": "occasion",
+   "question": "occasion",
+   "icon": "coffee",
+   "active": true
+  },
+  {
+   "slug": "with-kids",
+   "label": "With kids",
+   "group": "occasion",
+   "question": "who",
+   "icon": "users",
+   "active": true
+  },
+  {
+   "slug": "weekend-morning",
+   "label": "Weekend morning",
+   "group": "occasion",
+   "question": "when",
+   "icon": "clock",
+   "active": true
+  }
+ ],
+ "synonyms": [
+  {
+   "term": "sparky",
+   "category": null,
+   "suburb": null,
+   "tag": null
+  },
+  {
+   "term": "coffee",
+   "category": "cafe",
+   "suburb": null,
+   "tag": null
+  },
+  {
+   "term": "cooleman court",
+   "category": null,
+   "suburb": "weston",
+   "tag": null
   }
  ]
 }

@@ -27,6 +27,11 @@ export function toQuery(obj, prefix = '') {
   return parts.filter(Boolean).join('&');
 }
 
+// Like getAll, but returns [] when the token isn't allowed to read it, so the site still builds.
+async function getOptional(collection, params = {}) {
+  try { return await getAll(collection, params); } catch (e) { if (/: 40[13] /.test(e.message)) { console.warn(`Skipping ${collection}: the site token can't read it.`); return []; } throw e; }
+}
+
 async function getAll(collection, params = {}) {
   const auth = { Authorization: `Bearer ${token()}` };
   const rows = [];
@@ -83,7 +88,7 @@ export function shapePlace(p) {
     lat: showAddress && loc?.lat != null ? Number(loc.lat) : null,
     lng: showAddress && loc?.lng != null ? Number(loc.lng) : null,
     serviceAreas: (p.service_areas ?? []).filter((a) => a.suburb).map((a) => ({ slug: a.suburb.slug, name: a.suburb.name })),
-    facts: (p.facts ?? []).filter((f) => f.tag).map((f) => ({ label: f.tag.label, evidence: f.evidence, checkedAt: f.checked_at })),
+    facts: (p.facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false, evidence: f.evidence, checkedAt: f.checked_at })),
     hours: (p.opening_hours ?? [])
       .map((h) => ({ day: WEEKDAYS.indexOf(h.weekday), opens: String(h.opens_at).slice(0, 5), closes: String(h.closes_at).slice(0, 5) }))
       .sort((a, b) => a.day - b.day || a.opens.localeCompare(b.opens)),
@@ -112,7 +117,7 @@ export async function loadSite() {
     cached = { ...sample, places: sample.places.map(shapePlace) };
     return finish(cached);
   }
-  const [districts, suburbs, centres, categories, places] = await Promise.all([
+  const [districts, suburbs, centres, categories, places, tags, synonyms] = await Promise.all([
     getAll('districts', { sort: 'name' }),
     getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, hero_image: { populate: ['file'] } } }),
     getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] } } }),
@@ -132,13 +137,15 @@ export async function loadSite() {
         photos: { populate: ['file'] },
       },
     }),
+    getOptional('tags', { sort: 'label' }),
+    getOptional('search-synonyms', { populate: ['category', 'suburb', 'tag'] }),
   ]);
 
   const shaped = places.map(shapePlace);
   cached = {
     districts: districts.map((d) => ({ slug: d.slug, name: d.name })),
     suburbs: suburbs.map((s) => ({
-      slug: s.slug, name: s.name, district: s.district ? { slug: s.district.slug, name: s.district.name } : null,
+      slug: s.slug, name: s.name, lat: s.lat != null ? Number(s.lat) : null, lng: s.lng != null ? Number(s.lng) : null, district: s.district ? { slug: s.district.slug, name: s.district.name } : null,
       intro: s.intro ?? '', body: s.body ?? '', live: !!s.page_live, checkedAt: s.checked_at ?? null,
       neighbours: (s.neighbours ?? []).map((n) => ({ slug: n.slug, name: n.name })), image: image(s.hero_image),
     })),
@@ -148,6 +155,8 @@ export async function loadSite() {
     })),
     categories: categories.map((c) => ({ slug: c.slug, label: c.label, plural: c.plural, kind: c.kind, icon: c.icon, active: !!c.active })),
     places: shaped,
+    tags: tags.map((t) => ({ slug: t.slug, label: t.label, group: t.group, question: t.question ?? null, icon: t.icon ?? null, active: !!t.active })),
+    synonyms: synonyms.map((x) => ({ term: x.term, category: x.category?.slug ?? null, suburb: x.suburb?.slug ?? null, tag: x.tag?.slug ?? null })),
   };
   return finish(cached);
 }
@@ -166,6 +175,24 @@ function finish(site) {
     ...site.centres.map((c) => c.district?.slug),
   ].filter(Boolean));
   return site;
+}
+
+// The data the browser uses for search: published, public fields only.
+export function publicData(site) {
+  const days = (hours) => hours.map((h) => [h.day, h.opens, h.closes]);
+  return {
+    suburbs: site.suburbs.filter((s) => site.pagedSuburbs.has(s.slug)).map((s) => ({ slug: s.slug, name: s.name, lat: s.lat ?? null, lng: s.lng ?? null })),
+    categories: site.categories.filter((c) => c.active).map(({ slug, label, plural, kind, icon }) => ({ slug, label, plural, kind, icon })),
+    tags: site.tags.filter((t) => t.active).map(({ slug, label, group, question, icon }) => ({ slug, label, group, question, icon })),
+    synonyms: site.synonyms,
+    places: site.places.map((p) => ({
+      slug: p.slug, name: p.name, cat: p.category?.slug ?? null, type: p.locationType, sub: p.suburb?.slug ?? null, subName: p.suburb?.name ?? '',
+      centre: p.centre?.name ?? null, lat: p.lat, lng: p.lng, areas: p.serviceAreas.map((a) => a.slug), short: p.short, phone: p.phone, website: p.website,
+      checked: p.checkedAt, hours: days(p.hours), logo: p.logo?.src ?? null,
+      facts: Object.fromEntries(p.facts.filter((f) => f.group === 'feature').map((f) => [f.slug, f.evidence])),
+      occ: p.facts.filter((f) => f.group === 'occasion' && f.active && f.evidence !== 'unknown').map((f) => f.slug),
+    })),
+  };
 }
 
 // Places in one category for one suburb. Services count when they confirmed they serve the suburb.
