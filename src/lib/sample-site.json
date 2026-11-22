@@ -10,7 +10,26 @@
     "credit": null,
     "width": 800,
     "height": 1000
-   }
+   },
+   "intro": "SAMPLE: Weston Creek sits between the Cotter Road and the Molonglo River, with Cooleman Court at its heart and leafy streets around it.",
+   "photos": [
+    {
+     "src": "/sample/district-weston-creek.svg",
+     "alt": "Sample: hills over Weston Creek",
+     "credit": null,
+     "width": 800,
+     "height": 1000,
+     "primary": true
+    },
+    {
+     "src": "/sample/cafe-deck.svg",
+     "alt": "Sample: an outdoor deck",
+     "credit": "Find Me CBR",
+     "width": 1200,
+     "height": 900,
+     "primary": false
+    }
+   ]
   },
   {
    "slug": "molonglo-valley",

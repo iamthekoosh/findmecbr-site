@@ -1,8 +1,9 @@
 ---
-// A district: its suburbs, and its centres grouped by type.
+// A district: a short description, photos, Services and Businesses as tiles, then its suburbs and its centres by type.
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
-import { loadSite } from '../../../lib/strapi.js';
+import PhotoCarousel from '../../../components/PhotoCarousel.astro';
+import { loadSite, districtCategories, STAGE } from '../../../lib/strapi.js';
 import { CENTRE_TYPES } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
@@ -17,10 +18,37 @@ const centres = site.centres.filter((c) => c.district?.slug === district.slug);
 const types = Object.entries(CENTRE_TYPES)
   .map(([kind, t]) => ({ ...t, count: centres.filter((c) => c.kind === kind).length }))
   .filter((t) => t.count > 0);
+const { services, businesses } = districtCategories(site, district);
+const alpha = STAGE === 'alpha';
+const sections = [
+  { key: 'services', title: 'Services', note: 'They come to you, or you book them.', list: services },
+  { key: 'businesses', title: 'Businesses', note: 'Shops, cafes and places to visit.', list: businesses },
+];
 ---
-<Base title={district.name} description={`Suburbs, local shops and centres in ${district.name}, Canberra.`} noindex={suburbs.length === 0}>
+<Base title={district.name} description={district.intro || `Suburbs, local shops and centres in ${district.name}, Canberra.`} noindex={suburbs.length === 0}>
   <p class="kicker">District</p>
   <h1>{district.name}</h1>
+  {district.intro && <p class="lede">{district.intro}</p>}
+
+  <PhotoCarousel photos={district.photos ?? []} name={district.name} placeholder={alpha} />
+
+  {sections.map((sec) => (sec.list.length > 0 || alpha) && (
+    <section class="section">
+      <h2>{sec.title}</h2>
+      {sec.list.length > 0 ? (
+        <div class="grid">
+          {sec.list.map((c) => (
+            <a class="gt stacked" href={`/districts/${district.slug}/${sec.key}/${c.slug}/`}>
+              <Icon name={c.icon || 'store'} />
+              <span>{c.plural}<small>{c.count} listed</small></span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="empty">{sec.title} in {district.name} appear here once they've been checked.</p>
+      )}
+    </section>
+  ))}
 
   {suburbs.length > 0 && (
     <section class="section">

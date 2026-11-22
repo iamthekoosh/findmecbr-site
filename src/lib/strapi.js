@@ -132,7 +132,7 @@ export async function loadSite() {
     return finish(cached);
   }
   const [districts, suburbs, centres, categories, places, tags, synonyms] = await Promise.all([
-    getAll('districts', { sort: 'name', populate: { hero_image: { populate: ['file'] } } }),
+    getAll('districts', { sort: 'name', populate: { hero_image: { populate: ['file'] }, photos: { populate: ['file'] } } }),
     getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, hero_image: { populate: ['file'] } } }),
     getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] } } }),
     getAll('categories', { sort: 'label' }),
@@ -158,7 +158,10 @@ export async function loadSite() {
 
   const shaped = places.map(shapePlace);
   cached = {
-    districts: districts.map((d) => ({ slug: d.slug, name: d.name, image: image(d.hero_image) })),
+    districts: districts.map((d) => ({
+      slug: d.slug, name: d.name, intro: d.intro ?? '', image: image(d.hero_image),
+      photos: (d.photos ?? []).map((ph) => ({ ...image(ph), primary: ph.is_primary })).filter((ph) => ph.src),
+    })),
     suburbs: suburbs.map((s) => ({
       slug: s.slug, name: s.name, lat: s.lat != null ? Number(s.lat) : null, lng: s.lng != null ? Number(s.lng) : null, district: s.district ? { slug: s.district.slug, name: s.district.name } : null,
       intro: s.intro ?? '', body: s.body ?? '', live: !!s.page_live, checkedAt: s.checked_at ?? null,
@@ -216,6 +219,22 @@ export function placesFor(site, suburb, category) {
     category.kind === 'service'
       ? p.serviceAreas.some((a) => a.slug === suburb.slug) || p.suburb?.slug === suburb.slug
       : p.suburb?.slug === suburb.slug));
+}
+
+// Places in one category across a district. A service counts if it serves any suburb in the district.
+export function placesInDistrict(site, district, category) {
+  const subs = new Set(site.suburbs.filter((x) => x.district?.slug === district.slug).map((x) => x.slug));
+  return site.places.filter((p) => p.category?.slug === category.slug && (
+    subs.has(p.suburb?.slug) || (category.kind === 'service' && p.serviceAreas.some((x) => subs.has(x.slug)))));
+}
+
+// The category tiles for a district: switched-on categories with at least one place, split into services and businesses.
+export function districtCategories(site, district) {
+  const rows = site.categories.filter((c) => c.active)
+    .map((c) => ({ ...c, count: placesInDistrict(site, district, c).length }))
+    .filter((c) => c.count > 0)
+    .sort((x, y) => x.plural.localeCompare(y.plural));
+  return { services: rows.filter((c) => c.kind === 'service'), businesses: rows.filter((c) => c.kind !== 'service') };
 }
 
 // Places grouped by category, in category order, for directory lists.
