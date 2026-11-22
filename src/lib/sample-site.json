@@ -185,9 +185,66 @@
    "facts": [
     {
      "tag": {
+      "slug": "off-street-parking",
+      "label": "Off-street parking",
+      "group": "feature",
+      "section": "getting_there",
+      "icon": "square-parking"
+     },
+     "evidence": "confirmed",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "slug": "near-bus-stop",
+      "label": "Near a bus stop",
+      "group": "feature",
+      "section": "nearby",
+      "icon": "bus"
+     },
+     "evidence": "confirmed",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
       "slug": "step-free-entry",
       "label": "Step-free entry",
-      "group": "feature"
+      "group": "feature",
+      "section": "access",
+      "icon": "accessibility"
+     },
+     "evidence": "confirmed",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "slug": "accessible-toilet",
+      "label": "Accessible toilet",
+      "group": "feature",
+      "section": "access",
+      "icon": "toilet"
+     },
+     "evidence": "unknown",
+     "checked_at": null
+    },
+    {
+     "tag": {
+      "slug": "free-wifi",
+      "label": "Free Wi-Fi",
+      "group": "feature",
+      "section": "facilities",
+      "icon": "wifi"
+     },
+     "evidence": "business_says",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "slug": "outdoor-seating",
+      "label": "Outdoor seating",
+      "group": "feature",
+      "section": "facilities",
+      "icon": "sun"
      },
      "evidence": "confirmed",
      "checked_at": "2026-11-19"
@@ -196,18 +253,45 @@
      "tag": {
       "slug": "dogs-welcome",
       "label": "Dogs welcome",
-      "group": "feature"
+      "group": "feature",
+      "section": "facilities",
+      "icon": "dog"
      },
      "evidence": "business_says",
      "checked_at": "2026-11-19"
     },
     {
      "tag": {
-      "slug": "accessible-toilet",
-      "label": "Accessible toilet",
-      "group": "feature"
+      "slug": "vegan-options",
+      "label": "Vegan options",
+      "group": "feature",
+      "section": "food_drink",
+      "icon": "sprout"
      },
-     "evidence": "unknown"
+     "evidence": "business_says",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "slug": "takeaway",
+      "label": "Takeaway",
+      "group": "feature",
+      "section": "food_drink",
+      "icon": "shopping-bag"
+     },
+     "evidence": "confirmed",
+     "checked_at": "2026-11-19"
+    },
+    {
+     "tag": {
+      "slug": "card-payments",
+      "label": "Card payments",
+      "group": "feature",
+      "section": "services",
+      "icon": "credit-card"
+     },
+     "evidence": "confirmed",
+     "checked_at": "2026-11-19"
     },
     {
      "tag": {

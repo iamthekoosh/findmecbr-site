@@ -89,7 +89,7 @@ export function shapePlace(p) {
     lat: showAddress && loc?.lat != null ? Number(loc.lat) : null,
     lng: showAddress && loc?.lng != null ? Number(loc.lng) : null,
     serviceAreas: (p.service_areas ?? []).filter((a) => a.suburb).map((a) => ({ slug: a.suburb.slug, name: a.suburb.name })),
-    facts: (p.facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, icon: f.tag.icon ?? null, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false, evidence: f.evidence, checkedAt: f.checked_at })),
+    facts: (p.facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, icon: f.tag.icon ?? null, section: f.tag.section ?? null, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false, evidence: f.evidence, checkedAt: f.checked_at })),
     hours: (p.opening_hours ?? [])
       .map((h) => ({ day: WEEKDAYS.indexOf(h.weekday), opens: String(h.opens_at).slice(0, 5), closes: String(h.closes_at).slice(0, 5) }))
       .sort((a, b) => a.day - b.day || a.opens.localeCompare(b.opens)),

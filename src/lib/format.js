@@ -53,6 +53,24 @@ export function evidenceBadge(fact, knownIcons = {}) {
   return { icon, label: fact.label, status, cls };
 }
 
+// Sections for a listing's fact tiles, in the order they appear. Occasion tags go under "Good for".
+export const FACT_SECTIONS = [
+  ['getting_there', 'Getting there'],
+  ['access', 'Access'],
+  ['facilities', 'Facilities'],
+  ['food_drink', 'Food and drink'],
+  ['services', 'Services'],
+  ['nearby', 'Nearby'],
+  ['other', 'Other features'],
+  ['good_for', 'Good for'],
+];
+
+export function groupFacts(facts) {
+  const known = new Set(FACT_SECTIONS.map(([k]) => k));
+  const key = (f) => (f.group === 'occasion' ? 'good_for' : known.has(f.section) ? f.section : 'other');
+  return FACT_SECTIONS.map(([k, label]) => ({ key: k, label, facts: facts.filter((f) => key(f) === k) })).filter((g) => g.facts.length);
+}
+
 // A maps hand-off for the Directions button. Uses coordinates when the address is public, else the suburb.
 export function directionsUrl(place) {
   if (place.lat != null && place.lng != null) return `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;

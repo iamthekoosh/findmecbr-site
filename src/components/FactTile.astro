@@ -1,12 +1,13 @@
 ---
-// A fact about a place as a badge: icon, the fact, and how we know it.
+// A fact about a place as a tile: icon on top, the fact under it, and how we know it below.
 import Icon from './Icon.astro';
 import icons from '../lib/icons.json';
 import { evidenceBadge } from '../lib/format.js';
 const { fact } = Astro.props;
 const b = evidenceBadge(fact, icons);
 ---
-<li class={`fact-badge ${b.cls}`}>
+<li class={`fact-tile ${b.cls}`}>
   <Icon name={b.icon} />
-  <span>{b.label}<small>{b.status}</small></span>
+  <span class="fact-label">{b.label}</span>
+  <small>{b.status}</small>
 </li>

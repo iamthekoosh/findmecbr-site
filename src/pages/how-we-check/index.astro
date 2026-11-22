@@ -1,16 +1,16 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
-import FactBadge from '../../components/FactBadge.astro';
+import FactTile from '../../components/FactTile.astro';
 ---
 <Base title="How we check" description="What confirmed, business says and not confirmed mean on Find Me CBR.">
   <div class="prose">
     <h1>How we check</h1>
     <p>Every place shows the date we last checked it. Each fact says how we know it:</p>
-    <ul class="fact-badges">
-      <FactBadge fact={{ label: 'Step-free entry', evidence: 'confirmed' }} />
-      <FactBadge fact={{ label: 'Step-free entry', evidence: 'business_says' }} />
-      <FactBadge fact={{ label: 'Step-free entry', evidence: 'unknown' }} />
+    <ul class="fact-tiles">
+      <FactTile fact={{ label: 'Step-free entry', evidence: 'confirmed', icon: 'accessibility' }} />
+      <FactTile fact={{ label: 'Step-free entry', evidence: 'business_says', icon: 'accessibility' }} />
+      <FactTile fact={{ label: 'Step-free entry', evidence: 'unknown', icon: 'accessibility' }} />
     </ul>
     <ul>
       <li><strong>Confirmed:</strong> we saw it ourselves, or tested it in person.</li>
