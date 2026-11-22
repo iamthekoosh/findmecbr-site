@@ -4,7 +4,7 @@ import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import Crumbs from '../../../components/Crumbs.astro';
-import { loadSite, byCategory, placesFor, STAGE } from '../../../lib/strapi.js';
+import { loadSite, placesFor, STAGE } from '../../../lib/strapi.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -19,9 +19,9 @@ const here = site.places.filter((p) => p.suburb?.slug === suburb.slug);
 // Services that confirmed they come here, but aren't based here.
 const servicing = site.places.filter((p) => p.suburb?.slug !== suburb.slug && p.serviceAreas.some((a) => a.slug === suburb.slug));
 const centres = site.centres.filter((c) => c.suburb?.slug === suburb.slug);
-const groups = byCategory(here);
-// Category tiles at the top, for categories that are switched on and have places for this suburb.
-const catTiles = site.categories.filter((c) => c.active).map((c) => ({ c, n: placesFor(site, suburb, c).length })).filter((x) => x.n > 0);
+// One tab per category with places for this suburb: based here, or a service that confirmed it serves here.
+const tabs = site.categories.map((c) => ({ c, places: placesFor(site, suburb, c) })).filter((t) => t.places.length > 0)
+  .sort((x, y) => x.c.plural.localeCompare(y.c.plural));
 // The description as plain paragraphs: a blank line starts a new one. Markdown marks are shown as typed, and HTML is escaped.
 const paragraphs = (text) => text.trim().split(/\n{2,}/).map((p) => `<p>${p.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]).replace(/\n/g, "<br>")}</p>`).join("");
 const desc = suburb.intro || `Local places in ${suburb.name}, ${suburb.district?.name ?? 'Canberra'}, checked by hand.`;
@@ -48,13 +48,6 @@ const noindex = !suburb.live || here.length + servicing.length === 0;
     </section>
   ) : STAGE === "alpha" && <div class="desc-box empty-box">Description of {suburb.name} coming soon</div>}
 
-  {catTiles.length > 0 && (
-    <section class="section">
-      <h2>Find in {suburb.name}</h2>
-      <div class="grid">{catTiles.map(({ c, n }) => <a class="gt" href={`/suburbs/${suburb.slug}/${c.slug}/`}><Icon name={c.icon || 'store'} /><span>{c.plural}<small>{n} listed</small></span></a>)}</div>
-    </section>
-  )}
-
   {centres.length > 0 && (
     <section class="section">
       <h2>Shopping centres and local shops</h2>
@@ -69,20 +62,60 @@ const noindex = !suburb.live || here.length + servicing.length === 0;
     </section>
   )}
 
-  {groups.map((g) => (
-    <section class="section">
-      <h2 class="h2row"><Icon name={g.category.icon || 'store'} />{g.category.plural}</h2>
-      <div class="stack">{g.places.map((p) => <PlaceCard place={p} />)}</div>
-    </section>
-  ))}
-
-  {servicing.length > 0 && (
-    <section class="section">
-      <h2>Services that come to {suburb.name}</h2>
-      <p class="muted">These businesses confirmed they serve {suburb.name}.</p>
-      <div class="stack">{servicing.map((p) => <PlaceCard place={p} />)}</div>
+  {tabs.length > 0 && (
+    <section class="section cat-tabs" data-cat-tabs>
+      <h2>Find in {suburb.name}</h2>
+      <div class="grid" role="tablist" aria-label={`Categories in ${suburb.name}`}>
+        {tabs.map((t, i) => (
+          <a class="gt cat-tab" href={`#${t.c.slug}`} id={`tab-${t.c.slug}`} role="tab" aria-controls={t.c.slug} aria-selected={i === 0 ? 'true' : 'false'}>
+            <Icon name={t.c.icon || 'store'} />
+            <span>{t.c.plural}<small>{t.places.length} listed</small></span>
+          </a>
+        ))}
+      </div>
+      {tabs.map((t) => (
+        <div class="cat-panel" id={t.c.slug} role="tabpanel" aria-labelledby={`tab-${t.c.slug}`}>
+          <h3 class="h2row"><Icon name={t.c.icon || 'store'} />{t.c.kind === 'service' ? `${t.c.plural} who serve ${suburb.name}` : `${t.c.plural} in ${suburb.name}`}</h3>
+          {t.c.kind === 'service' && t.places.some((p) => p.suburb?.slug !== suburb.slug) && <p class="muted">Each of these is based here, or confirmed they serve {suburb.name}.</p>}
+          <div class="stack">{t.places.map((p) => <PlaceCard place={p} />)}</div>
+        </div>
+      ))}
     </section>
   )}
+
+  <script>
+    // Category tiles work as tabs: only the chosen category's listings show.
+    // Without JavaScript, every list shows and each tile jumps to its list.
+    for (const root of document.querySelectorAll('[data-cat-tabs]')) {
+      const tabs = [...root.querySelectorAll('[role=tab]')];
+      const panels = [...root.querySelectorAll('[role=tabpanel]')];
+      const show = (id, focus) => {
+        const tab = tabs.find((t) => t.getAttribute('aria-controls') === id) ?? tabs[0];
+        for (const t of tabs) {
+          const on = t === tab;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+        }
+        for (const p of panels) p.hidden = p.id !== tab.getAttribute('aria-controls');
+        if (focus) tab.focus();
+        return tab.getAttribute('aria-controls');
+      };
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', (e) => {
+          e.preventDefault();
+          history.replaceState(null, '', '#' + show(t.getAttribute('aria-controls')));
+        });
+        t.addEventListener('keydown', (e) => {
+          const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+          if (!step) return;
+          e.preventDefault();
+          const next = tabs[(i + step + tabs.length) % tabs.length];
+          history.replaceState(null, '', '#' + show(next.getAttribute('aria-controls'), true));
+        });
+      });
+      show(location.hash.slice(1));
+    }
+  </script>
 
   {here.length + servicing.length === 0 && (
     <p class="empty">We haven't checked any places in {suburb.name} yet. Listings appear here once they've been checked by hand.</p>
