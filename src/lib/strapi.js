@@ -59,6 +59,17 @@ const image = (img) => {
 };
 
 // "alpha" while testing on the server's IP address: every page is noindex and labelled as a test.
+// The Menu button: only when it's switched on, checked and complete. A link out, or images shown on our own page.
+function shapeMenu(p) {
+  const m = p.menu;
+  if (!m?.show || !m.checked_at) return null;
+  if (m.kind === 'images') {
+    const pages = (m.images ?? []).map((file, i) => image({ file, alt_text: file.alternativeText || `${p.name} menu, page ${i + 1}` })).filter(Boolean);
+    return pages.length ? { kind: 'images', pages, checkedAt: m.checked_at } : null;
+  }
+  return /^https:\/\//.test(m.url ?? '') ? { kind: 'link', url: m.url, checkedAt: m.checked_at } : null;
+}
+
 export const STAGE = process.env.SITE_STAGE || 'live';
 
 const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -98,6 +109,7 @@ export function shapePlace(p) {
     actions: (p.action_tiles ?? []).filter((t) => t.active && t.checked_at && /^https:\/\//.test(t.url ?? ''))
       .map((t) => ({ action: t.action, label: t.label, provider: t.provider, url: t.url })),
     logo: image(p.logo),
+    menu: shapeMenu(p),
     photos: (p.photos ?? []).map((ph) => ({ ...image(ph), primary: ph.is_primary })).filter((ph) => ph.src)
       .sort((a, b) => Number(b.primary) - Number(a.primary)),
   };
@@ -135,6 +147,7 @@ export async function loadSite() {
         opening_hours: true,
         hours_exceptions: true,
         action_tiles: true,
+        menu: { populate: ['images'] },
         logo: { populate: ['file'] },
         photos: { populate: ['file'] },
       },

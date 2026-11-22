@@ -70,11 +70,13 @@ const features = place.facts.filter((f) => f.group !== "occasion");
     </div>
   )}
 
-  {(directions || place.phone || place.website) && (
+  {(directions || place.phone || place.website || place.menu) && (
     <div class="utils">
       {directions && <a class="btn" href={directions} rel="noopener"><Icon name="navigation" />Directions</a>}
       {place.phone && <a class="btn" href={telUrl(place.phone)}><Icon name="phone" />Call</a>}
       {place.website && <a class="btn" href={place.website} rel="noopener"><Icon name="globe" />Website</a>}
+      {place.menu?.kind === 'link' && <a class="btn" href={place.menu.url} rel="noopener"><Icon name="book-open" />Menu</a>}
+      {place.menu?.kind === 'images' && <a class="btn" href={`/places/${place.slug}/menu/`}><Icon name="book-open" />Menu</a>}
     </div>
   )}
 

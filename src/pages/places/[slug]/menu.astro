@@ -1,0 +1,34 @@
+---
+// A place's menu as images, one per page, when the business gave us images instead of a link.
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import { loadSite } from '../../../lib/strapi.js';
+import { shortDate } from '../../../lib/format.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.places.filter((p) => p.menu?.kind === 'images').map((place) => ({ params: { slug: place.slug }, props: { place } }));
+}
+
+const { place } = Astro.props;
+const pages = place.menu.pages;
+---
+<Base title={`Menu: ${place.name}`} description={`The menu at ${place.name}${place.suburb ? ', ' + place.suburb.name : ''}.`}>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a class="chip" href={`/places/${place.slug}/`}><Icon name="arrow-left" />{place.name}</a>
+  </nav>
+  <h1>Menu</h1>
+  <p class="muted">{place.name}. Prices and dishes can change, so check with them before you go.</p>
+  <ol class="menu-pages">
+    {pages.map((p, i) => (
+      <li>
+        <a href={p.src} aria-label={`Open page ${i + 1} full size`}>
+          <img src={p.src} alt={p.alt} width={p.width} height={p.height} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+        </a>
+        {pages.length > 1 && <small>Page {i + 1} of {pages.length}</small>}
+      </li>
+    ))}
+  </ol>
+  <p class="stamp">Menu checked on {shortDate(place.menu.checkedAt)}.</p>
+  <a class="rowtile" href={`/report/?place=${place.slug}`}><span><Icon name="flag" class="lead" /><span>Menu out of date?<small>Tell us and we'll check it</small></span></span><Icon name="chevron-right" /></a>
+</Base>

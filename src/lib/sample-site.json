@@ -409,7 +409,27 @@
      "permission": "Sample",
      "is_primary": false
     }
-   ]
+   ],
+   "menu": {
+    "show": true,
+    "kind": "images",
+    "checked_at": "2026-11-19",
+    "url": null,
+    "images": [
+     {
+      "url": "/sample/menu-1.svg",
+      "width": 800,
+      "height": 1100,
+      "alternativeText": "Sample menu, page 1: drinks"
+     },
+     {
+      "url": "/sample/menu-2.svg",
+      "width": 800,
+      "height": 1100,
+      "alternativeText": "Sample menu, page 2: food"
+     }
+    ]
+   }
   },
   {
    "slug": "sample-cleaning",
@@ -456,7 +476,14 @@
       "name": "Coombs"
      }
     }
-   ]
+   ],
+   "menu": {
+    "show": true,
+    "kind": "link",
+    "url": "https://example.com/prices",
+    "checked_at": "2026-11-19",
+    "images": []
+   }
   }
  ],
  "tags": [
