@@ -97,6 +97,7 @@ export function shapePlace(p) {
     id: p.documentId ?? null,
     slug: p.slug,
     name: p.name,
+    otherCategories: (p.other_categories ?? []).map((c) => ({ slug: c.slug })),
     category: p.primary_category ? { slug: p.primary_category.slug, label: p.primary_category.label, plural: p.primary_category.plural, icon: p.primary_category.icon } : null,
     locationType: p.location_type,
     postStatus: POST_STATUSES[p.post_status] ? p.post_status : 'unverified',
@@ -159,6 +160,7 @@ export async function loadSite() {
       sort: 'name',
       populate: {
         primary_category: true,
+        other_categories: true,
         location: { populate: ['suburb', 'centre'] },
         service_areas: { populate: ['suburb'] },
         facts: { populate: ['tag'] },

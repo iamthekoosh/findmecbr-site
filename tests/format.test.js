@@ -103,3 +103,15 @@ test('post status defaults to unverified and keeps known values', () => {
   assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'info_online' }).postStatus, 'info_online');
   assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'nonsense' }).postStatus, 'unverified');
 });
+
+test('extra service tiles only for groceries and service stations, unconfirmed unless a fact says otherwise', async () => {
+  const { extraServiceTiles } = await import('../src/lib/format.js');
+  const grocery = { category: { slug: 'grocery' }, facts: [{ slug: 'liquor', label: 'Liquor', evidence: 'business_says', icon: null }] };
+  const tiles = extraServiceTiles(grocery);
+  assert.deepEqual(tiles.map((t) => t.label), ['Ice', 'LPG swap', 'Firewood', 'Bait', 'Postal services', 'Liquor', 'Lotto']);
+  assert.equal(tiles[5].evidence, 'business_says');
+  assert.equal(tiles[5].icon, 'wine');
+  assert.equal(tiles[0].evidence, 'unknown');
+  assert.equal(extraServiceTiles({ category: { slug: 'cafe' }, facts: [] }).length, 0);
+  assert.equal(extraServiceTiles({ category: { slug: 'cafe' }, otherCategories: [{ slug: 'service-station' }], facts: [] }).length, 7);
+});

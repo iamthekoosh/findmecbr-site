@@ -1,0 +1,27 @@
+---
+// "Open now", "Closing in 20 mins", "Opening in 15 mins" or "Closed", worked out in the visitor's browser
+// from the place's hours, so it stays right between site rebuilds. Hidden when the place has no hours.
+const { hours = [], exceptions = [] } = Astro.props;
+---
+{hours.length > 0 && (
+  <p class="live" data-live data-hours={JSON.stringify(hours)} data-exceptions={JSON.stringify(exceptions)} aria-live="polite" hidden>
+    <span class="live-tag"></span><span class="live-detail"></span>
+  </p>
+)}
+
+<script>
+  import { liveStatus, canberraNow } from '../lib/live-hours.js';
+  const nodes = [...document.querySelectorAll('[data-live]')];
+  const paint = () => {
+    const now = canberraNow();
+    for (const el of nodes) {
+      const s = liveStatus(JSON.parse(el.dataset.hours), JSON.parse(el.dataset.exceptions), now);
+      if (!s) continue;
+      el.className = `live live-${s.state}`;
+      el.querySelector('.live-tag').textContent = s.text;
+      el.querySelector('.live-detail').textContent = s.detail;
+      el.hidden = false;
+    }
+  };
+  if (nodes.length) { paint(); setInterval(paint, 60_000); }
+</script>

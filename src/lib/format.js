@@ -80,3 +80,28 @@ export const CENTRE_TYPES = {
 };
 export const CENTRE_KINDS = Object.fromEntries(Object.entries(CENTRE_TYPES).map(([k, v]) => [k, v.label]));
 export const typeOf = (kind) => CENTRE_TYPES[kind] ?? CENTRE_TYPES.local_shops;
+
+// Extra services shown as their own set of tiles on groceries, supermarkets and service stations.
+// Each is a feature tag in Strapi with the same slug. One the place has no fact for shows as unconfirmed.
+export const EXTRA_SERVICES = [
+  { slug: 'ice', label: 'Ice', icon: 'snowflake' },
+  { slug: 'lpg-swap', label: 'LPG swap', icon: 'cylinder' },
+  { slug: 'firewood', label: 'Firewood', icon: 'axe' },
+  { slug: 'bait', label: 'Bait', icon: 'fish' },
+  { slug: 'postal-services', label: 'Postal services', icon: 'mail' },
+  { slug: 'liquor', label: 'Liquor', icon: 'wine' },
+  { slug: 'lotto', label: 'Lotto', icon: 'ticket' },
+];
+export const EXTRA_SERVICE_CATEGORIES = ['grocery', 'supermarket', 'service-station'];
+const EXTRA_SLUGS = new Set(EXTRA_SERVICES.map((s) => s.slug));
+export const isExtraService = (fact) => EXTRA_SLUGS.has(fact.slug);
+
+// The tiles for a place, or [] when its category doesn't get them.
+export function extraServiceTiles(place) {
+  const cats = [place.category?.slug, ...(place.otherCategories ?? []).map((c) => c.slug)];
+  if (!cats.some((c) => EXTRA_SERVICE_CATEGORIES.includes(c))) return [];
+  return EXTRA_SERVICES.map((s) => {
+    const fact = place.facts.find((f) => f.slug === s.slug);
+    return fact ? { ...fact, icon: fact.icon || s.icon } : { slug: s.slug, label: s.label, icon: s.icon, subtitle: '', evidence: 'unknown' };
+  });
+}
