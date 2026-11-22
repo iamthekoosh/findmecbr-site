@@ -4,7 +4,7 @@ import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import Crumbs from '../../../components/Crumbs.astro';
-import { loadSite, byCategory, placesFor } from '../../../lib/strapi.js';
+import { loadSite, byCategory, placesFor, STAGE } from '../../../lib/strapi.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -22,6 +22,8 @@ const centres = site.centres.filter((c) => c.suburb?.slug === suburb.slug);
 const groups = byCategory(here);
 // Category tiles at the top, for categories that are switched on and have places for this suburb.
 const catTiles = site.categories.filter((c) => c.active).map((c) => ({ c, n: placesFor(site, suburb, c).length })).filter((x) => x.n > 0);
+// The description as plain paragraphs: a blank line starts a new one. Markdown marks are shown as typed, and HTML is escaped.
+const paragraphs = (text) => text.trim().split(/\n{2,}/).map((p) => `<p>${p.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]).replace(/\n/g, "<br>")}</p>`).join("");
 const desc = suburb.intro || `Local places in ${suburb.name}, ${suburb.district?.name ?? 'Canberra'}, checked by hand.`;
 // Thin pages stay out of search until the page is live and has something useful on it.
 const noindex = !suburb.live || here.length + servicing.length === 0;
@@ -38,6 +40,13 @@ const noindex = !suburb.live || here.length + servicing.length === 0;
       <ul class="stat-tiles">{suburb.stats.map((x) => <StatTile stat={x} />)}</ul>
     </section>
   )}
+
+  {suburb.body.trim() ? (
+    <section class="section desc-box">
+      <h2>About {suburb.name}</h2>
+      <div class="prose" set:html={paragraphs(suburb.body)} />
+    </section>
+  ) : STAGE === "alpha" && <div class="desc-box empty-box">Description of {suburb.name} coming soon</div>}
 
   {catTiles.length > 0 && (
     <section class="section">
