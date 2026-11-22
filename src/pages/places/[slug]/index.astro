@@ -3,7 +3,7 @@ import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import FactTile from '../../../components/FactTile.astro';
 import { loadSite } from '../../../lib/strapi.js';
-import { shortDate, weekHours, directionsUrl, telUrl, ACTION_WORDS, groupFacts } from '../../../lib/format.js';
+import { shortDate, weekHours, directionsUrl, telUrl, ACTION_WORDS, orderFacts } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -78,12 +78,7 @@ const ld = {
   {place.facts.length > 0 && (
     <section class="section">
       <h2>What we know</h2>
-      {groupFacts(place.facts).map((g) => (
-        <div class="fact-group">
-          <h3>{g.label}</h3>
-          <ul class="fact-tiles">{g.facts.map((f) => <FactTile fact={f} />)}</ul>
-        </div>
-      ))}
+      <ul class="fact-tiles">{orderFacts(place.facts).map((f) => <FactTile fact={f} />)}</ul>
       <a class="foot-key" href="/how-we-check/">What these mean</a>
     </section>
   )}
