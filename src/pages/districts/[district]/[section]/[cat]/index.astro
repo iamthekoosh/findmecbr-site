@@ -1,0 +1,31 @@
+---
+// One category in one section of a district, e.g. Schools (Essential services) or Cafes (Businesses) in Weston Creek.
+// A place shows in the section that matches its Class. Built only where there's at least one published place.
+import Base from '../../../../../layouts/Base.astro';
+import Crumbs from '../../../../../components/Crumbs.astro';
+import PlaceCard from '../../../../../components/PlaceCard.astro';
+import { loadSite, placesInDistrict, CLASSES } from '../../../../../lib/strapi.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  const paths = [];
+  for (const district of site.districts.filter((d) => site.pagedDistricts.has(d.slug))) {
+    for (const [placeClass, section] of Object.entries(CLASSES)) {
+      for (const category of site.categories.filter((c) => c.active)) {
+        const places = placesInDistrict(site, district, category, placeClass);
+        if (places.length) paths.push({ params: { district: district.slug, section: section.key, cat: category.slug }, props: { district, category, placeClass, places } });
+      }
+    }
+  }
+  return paths;
+}
+
+const { district, category, placeClass, places } = Astro.props;
+const title = placeClass === 'service' ? `${category.plural} who service ${district.name}` : `${category.plural} in ${district.name}`;
+---
+<Base title={title} description={`${title}, Canberra. Checked by hand, with the date we last checked.`}>
+  <Crumbs items={[{ label: district.name, href: `/districts/${district.slug}/` }]} />
+  <h1>{title}</h1>
+  {placeClass === 'service' && <p class="muted">Each of these confirmed they serve at least one suburb in {district.name}.</p>}
+  <div class="stack">{places.map((p) => <PlaceCard place={p} />)}</div>
+</Base>

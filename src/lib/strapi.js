@@ -74,6 +74,13 @@ export const STAGE = process.env.SITE_STAGE || 'live';
 
 const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
+// A place's class decides which section of a district page it shows in, in this order.
+export const CLASSES = {
+  essential_service: { key: 'essential-services', title: 'Essential services', note: 'Schools, public services and similar.' },
+  service: { key: 'services', title: 'Services', note: 'They come to you, or you book them.' },
+  business: { key: 'businesses', title: 'Businesses', note: 'Shops, cafes and places to visit.' },
+};
+
 // Shapes one place for the pages. Exported for tests.
 export function shapePlace(p) {
   const loc = p.location ?? null;
@@ -84,6 +91,7 @@ export function shapePlace(p) {
     name: p.name,
     category: p.primary_category ? { slug: p.primary_category.slug, label: p.primary_category.label, plural: p.primary_category.plural, icon: p.primary_category.icon } : null,
     locationType: p.location_type,
+    placeClass: CLASSES[p.place_class] ? p.place_class : (p.primary_category?.kind === 'service' ? 'service' : 'business'),
     short: p.description_short ?? '',
     full: p.description_full ?? '',
     ourTake: p.is_health ? '' : (p.our_take ?? ''),
@@ -223,20 +231,23 @@ export function placesFor(site, suburb, category) {
       : p.suburb?.slug === suburb.slug));
 }
 
-// Places in one category across a district. A service counts if it serves any suburb in the district.
-export function placesInDistrict(site, district, category) {
+// Places in one category across a district, optionally of one class. A service counts if it serves any suburb in the district.
+export function placesInDistrict(site, district, category, placeClass = null) {
   const subs = new Set(site.suburbs.filter((x) => x.district?.slug === district.slug).map((x) => x.slug));
-  return site.places.filter((p) => p.category?.slug === category.slug && (
+  return site.places.filter((p) => p.category?.slug === category.slug && (!placeClass || p.placeClass === placeClass) && (
     subs.has(p.suburb?.slug) || (category.kind === 'service' && p.serviceAreas.some((x) => subs.has(x.slug)))));
 }
 
-// The category tiles for a district: switched-on categories with at least one place, split into services and businesses.
-export function districtCategories(site, district) {
-  const rows = site.categories.filter((c) => c.active)
-    .map((c) => ({ ...c, count: placesInDistrict(site, district, c).length }))
-    .filter((c) => c.count > 0)
-    .sort((x, y) => x.plural.localeCompare(y.plural));
-  return { services: rows.filter((c) => c.kind === 'service'), businesses: rows.filter((c) => c.kind !== 'service') };
+// The sections of a district page, one per class, each with its switched-on categories that have at least one place of that class.
+export function districtSections(site, district) {
+  return Object.entries(CLASSES).map(([placeClass, sec]) => ({
+    ...sec,
+    placeClass,
+    list: site.categories.filter((c) => c.active)
+      .map((c) => ({ ...c, count: placesInDistrict(site, district, c, placeClass).length }))
+      .filter((c) => c.count > 0)
+      .sort((x, y) => x.plural.localeCompare(y.plural)),
+  }));
 }
 
 // Places grouped by category, in category order, for directory lists.

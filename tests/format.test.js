@@ -80,3 +80,20 @@ test('directories group by category', () => {
   const groups = byCategory([shapePlace(raw), shapePlace({ ...raw, slug: 'b', primary_category: { slug: 'cafe', label: 'Cafe', plural: 'Cafes' } })]);
   assert.deepEqual(groups.map((g) => g.category.plural), ['Cafes', 'Cleaners']);
 });
+
+test('a place shows in the district section that matches its class', async () => {
+  const { shapePlace, districtSections } = await import('../src/lib/strapi.js');
+  const school = shapePlace({ slug: 'a', name: 'A', place_class: 'essential_service', primary_category: { slug: 'school', label: 'School', plural: 'Schools', kind: 'venue' }, location: { suburb: { slug: 'holder', name: 'Holder' } } });
+  const cafe = shapePlace({ slug: 'b', name: 'B', primary_category: { slug: 'cafe', label: 'Cafe', plural: 'Cafes', kind: 'venue' }, location: { suburb: { slug: 'holder', name: 'Holder' } } });
+  assert.equal(cafe.placeClass, 'business');
+  const site = {
+    suburbs: [{ slug: 'holder', district: { slug: 'wc' } }],
+    categories: [{ slug: 'school', plural: 'Schools', kind: 'venue', active: true }, { slug: 'cafe', plural: 'Cafes', kind: 'venue', active: true }],
+    places: [school, cafe],
+  };
+  const [essential, services, businesses] = districtSections(site, { slug: 'wc' });
+  assert.deepEqual(essential.list.map((c) => c.slug), ['school']);
+  assert.equal(essential.key, 'essential-services');
+  assert.equal(services.list.length, 0);
+  assert.deepEqual(businesses.list.map((c) => c.slug), ['cafe']);
+});

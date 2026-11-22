@@ -1,9 +1,9 @@
 ---
-// A district: a short description, photos, Services and Businesses as tiles, then its suburbs and its centres by type.
+// A district: a short description, photos, Essential services, Services and Businesses as tiles, then its suburbs and its centres by type.
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import PhotoCarousel from '../../../components/PhotoCarousel.astro';
-import { loadSite, districtCategories, STAGE } from '../../../lib/strapi.js';
+import { loadSite, districtSections, STAGE } from '../../../lib/strapi.js';
 import { CENTRE_TYPES } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
@@ -18,12 +18,8 @@ const centres = site.centres.filter((c) => c.district?.slug === district.slug);
 const types = Object.entries(CENTRE_TYPES)
   .map(([kind, t]) => ({ ...t, count: centres.filter((c) => c.kind === kind).length }))
   .filter((t) => t.count > 0);
-const { services, businesses } = districtCategories(site, district);
 const alpha = STAGE === 'alpha';
-const sections = [
-  { key: 'services', title: 'Services', note: 'They come to you, or you book them.', list: services },
-  { key: 'businesses', title: 'Businesses', note: 'Shops, cafes and places to visit.', list: businesses },
-];
+const sections = districtSections(site, district);
 ---
 <Base title={district.name} description={district.intro || `Suburbs, local shops and centres in ${district.name}, Canberra.`} noindex={suburbs.length === 0}>
   <p class="kicker">District</p>
