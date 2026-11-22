@@ -15,7 +15,10 @@ export async function getStaticPaths() {
 }
 
 const { place } = Astro.props;
-const hours = weekHours(place.hours);
+// A parent place (one with places inside) is just a container: no website, photos or opening hours.
+const isContainer = place.children.length > 0;
+const hours = isContainer ? [] : weekHours(place.hours);
+const website = isContainer ? '' : place.website;
 const directions = place.locationType === 'physical' ? directionsUrl(place) : '';
 const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 const where = [place.suburb?.name, place.state || 'ACT'].filter(Boolean).join(', ');
@@ -28,7 +31,7 @@ const ld = {
   name: place.name,
   description: place.short || undefined,
   telephone: place.phone || undefined,
-  url: place.website || undefined,
+  url: (place.children.length ? '' : place.website) || undefined,
   address: place.address || place.suburb ? {
     '@type': 'PostalAddress', streetAddress: place.address || undefined, addressLocality: place.suburb?.name, addressRegion: place.state || 'ACT', postalCode: place.postcode || undefined, addressCountry: 'AU',
   } : undefined,
@@ -55,8 +58,8 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
     </div>
   </div>
 
-  <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />
-  <LiveStatus hours={place.hours} exceptions={place.exceptions} />
+  {!isContainer && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
+  {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} />}
   {place.short && <p class="lede">{place.short}</p>}
 
   {place.parent && (
@@ -84,11 +87,11 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
     </div>
   )}
 
-  {(directions || place.phone || place.website || place.menu) && (
+  {(directions || place.phone || website || place.menu) && (
     <div class="utils">
       {directions && <a class="btn" href={directions} rel="noopener"><Icon name="navigation" />Directions</a>}
       {place.phone && <a class="btn" href={telUrl(place.phone)}><Icon name="phone" />Call</a>}
-      {place.website && <a class="btn" href={place.website} rel="noopener"><Icon name="globe" />Website</a>}
+      {website && <a class="btn" href={website} rel="noopener"><Icon name="globe" />Website</a>}
       {place.menu?.kind === 'link' && <a class="btn" href={place.menu.url} rel="noopener"><Icon name="book-open" />Menu</a>}
       {place.menu?.kind === 'images' && <a class="btn" href={`/places/${place.slug}/menu/`}><Icon name="book-open" />Menu</a>}
     </div>
@@ -131,7 +134,7 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
     </section>
   )}
 
-  {hours.length === 0 && (
+  {hours.length === 0 && !isContainer && (
     <section class="section">
       <h2>Opening hours</h2>
       <p class="muted">Hours not confirmed yet. Check with the business before you go.</p>
