@@ -125,3 +125,8 @@ test('tile sets group the tiles a place has, in set order; other tiles are left 
   assert.equal(sets[1].tiles[0].icon, 'snowflake', "a fact without its own icon uses the tag's");
   assert.equal(tileSetsFor({ ...place, tileSetChoice: [] }, [extras]).length, 0, 'no sets picked: no set sections');
 });
+
+test('a place keeps the place it is inside', () => {
+  assert.deepEqual(shapePlace({ slug: 'a', name: 'A', parent_place: { slug: 'suite', name: 'Holder Consulting Suite', id: 3 } }).parent, { slug: 'suite', name: 'Holder Consulting Suite' });
+  assert.equal(shapePlace({ slug: 'a', name: 'A' }).parent, null);
+});

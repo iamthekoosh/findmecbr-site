@@ -4,7 +4,7 @@ import Icon from './Icon.astro';
 import StatusTag from './StatusTag.astro';
 import { shortDate, directionsUrl, telUrl } from '../lib/format.js';
 const { place, showCentre = true } = Astro.props;
-const where = [place.centre && showCentre ? place.centre.name : null, place.suburb?.name].filter(Boolean).join(', ');
+const where = [place.parent?.name ?? (place.centre && showCentre ? place.centre.name : null), place.suburb?.name].filter(Boolean).join(', ');
 const directions = place.locationType === 'physical' ? directionsUrl(place) : '';
 const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 ---

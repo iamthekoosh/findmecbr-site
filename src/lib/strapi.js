@@ -116,6 +116,8 @@ export function shapePlace(p) {
     facebook: p.facebook_url ?? '',
     checkedAt: p.checked_at ?? null,
     suburb: loc?.suburb ? { slug: loc.suburb.slug, name: loc.suburb.name } : null,
+    // The place this one is inside, such as a building. Its children are worked out from the other places.
+    parent: p.parent_place?.slug ? { slug: p.parent_place.slug, name: p.parent_place.name } : null,
     centre: loc?.in_centre && loc?.centre ? { slug: loc.centre.slug, name: loc.centre.name } : null,
     address: showAddress ? (loc?.public_address ?? '') : '',
     postcode: loc?.postcode ?? '',
@@ -168,6 +170,7 @@ export async function loadSite() {
         service_areas: { populate: ['suburb'] },
         facts: { populate: ['tag'] },
         tile_sets: true,
+        parent_place: true,
         opening_hours: true,
         hours_exceptions: true,
         action_tiles: true,
@@ -210,6 +213,10 @@ export async function loadSite() {
 function finish(site) {
   const paged = new Set(site.suburbs.filter((s) => hasPage(s, site.places)).map((s) => s.slug));
   site.pagedSuburbs = paged;
+  // Parents and children: a parent only counts when it's published too.
+  const bySlug = new Map(site.places.map((p) => [p.slug, p]));
+  for (const p of site.places) if (p.parent && !bySlug.has(p.parent.slug)) p.parent = null;
+  for (const p of site.places) p.children = site.places.filter((c) => c.parent?.slug === p.slug);
   // Each place's tile sections, from the tile sets in Strapi.
   for (const p of site.places) p.tileSets = tileSetsFor(p, site.tileSets ?? []);
   for (const s of site.suburbs) s.neighbours = s.neighbours.filter((n) => paged.has(n.slug));
