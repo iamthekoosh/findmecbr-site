@@ -15,7 +15,7 @@ const { place } = Astro.props;
 const hours = weekHours(place.hours);
 const directions = place.locationType === 'physical' ? directionsUrl(place) : '';
 const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
-const where = [place.suburb?.name, 'ACT'].filter(Boolean).join(', ');
+const where = [place.suburb?.name, place.state || 'ACT'].filter(Boolean).join(', ');
 const desc = place.short || `${place.name}, ${place.category?.label ?? 'local business'} in ${where}.`;
 
 // Structured data for search engines. Only facts we show on the page.
@@ -27,7 +27,7 @@ const ld = {
   telephone: place.phone || undefined,
   url: place.website || undefined,
   address: place.address || place.suburb ? {
-    '@type': 'PostalAddress', streetAddress: place.address || undefined, addressLocality: place.suburb?.name, addressRegion: 'ACT', postalCode: place.postcode || undefined, addressCountry: 'AU',
+    '@type': 'PostalAddress', streetAddress: place.address || undefined, addressLocality: place.suburb?.name, addressRegion: place.state || 'ACT', postalCode: place.postcode || undefined, addressCountry: 'AU',
   } : undefined,
   geo: place.lat != null ? { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } : undefined,
 };
@@ -114,7 +114,7 @@ const features = place.facts.filter((f) => f.group !== "occasion");
   {(place.address || place.serviceAreas.length > 0 || place.basedIn) && (
     <section class="section">
       <h2>Where</h2>
-      {place.address && <p>{[place.address, place.suburb?.name, `ACT ${place.postcode}`.trim()].filter(Boolean).join(', ')}</p>}
+      {place.address && <p>{[place.address, place.suburb?.name, `${place.state || 'ACT'} ${place.postcode}`.trim()].filter(Boolean).join(', ')}</p>}
       {!place.address && place.locationType === 'physical' && place.suburb && <p>{place.suburb.name}. The street address isn't shown.</p>}
       {place.basedIn && <p class="muted">Based in {place.basedIn}.</p>}
       {place.serviceAreas.length > 0 && (

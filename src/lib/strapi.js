@@ -98,6 +98,7 @@ export function shapePlace(p) {
     centre: loc?.in_centre && loc?.centre ? { slug: loc.centre.slug, name: loc.centre.name } : null,
     address: showAddress ? (loc?.public_address ?? '') : '',
     postcode: loc?.postcode ?? '',
+    state: loc?.state || 'ACT',
     lat: showAddress && loc?.lat != null ? Number(loc.lat) : null,
     lng: showAddress && loc?.lng != null ? Number(loc.lng) : null,
     serviceAreas: (p.service_areas ?? []).filter((a) => a.suburb).map((a) => ({ slug: a.suburb.slug, name: a.suburb.name })),

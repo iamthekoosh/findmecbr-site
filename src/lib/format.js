@@ -64,7 +64,7 @@ export function orderFacts(facts) {
 // A maps hand-off for the Directions button. Uses coordinates when the address is public, else the suburb.
 export function directionsUrl(place) {
   if (place.lat != null && place.lng != null) return `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
-  const where = [place.address, place.suburb?.name, 'ACT'].filter(Boolean).join(', ');
+  const where = [place.address, place.suburb?.name, place.state || 'ACT'].filter(Boolean).join(', ');
   return where ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(where)}` : '';
 }
 
