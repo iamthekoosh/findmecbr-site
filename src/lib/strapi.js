@@ -115,14 +115,10 @@ export const SOCIAL_PLATFORMS = {
 };
 const PLATFORM_ORDER = Object.keys(SOCIAL_PLATFORMS);
 
-// A place's social media pages, https only, in platform order. The old single
-// Facebook field still counts until every place has moved to Social media.
+// A place's social media pages, https only, in platform order.
 export function shapeSocials(p) {
   const links = (p.social_links ?? []).filter((l) => SOCIAL_PLATFORMS[l.platform] && /^https:\/\//.test(l.url ?? ''))
     .map((l) => ({ platform: l.platform, url: l.url, handle: l.handle ?? '', ...SOCIAL_PLATFORMS[l.platform] }));
-  if (/^https:\/\//.test(p.facebook_url ?? '') && !links.some((l) => l.platform === 'facebook')) {
-    links.push({ platform: 'facebook', url: p.facebook_url, handle: '', ...SOCIAL_PLATFORMS.facebook });
-  }
   return links.sort((a, b) => PLATFORM_ORDER.indexOf(a.platform) - PLATFORM_ORDER.indexOf(b.platform));
 }
 

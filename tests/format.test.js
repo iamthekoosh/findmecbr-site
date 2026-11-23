@@ -141,11 +141,11 @@ test('a child is hidden from a summary list when its parent is on the same page'
   assert.deepEqual(hideListedChildren([clinic], [suite, clinic]).map((p) => p.slug), [], 'parent elsewhere on the same page');
 });
 
-test('social media links: https only, in platform order, old Facebook field still shown', async () => {
+test('social media links: https only, in platform order', async () => {
   const { shapeSocials } = await import('../src/lib/strapi.js');
   const s = shapeSocials({
-    facebook_url: 'https://www.facebook.com/old',
     social_links: [
+      { platform: 'facebook', url: 'https://www.facebook.com/a' },
       { platform: 'tiktok', url: 'https://www.tiktok.com/@a' },
       { platform: 'instagram', url: 'https://www.instagram.com/a', handle: '@a' },
       { platform: 'youtube', url: 'http://youtube.com/a' },
@@ -155,6 +155,4 @@ test('social media links: https only, in platform order, old Facebook field stil
   assert.deepEqual(s.map((l) => l.platform), ['facebook', 'instagram', 'tiktok']);
   assert.equal(s[1].handle, '@a');
   assert.equal(s[2].icon, 'music-2');
-  const own = shapeSocials({ facebook_url: 'https://www.facebook.com/old', social_links: [{ platform: 'facebook', url: 'https://www.facebook.com/new' }] });
-  assert.deepEqual(own.map((l) => l.url), ['https://www.facebook.com/new'], 'Social media wins over the old field');
 });
