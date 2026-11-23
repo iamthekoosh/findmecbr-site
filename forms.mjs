@@ -69,9 +69,17 @@ function reply(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
+// Who sent the form, for the rate limit. Visitors come through Cloudflare, which puts their real address in
+// CF-Connecting-IP. The server's firewall only lets Cloudflare in on 80 and 443, so that header can be trusted.
+// Without it (local runs), fall back to X-Forwarded-For, then the connection itself.
+export function visitorOf(req) {
+  const h = req.headers ?? {};
+  return String(h['cf-connecting-ip'] ?? h['x-forwarded-for'] ?? req.socket?.remoteAddress ?? '').split(',')[0].trim();
+}
+
 export function handleForm(req, res, liveDir) {
   const kind = req.url.split('?')[0].split('/').pop();
-  const visitor = String(req.headers['x-forwarded-for'] ?? req.socket.remoteAddress ?? '').split(',')[0].trim();
+  const visitor = visitorOf(req);
   let size = 0; const chunks = [];
   req.on('data', (c) => { size += c.length; if (size > MAX_BYTES) req.destroy(); else chunks.push(c); });
   req.on('end', async () => {

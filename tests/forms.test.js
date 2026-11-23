@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { prepare, rateLimited } from '../forms.mjs';
+import { prepare, rateLimited, visitorOf } from '../forms.mjs';
 
 test('a report needs words, and a valid email if one is given', () => {
   assert.ok(prepare('report', { what: '' }).errors.what);
@@ -36,4 +36,11 @@ test('five submissions per visitor every ten minutes', () => {
   assert.equal(rateLimited('v1', t + 10), true);
   assert.equal(rateLimited('v2', t + 10), false, 'other visitors are not affected');
   assert.equal(rateLimited('v1', t + 11 * 60 * 1000), false, 'allowed again after the window');
+});
+
+test('the visitor is the address Cloudflare reports, not the Cloudflare edge', () => {
+  const edge = '172.68.10.20';
+  assert.equal(visitorOf({ headers: { 'cf-connecting-ip': '203.0.113.7', 'x-forwarded-for': edge }, socket: { remoteAddress: '10.0.1.5' } }), '203.0.113.7');
+  assert.equal(visitorOf({ headers: { 'x-forwarded-for': '198.51.100.4, 172.68.10.20' }, socket: { remoteAddress: '10.0.1.5' } }), '198.51.100.4');
+  assert.equal(visitorOf({ headers: {}, socket: { remoteAddress: '127.0.0.1' } }), '127.0.0.1');
 });
