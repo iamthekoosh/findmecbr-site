@@ -58,3 +58,20 @@ test('a synonym for a tile finds places that have it, not unconfirmed ones', () 
   assert.equal(parseQuery('beer', site).has, 'liquor');
   assert.deepEqual(search({ q: 'beer' }, site).results.map((r) => r.slug), ['b-cafe']);
 });
+
+test('near me puts the closest places first and leaves out far ones', () => {
+  // Standing in Rivett: B Cafe is next door, A Cafe is about 2.2 km away.
+  const origin = { lat: -35.346, lng: 149.038, suburb: 'rivett' };
+  const r = search({ cat: 'cafe', near: '1' }, site, { origin });
+  assert.equal(r.cond.radius, 5);
+  assert.deepEqual(r.results.map((p) => p.slug), ['b-cafe', 'a-cafe']);
+  assert.deepEqual(search({ cat: 'cafe', near: '1', radius: '2' }, site, { origin }).results.map((p) => p.slug), ['b-cafe']);
+  const far = { lat: -35.2, lng: 149.1, suburb: 'rivett' };
+  assert.deepEqual(search({ cat: 'cafe', near: '1' }, site, { origin: far }).results, []);
+  assert.deepEqual(search({ cat: 'cafe', near: '1', radius: 'any' }, site, { origin: far }).results.map((p) => p.slug), ['a-cafe', 'b-cafe']);
+});
+
+test('near me lists services that come to you after places with a distance', () => {
+  const origin = { lat: -35.346, lng: 149.038, suburb: 'rivett' };
+  assert.deepEqual(search({ near: '1' }, site, { origin }).results.map((p) => p.slug), ['b-cafe', 'a-cafe', 'spark']);
+});

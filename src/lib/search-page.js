@@ -1,6 +1,6 @@
 // The search results page, rendered in the browser from /data/site.json.
 // Filters are chips (buttons). Results use the same card as the rest of the site.
-import { search } from './search.js';
+import { search, NEAR_RADII } from './search.js';
 import icons from './icons.json';
 
 const PAGE = 10;
@@ -85,11 +85,17 @@ function chips(params, cond, site) {
   }
   const suburbOpts = [...groups].sort(([a], [b]) => a.localeCompare(b)).map(([d, subs]) => `<optgroup label="${esc(d)}">${
     subs.map((s) => `<option value="${esc(s.slug)}"${cond.suburb === s.slug ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</optgroup>`).join('');
+  // How far, shown only with Near me.
+  const radii = cond.near ? `<div class="locrow wrap" role="group" aria-label="How far">${
+    [...NEAR_RADII.map((km) => [String(km), `${km} km`]), ['any', 'Any']].map(([v, label]) => {
+      const on = v === 'any' ? cond.radius == null : cond.radius === Number(v);
+      return `<a class="chip" role="button" aria-pressed="${on}" href="${link(params, { radius: v })}">${label}</a>`;
+    }).join('')}</div>` : '';
   return `<div class="locrow">
       <button class="chip" type="button" id="near-me" aria-pressed="${!!cond.near}">${ic('locate')}Near me</button>
       ${chip('open', 'clock', 'Open now')}
       <select id="suburb-pick" aria-label="Suburb"><option value="">Suburb</option>${suburbOpts}</select>
-    </div>`;
+    </div>${radii}`;
 }
 
 function noResults(params, cond, site) {
@@ -104,6 +110,10 @@ function noResults(params, cond, site) {
     const name = site.suburbs.find((s) => s.slug === cond.suburb)?.name ?? '';
     const q = params.q ? params.q.replace(new RegExp(`\\b(in|near|servicing|around)?\\s*${name}\\b`, 'i'), ' ').replace(/\s+/g, ' ').trim() : params.q;
     opts.push(`<a class="btn btn-row" href="${link(params, { suburb: null, q })}">Search all suburbs</a>`);
+  }
+  if (cond.near && cond.radius != null) {
+    const wider = NEAR_RADII.find((km) => km > cond.radius);
+    opts.push(`<a class="btn btn-row" href="${link(params, { radius: wider ?? 'any' })}">${wider ? `Look within ${wider} km` : 'Look at any distance'}</a>`);
   }
   if (cond.occ?.includes(',')) opts.push(`<a class="btn btn-row" href="${link(params, { occ: cond.occ.split(',')[0] })}">Try fewer ideas</a>`);
   return `<div class="notice">
@@ -136,15 +146,20 @@ export async function initSearch() {
     <div class="stack">${results.slice(0, shown).map((p) => card(p, site, distanceTo(p))).join('')}</div>
     ${results.length > shown ? `<a class="btn btn-row" href="${link(params, { more: '1' })}">Show all ${results.length}</a>` : ''}`;
 
-  document.getElementById('suburb-pick')?.addEventListener('change', (e) => { location.href = link(params, { suburb: e.target.value || null, near: null }); });
-  document.getElementById('near-me')?.addEventListener('click', () => {
-    if (params.near) { location.href = link(params, { near: null }); return; }
-    if (!navigator.geolocation) return;
+  const locate = () => {
+    if (!navigator.geolocation) { alert('This browser can\'t share your location. You can pick a suburb instead.'); return; }
     navigator.geolocation.getCurrentPosition((pos) => {
       const o = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       o.suburb = nearestSuburb(site, o.lat, o.lng);
       try { sessionStorage.setItem('fmc-origin', JSON.stringify(o)); } catch {}
       location.href = link(params, { near: true, suburb: null });
     }, () => { alert('We couldn\'t get your location. You can pick a suburb instead.'); }, { maximumAge: 300000, timeout: 10000 });
+  };
+  document.getElementById('suburb-pick')?.addEventListener('change', (e) => { location.href = link(params, { suburb: e.target.value || null, near: null, radius: null }); });
+  document.getElementById('near-me')?.addEventListener('click', () => {
+    if (cond.near) { location.href = link(params, { near: null, radius: null }); return; }
+    locate();
   });
+  // A Near me link opened in a new tab has no saved location yet, so ask for it.
+  if (params.near && !origin) locate();
 }

@@ -45,6 +45,7 @@ label{display:grid;gap:4px;font-weight:600}
 .err{color:var(--color-error);font-size:15px;font-weight:600}
 
 .locrow{display:flex;gap:6px;align-items:stretch}
+.locrow.wrap{flex-wrap:wrap}
 .locrow select{flex:1;min-width:0;padding:8px 6px 8px 10px}
 .locrow .chip{flex:none;white-space:nowrap;padding:6px 10px}
 @media (max-width:359px){.locrow .chip .ic{display:none}}

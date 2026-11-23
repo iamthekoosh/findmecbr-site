@@ -4,6 +4,9 @@
 
 export const WEIGHTS = { match: 0.4, proximity: 0.25, features: 0.2, quality: 0.15 }; // Illustrative, needs testing.
 export const PROXIMITY_KM = 10;
+// Near me shows places within this distance unless a radius is picked. "any" turns the limit off.
+export const NEAR_KM = 5;
+export const NEAR_RADII = [2, 5, 10];
 
 // Feature tags the hard filters look for, by slug in Strapi.
 export const FILTER_TAGS = { step: 'step-free-entry', dogs: 'dogs-welcome', free: 'free-entry' };
@@ -82,7 +85,7 @@ export function search(params, site, opts = {}) {
     cat: params.cat || parsed.cat || null,
     occ: params.occ || parsed.occ || null,
     suburb: params.suburb || parsed.suburb || null,
-    radius: params.radius ? Number(params.radius) : parsed.radius || null,
+    radius: params.radius === 'any' ? null : params.radius ? Number(params.radius) || null : parsed.radius || null,
     step: !!(params.step || parsed.step),
     open: !!(params.open || parsed.open),
     dogs: !!(params.dogs || parsed.dogs),
@@ -93,6 +96,7 @@ export function search(params, site, opts = {}) {
   };
   if (cond.cat && !cats[cond.cat]) cond.cat = null;
   if (cond.suburb && !suburbs[cond.suburb]) cond.suburb = null;
+  if (cond.near && !cond.radius && params.radius !== 'any') cond.radius = NEAR_KM;
 
   const origin = cond.near ? opts.origin : cond.suburb ? { lat: suburbs[cond.suburb].lat, lng: suburbs[cond.suburb].lng, suburb: cond.suburb } : null;
   const isService = cond.cat && cats[cond.cat].kind === 'service';
@@ -134,6 +138,13 @@ export function search(params, site, opts = {}) {
     const proximity = d == null ? 0 : Math.max(0, 1 - d / PROXIMITY_KM);
     return WEIGHTS.match * match + WEIGHTS.proximity * proximity + WEIGHTS.features * confirmed + WEIGHTS.quality * filled;
   };
-  const results = [...eligible].sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name));
+  const byScore = (a, b) => score(b) - score(a) || a.name.localeCompare(b.name);
+  // Near me: closest first. Services that come to you have no distance, so they follow, best first.
+  const byDistance = (a, b) => {
+    const da = distanceTo(a), db = distanceTo(b);
+    if (da == null || db == null) return (da == null) - (db == null) || byScore(a, b);
+    return da - db || byScore(a, b);
+  };
+  const results = [...eligible].sort(cond.near ? byDistance : byScore);
   return { results, cond, origin, distanceTo };
 }
