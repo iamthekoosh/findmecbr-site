@@ -102,6 +102,30 @@ export function shapeFacts(facts) {
   return (facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, subtitle: f.subtitle ?? '', icon: f.tag.icon ?? null, section: f.tag.section ?? null, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false, evidence: f.evidence, checkedAt: f.checked_at }));
 }
 
+// Social media platforms in the order their buttons show, with a name and a Lucide icon.
+// Lucide has no TikTok logo, so TikTok uses a music note.
+export const SOCIAL_PLATFORMS = {
+  facebook: { name: 'Facebook', icon: 'facebook' },
+  instagram: { name: 'Instagram', icon: 'instagram' },
+  tiktok: { name: 'TikTok', icon: 'music-2' },
+  youtube: { name: 'YouTube', icon: 'youtube' },
+  linkedin: { name: 'LinkedIn', icon: 'linkedin' },
+  x: { name: 'X', icon: 'at-sign' },
+  other: { name: 'Other page', icon: 'external-link' },
+};
+const PLATFORM_ORDER = Object.keys(SOCIAL_PLATFORMS);
+
+// A place's social media pages, https only, in platform order. The old single
+// Facebook field still counts until every place has moved to Social media.
+export function shapeSocials(p) {
+  const links = (p.social_links ?? []).filter((l) => SOCIAL_PLATFORMS[l.platform] && /^https:\/\//.test(l.url ?? ''))
+    .map((l) => ({ platform: l.platform, url: l.url, handle: l.handle ?? '', ...SOCIAL_PLATFORMS[l.platform] }));
+  if (/^https:\/\//.test(p.facebook_url ?? '') && !links.some((l) => l.platform === 'facebook')) {
+    links.push({ platform: 'facebook', url: p.facebook_url, handle: '', ...SOCIAL_PLATFORMS.facebook });
+  }
+  return links.sort((a, b) => PLATFORM_ORDER.indexOf(a.platform) - PLATFORM_ORDER.indexOf(b.platform));
+}
+
 // Shapes one place for the pages. Exported for tests.
 export function shapePlace(p) {
   const loc = p.location ?? null;
@@ -125,7 +149,7 @@ export function shapePlace(p) {
     phone: p.phone ?? '',
     email: p.email ?? '',
     website: p.website_url ?? '',
-    facebook: p.facebook_url ?? '',
+    socials: shapeSocials(p),
     checkedAt: p.checked_at ?? null,
     // When the listing was last changed in Strapi, as a Sydney date.
     updatedAt: sydneyDate(p.updatedAt) ?? p.checked_at ?? null,
@@ -188,6 +212,7 @@ export async function loadSite() {
         opening_hours: true,
         hours_exceptions: true,
         action_tiles: true,
+        social_links: true,
         menu: { populate: ['images'] },
         logo: { populate: ['file'] },
         photos: { populate: ['file'] },

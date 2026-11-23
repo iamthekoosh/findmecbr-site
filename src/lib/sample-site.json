@@ -270,6 +270,7 @@
    "is_health": false,
    "phone": "02 5550 0101",
    "website_url": "https://example.com",
+   "social_links": [{ "platform": "facebook", "url": "https://www.facebook.com/example" }, { "platform": "instagram", "url": "https://www.instagram.com/example", "handle": "@example.cafe" }, { "platform": "tiktok", "url": "https://www.tiktok.com/@example" }],
    "checked_at": "2026-11-19",
    "primary_category": {
     "slug": "cafe",

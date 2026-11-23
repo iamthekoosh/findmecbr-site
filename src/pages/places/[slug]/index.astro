@@ -99,6 +99,19 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
       {place.menu?.kind === 'images' && <a class="btn" href={`/places/${place.slug}/menu/`}><Icon name="book-open" />Menu</a>}
     </div>
   )}
+  {!isContainer && place.socials.length > 0 && (
+    <section class="socials" aria-label="Social media">
+      <h2 class="socials-head">Social media</h2>
+      <div class="social-grid">
+        {place.socials.map((s) => (
+          <a class="btn" href={s.url} rel="noopener">
+            <Icon name={s.icon} />{s.name}
+            {s.handle && <small class="handle">{s.handle}</small>}
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
   {place.menu?.kind === 'link' && place.menu.validAsOf && <p class="valid-as-of"><Icon name="calendar" />Menu valid as of: <b>{shortDate(place.menu.validAsOf)}</b></p>}
 
   {place.ourTake && (
