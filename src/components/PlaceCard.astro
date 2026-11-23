@@ -1,14 +1,11 @@
 ---
-// A place in a list. The whole head is a tile to the place page. Utility buttons sit below.
+// A place in a list. The whole head is a tile to the place page.
+// Lists stay short: no action buttons or checked date here. Both are on the place page.
 import Icon from './Icon.astro';
 import StatusTag from './StatusTag.astro';
-import { shortDate, directionsUrl, telUrl } from '../lib/format.js';
 const { place, showCentre = true, showChildren = true } = Astro.props;
 const kids = showChildren ? (place.children ?? []) : [];
-// A parent place is just a container, so its card has no website button.
-const website = place.children?.length ? '' : place.website;
 const where = [place.parent?.name ?? (place.centre && showCentre ? place.centre.name : null), place.suburb?.name].filter(Boolean).join(', ');
-const directions = place.locationType === 'physical' ? directionsUrl(place) : '';
 const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 ---
 <article class="card">
@@ -36,12 +33,4 @@ const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slic
       </ul>
     </div>
   )}
-  {(place.phone || directions || website) && (
-    <div class="utils">
-      {directions && <a class="btn" href={directions} rel="noopener"><Icon name="navigation" />Directions</a>}
-      {place.phone && <a class="btn" href={telUrl(place.phone)}><Icon name="phone" />Call</a>}
-      {website && <a class="btn" href={website} rel="noopener"><Icon name="globe" />Website</a>}
-    </div>
-  )}
-  {place.checkedAt && <p class="stamp">Checked {shortDate(place.checkedAt)}</p>}
 </article>

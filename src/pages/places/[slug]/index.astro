@@ -3,6 +3,7 @@ import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import StatusTag from '../../../components/StatusTag.astro';
 import FactTile from '../../../components/FactTile.astro';
+import FactKey from '../../../components/FactKey.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import PhotoCarousel from '../../../components/PhotoCarousel.astro';
 import LiveStatus from '../../../components/LiveStatus.astro';
@@ -138,7 +139,7 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
     <section class="section">
       <h2>{set.heading}</h2>
       <ul class="fact-tiles">{set.tiles.map((f) => <FactTile fact={f} />)}</ul>
-      <a class="foot-key" href="/how-we-check/">What these mean</a>
+      <FactKey />
     </section>
   ))}
 
@@ -146,7 +147,7 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
     <section class="section">
       <h2>What we know</h2>
       <ul class="fact-tiles">{orderFacts(features).map((f) => <FactTile fact={f} />)}</ul>
-      <a class="foot-key" href="/how-we-check/">What these mean</a>
+      <FactKey />
     </section>
   )}
 

@@ -7,8 +7,6 @@ const PAGE = 10;
 const KEYS = ['q', 'cat', 'occ', 'suburb', 'radius', 'step', 'open', 'dogs', 'free', 'has', 'near', 'more'];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const ic = (name, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${icons[name] ?? icons.store}</svg>`;
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const shortDate = (iso) => { if (!iso) return ''; const [y, m, d] = iso.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
 
 function readParams() {
   const u = new URLSearchParams(location.search);
@@ -56,18 +54,11 @@ function card(p, site, km) {
   const cat = site.categories.find((c) => c.slug === p.cat);
   const where = [p.centre, p.subName].filter(Boolean).join(', ');
   const initials = p.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
-  const dir = p.type === 'physical' && p.lat != null ? `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}` : '';
-  const utils = [
-    dir && `<a class="btn" href="${dir}" rel="noopener">${ic('navigation')}Directions</a>`,
-    p.phone && `<a class="btn" href="tel:${esc(p.phone.replace(/[^\d+]/g, ''))}">${ic('phone')}Call</a>`,
-    p.website && `<a class="btn" href="${esc(p.website)}" rel="noopener">${ic('globe')}Website</a>`,
-  ].filter(Boolean).join('');
+  // No action buttons or checked date in results, so the list stays short. Both are on the place page.
   return `<article class="card">
     <a class="card-head" href="/places/${esc(p.slug)}/"><span class="card-main"><span class="logo-slot">${p.logo ? `<img src="${esc(p.logo)}" alt="" loading="lazy">` : esc(initials)}</span>
       <span><span class="name">${esc(p.name)}</span><span class="sub">${esc([cat?.label, where, km != null ? `${km.toFixed(1)} km` : null].filter(Boolean).join(' · '))}</span></span></span>${ic('chevron-right')}</a>
     ${p.short ? `<p>${esc(p.short)}</p>` : ''}
-    ${utils ? `<div class="utils">${utils}</div>` : ''}
-    ${p.checked ? `<p class="stamp">Checked ${shortDate(p.checked)}</p>` : ''}
   </article>`;
 }
 

@@ -1,5 +1,6 @@
 ---
-// A fact about a place as a tile: icon on top, the fact, an optional subtitle, and a colour-coded tag for how we know it.
+// A fact about a place as a compact tile: icon, the fact, an optional subtitle, and a small circle for how we know it
+// (✓ Verified, i Info from online, ? Unconfirmed). The status is also in hidden text for screen readers.
 import Icon from './Icon.astro';
 import { hasIcon } from '../lib/icon-set.js';
 import { evidenceBadge } from '../lib/format.js';
@@ -8,7 +9,10 @@ const b = evidenceBadge(fact, hasIcon);
 ---
 <li class={`fact-tile ${b.cls}`}>
   <Icon name={b.icon} />
-  <span class="fact-label">{b.label}</span>
-  {b.subtitle && <span class="fact-sub">{b.subtitle}</span>}
-  <span class="ev-tag">{b.status}</span>
+  <span class="fact-text">
+    <span class="fact-label">{b.label}</span>
+    {b.subtitle && <span class="fact-sub">{b.subtitle}</span>}
+  </span>
+  <span class="ev-dot" title={b.status} aria-hidden="true"></span>
+  <span class="sr-only">{b.status}</span>
 </li>
