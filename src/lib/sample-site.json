@@ -173,7 +173,58 @@
    "intro": "",
    "body": "",
    "live": false,
-   "image": null
+   "image": null,
+   "facts": [
+    {
+     "slug": "off-street-parking",
+     "label": "Off-street parking",
+     "subtitle": "2 spaces behind the shop",
+     "icon": "square-parking",
+     "section": "getting_there",
+     "group": "feature",
+     "question": null,
+     "active": true,
+     "evidence": "confirmed",
+     "checkedAt": "2026-11-19"
+    },
+    {
+     "slug": "near-bus-stop",
+     "label": "Near a bus stop",
+     "subtitle": "",
+     "icon": "bus",
+     "section": "nearby",
+     "group": "feature",
+     "question": null,
+     "active": true,
+     "evidence": "confirmed",
+     "checkedAt": "2026-11-19"
+    },
+    {
+     "slug": "step-free-entry",
+     "label": "Step-free entry",
+     "subtitle": "",
+     "icon": "accessibility",
+     "section": "access",
+     "group": "feature",
+     "question": null,
+     "active": true,
+     "evidence": "confirmed",
+     "checkedAt": "2026-11-19"
+    },
+    {
+     "slug": "accessible-toilet",
+     "label": "Accessible toilet",
+     "subtitle": "",
+     "icon": "toilet",
+     "section": "access",
+     "group": "feature",
+     "question": null,
+     "active": true,
+     "evidence": "unknown",
+     "checkedAt": null
+    }
+   ],
+   "tileSetChoice": []
   },
   {
    "slug": "coombs-shops",

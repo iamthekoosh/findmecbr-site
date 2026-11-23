@@ -97,6 +97,11 @@ export function sydneyDate(ts) {
   return Number.isNaN(d.getTime()) ? null : d.toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
 }
 
+// Tiles (facts) on a place or centre: each one's tag and how we know it.
+export function shapeFacts(facts) {
+  return (facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, subtitle: f.subtitle ?? '', icon: f.tag.icon ?? null, section: f.tag.section ?? null, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false, evidence: f.evidence, checkedAt: f.checked_at }));
+}
+
 // Shapes one place for the pages. Exported for tests.
 export function shapePlace(p) {
   const loc = p.location ?? null;
@@ -134,7 +139,7 @@ export function shapePlace(p) {
     lat: showAddress && loc?.lat != null ? Number(loc.lat) : null,
     lng: showAddress && loc?.lng != null ? Number(loc.lng) : null,
     serviceAreas: (p.service_areas ?? []).filter((a) => a.suburb).map((a) => ({ slug: a.suburb.slug, name: a.suburb.name })),
-    facts: (p.facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, subtitle: f.subtitle ?? '', icon: f.tag.icon ?? null, section: f.tag.section ?? null, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false, evidence: f.evidence, checkedAt: f.checked_at })),
+    facts: shapeFacts(p.facts),
     hours: (p.opening_hours ?? [])
       .map((h) => ({ day: WEEKDAYS.indexOf(h.weekday), opens: String(h.opens_at).slice(0, 5), closes: String(h.closes_at).slice(0, 5) }))
       .sort((a, b) => a.day - b.day || a.opens.localeCompare(b.opens)),
@@ -167,7 +172,7 @@ export async function loadSite() {
   const [districts, suburbs, centres, categories, places, tags, synonyms, tileSets] = await Promise.all([
     getAll('districts', { sort: 'name', populate: { hero_image: { populate: ['file'] }, photos: { populate: ['file'] } } }),
     getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, stats: true, hero_image: { populate: ['file'] } } }),
-    getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] } } }),
+    getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] }, facts: { populate: ['tag'] }, tile_sets: true } }),
     getAll('categories', { sort: 'label' }),
     getAll('places', {
       status: 'published',
@@ -208,6 +213,7 @@ export async function loadSite() {
     centres: centres.map((c) => ({
       slug: c.slug, name: c.name, kind: c.kind, suburb: c.suburb ? { slug: c.suburb.slug, name: c.suburb.name } : null,
       address: c.public_address ?? '', intro: c.intro ?? '', body: c.body ?? '', live: !!c.page_live, image: image(c.hero_image),
+      facts: shapeFacts(c.facts), tileSetChoice: (c.tile_sets ?? []).map((s) => s.name),
     })),
     categories: categories.map((c) => ({ slug: c.slug, label: c.label, plural: c.plural, kind: c.kind, icon: c.icon, active: !!c.active })),
     places: shaped,
@@ -228,6 +234,7 @@ function finish(site) {
   for (const p of site.places) p.children = site.places.filter((c) => c.parent?.slug === p.slug);
   // Each place's tile sections, from the tile sets in Strapi.
   for (const p of site.places) p.tileSets = tileSetsFor(p, site.tileSets ?? []);
+  for (const c of site.centres) c.tileSets = tileSetsFor({ facts: c.facts ?? [], tileSetChoice: c.tileSetChoice ?? [] }, site.tileSets ?? []);
   for (const s of site.suburbs) s.neighbours = s.neighbours.filter((n) => paged.has(n.slug));
   for (const p of site.places) p.serviceAreas = p.serviceAreas.map((a) => ({ ...a, hasPage: paged.has(a.slug) }));
   // A centre's district comes from its suburb.

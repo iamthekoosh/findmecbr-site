@@ -5,7 +5,8 @@ import Icon from '../../../components/Icon.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import { loadSite, byCategory } from '../../../lib/strapi.js';
 import Crumbs from '../../../components/Crumbs.astro';
-import { typeOf, directionsUrl, hideListedChildren } from '../../../lib/format.js';
+import FactTile from '../../../components/FactTile.astro';
+import { typeOf, directionsUrl, hideListedChildren, orderFacts } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -22,6 +23,10 @@ const crumbs = centre.district
   ? [{ label: centre.district.name, href: `/districts/${centre.district.slug}/` }, { label: type.label, href: `/districts/${centre.district.slug}/${type.slug}/` }]
   : [];
 const desc = centre.intro || `Every checked place in ${centre.name}${centre.suburb ? `, ${centre.suburb.name}` : ''}.`;
+// Tiles: those in a tile set show under its heading; the rest under "What we know".
+const tileSets = centre.tileSets ?? [];
+const inSets = new Set(tileSets.flatMap((s) => s.tiles.map((t) => t.slug)));
+const features = (centre.facts ?? []).filter((f) => !inSets.has(f.slug));
 const directions = directionsUrl({ address: centre.address || centre.name, suburb: centre.suburb });
 ---
 <Base title={centre.name} description={desc} noindex={!centre.live || inside.length === 0}>
@@ -33,6 +38,22 @@ const directions = directionsUrl({ address: centre.address || centre.name, subur
   <div class="utils">
     <a class="btn" href={directions} rel="noopener"><Icon name="navigation" />Directions</a>
   </div>
+
+  {tileSets.map((set) => (
+    <section class="section">
+      <h2>{set.heading}</h2>
+      <ul class="fact-tiles">{set.tiles.map((f) => <FactTile fact={f} />)}</ul>
+      <a class="foot-key" href="/how-we-check/">What these mean</a>
+    </section>
+  ))}
+
+  {features.length > 0 && (
+    <section class="section">
+      <h2>What we know</h2>
+      <ul class="fact-tiles">{orderFacts(features).map((f) => <FactTile fact={f} />)}</ul>
+      <a class="foot-key" href="/how-we-check/">What these mean</a>
+    </section>
+  )}
 
   <section class="section">
     <h2>Directory</h2>
