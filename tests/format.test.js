@@ -156,3 +156,27 @@ test('social media links: https only, in platform order', async () => {
   assert.equal(s[1].handle, '@a');
   assert.equal(s[2].icon, 'music-2');
 });
+
+test('a place inside another place, or in a centre, inherits its tiles', async () => {
+  const { inheritFacts, evidenceBadge } = await import('../src/lib/format.js');
+  const f = (slug, evidence, extra = {}) => ({ slug, label: slug, evidence, group: 'feature', ...extra });
+  const centre = { slug: 'cc', name: 'Cooleman Court', facts: [f('parking', 'confirmed'), f('toilets', 'business_says')], tileSetChoice: ['Centre'] };
+  const suite = { slug: 'suite', name: 'Consulting Suite', parent: null, centre: { slug: 'cc' }, facts: [f('lift', 'confirmed')], tileSetChoice: [] };
+  const clinic = { slug: 'clinic', name: 'Clinic', parent: { slug: 'suite' }, centre: null, facts: [f('parking', 'unknown'), f('toilets', 'confirmed', { subtitle: 'Ours' })], tileSetChoice: ['Clinic'] };
+  const loner = { slug: 'loner', name: 'Loner', parent: null, centre: null, facts: [f('wifi', 'confirmed')], tileSetChoice: [] };
+  inheritFacts([clinic, suite, loner], [centre]);
+  const by = (p) => Object.fromEntries(p.facts.map((x) => [x.slug, [x.evidence, x.from ?? null]]));
+  assert.deepEqual(by(suite), { lift: ['confirmed', null], parking: ['confirmed', 'Cooleman Court'], toilets: ['business_says', 'Cooleman Court'] });
+  assert.deepEqual(by(clinic), { parking: ['confirmed', 'Cooleman Court'], toilets: ['confirmed', null], lift: ['confirmed', 'Consulting Suite'] },
+    'own tile wins unless it is Unconfirmed; inherits through the parent up to its centre');
+  assert.deepEqual(clinic.tileSetChoice, ['Clinic', 'Centre'], 'tile sets come along too');
+  assert.deepEqual(by(loner), { wifi: ['confirmed', null] }, 'a place on its own is unchanged');
+  assert.equal(evidenceBadge(clinic.facts.find((x) => x.slug === 'lift')).subtitle, 'From Consulting Suite');
+  assert.equal(evidenceBadge(clinic.facts.find((x) => x.slug === 'toilets')).subtitle, 'Ours');
+  inheritFacts([clinic, suite, loner], [centre]);
+  assert.equal(clinic.facts.length, 3, 'running twice adds nothing');
+  const a = { slug: 'a', name: 'A', parent: { slug: 'b' }, facts: [f('x', 'confirmed')] };
+  const b = { slug: 'b', name: 'B', parent: { slug: 'a' }, facts: [f('y', 'confirmed')] };
+  inheritFacts([a, b]);
+  assert.deepEqual(a.facts.map((x) => x.slug).sort(), ['x', 'y'], 'a loop of parents does not hang');
+});

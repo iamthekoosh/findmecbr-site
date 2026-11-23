@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { shapeTileSet, tileSetsFor } from './format.js';
+import { shapeTileSet, tileSetsFor, inheritFacts } from './format.js';
 
 const BASE = (process.env.STRAPI_URL || 'http://localhost:1337').replace(/\/$/, '');
 
@@ -253,6 +253,8 @@ function finish(site) {
   const bySlug = new Map(site.places.map((p) => [p.slug, p]));
   for (const p of site.places) if (p.parent && !bySlug.has(p.parent.slug)) p.parent = null;
   for (const p of site.places) p.children = site.places.filter((c) => c.parent?.slug === p.slug);
+  // A place inside another place, or in a centre, inherits its tiles (only published parents count).
+  inheritFacts(site.places, site.centres);
   // Each place's tile sections, from the tile sets in Strapi.
   for (const p of site.places) p.tileSets = tileSetsFor(p, site.tileSets ?? []);
   for (const c of site.centres) c.tileSets = tileSetsFor({ facts: c.facts ?? [], tileSetChoice: c.tileSetChoice ?? [] }, site.tileSets ?? []);

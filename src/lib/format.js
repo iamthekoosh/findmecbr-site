@@ -53,7 +53,8 @@ export function evidenceBadge(fact, knownIcons = {}) {
   const fallback = { confirmed: 'check', business_says: 'globe' }[fact.evidence] ?? 'circle-help';
   const known = typeof knownIcons === 'function' ? knownIcons(fact.icon) : knownIcons[fact.icon];
   const icon = fact.icon && known ? fact.icon : fallback;
-  return { icon, label: fact.label, subtitle: (fact.subtitle ?? '').trim(), status, cls };
+  const subtitle = (fact.subtitle ?? '').trim() || (fact.from ? `From ${fact.from}` : '');
+  return { icon, label: fact.label, subtitle, status, cls };
 }
 
 // A listing shows its facts as one set of tiles, no headings, in this order: getting there first, occasions ("good for") last.
@@ -109,6 +110,43 @@ export function tileSetsFor(place, sets = []) {
       }).filter(Boolean),
     }))
     .filter((s) => s.tiles.length);
+}
+
+// A place inside another place, or in a centre, inherits that place's tiles (facts) and tile sets.
+// Its own tile wins, unless its own is Unconfirmed and the inherited one is known.
+// Order: the parent place (and its own parents and centre, all the way up), then the place's centre.
+// Inherited tiles carry `from` (the name of the place they came from). Safe to run twice.
+export function inheritFacts(places, centres = []) {
+  const bySlug = new Map(places.map((p) => [p.slug, p]));
+  const centreBySlug = new Map(centres.map((c) => [c.slug, c]));
+  const done = new Map();
+  const resolve = (p, seen) => {
+    if (done.has(p.slug)) return done.get(p.slug);
+    const facts = [...(p.facts ?? [])];
+    const sets = [...(p.tileSetChoice ?? [])];
+    const take = (from, fromFacts, fromSets) => {
+      for (const f of fromFacts) {
+        const i = facts.findIndex((x) => x.slug === f.slug);
+        const inherited = { ...f, from: f.from ?? from };
+        if (i === -1) facts.push(inherited);
+        else if (facts[i].evidence === 'unknown' && f.evidence !== 'unknown') facts[i] = inherited;
+      }
+      for (const s of fromSets) if (!sets.includes(s)) sets.push(s);
+    };
+    const parent = p.parent && bySlug.get(p.parent.slug);
+    if (parent && !seen.has(parent.slug)) {
+      const up = resolve(parent, new Set([...seen, parent.slug]));
+      take(parent.name, up.facts, up.tileSetChoice);
+    }
+    const centre = p.centre && centreBySlug.get(p.centre.slug);
+    if (centre) take(centre.name, centre.facts ?? [], centre.tileSetChoice ?? []);
+    const out = { facts, tileSetChoice: sets };
+    done.set(p.slug, out);
+    return out;
+  };
+  const result = places.map((p) => resolve(p, new Set([p.slug])));
+  places.forEach((p, i) => { p.facts = result[i].facts; p.tileSetChoice = result[i].tileSetChoice; });
+  return places;
 }
 
 // Summary pages show a parent place with the places inside it on its card, so a child is left out
