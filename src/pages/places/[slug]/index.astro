@@ -63,8 +63,8 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
   </p>
 
   {!isContainer && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
-  {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} />}
   {place.short && <p class="lede">{place.short}</p>}
+  {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} />}
 
   {place.parent && (
     <a class="rowtile" href={`/places/${place.parent.slug}/`}>
