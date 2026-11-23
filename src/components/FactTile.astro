@@ -1,10 +1,10 @@
 ---
 // A fact about a place as a tile: icon on top, the fact, an optional subtitle, and a colour-coded tag for how we know it.
 import Icon from './Icon.astro';
-import icons from '../lib/icons.json';
+import { hasIcon } from '../lib/icon-set.js';
 import { evidenceBadge } from '../lib/format.js';
 const { fact } = Astro.props;
-const b = evidenceBadge(fact, icons);
+const b = evidenceBadge(fact, hasIcon);
 ---
 <li class={`fact-tile ${b.cls}`}>
   <Icon name={b.icon} />

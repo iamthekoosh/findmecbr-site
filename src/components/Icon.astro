@@ -1,7 +1,7 @@
 ---
 // A Lucide icon (ISC licence, see /lucide-LICENSE.txt). Decorative, so hidden from screen readers.
-import icons from '../lib/icons.json';
+import { iconBody } from '../lib/icon-set.js';
 const { name, class: cls = '' } = Astro.props;
-const body = icons[name] ?? icons['store'];
+const body = iconBody(name) ?? iconBody('store');
 ---
 <svg class={`ic ${cls}`} viewBox="0 0 24 24" aria-hidden="true" set:html={body} />

@@ -1,9 +1,9 @@
 ---
 // One statistic as a tile: icon, the figure, what it is, and where it came from.
 import Icon from './Icon.astro';
-import icons from '../lib/icons.json';
+import { hasIcon } from '../lib/icon-set.js';
 const { stat } = Astro.props;
-const icon = stat.icon && icons[stat.icon] ? stat.icon : 'chart-no-axes-column';
+const icon = stat.icon && hasIcon(stat.icon) ? stat.icon : 'chart-no-axes-column';
 const source = [stat.source, stat.year].filter(Boolean).join(', ');
 ---
 <li class="stat-tile">

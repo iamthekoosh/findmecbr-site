@@ -55,7 +55,8 @@ npm run build
 | `src/lib/format.js` | Display helpers: hours, evidence tags, tile sets (`tileSetsFor`), hiding children (`hideListedChildren`) |
 | `src/lib/live-hours.js` | The live open status, worked out in the browser |
 | `src/lib/search.js` | Rules-based search: synonyms (including tile synonyms such as "beer"), hard filters and ranking |
-| `src/lib/icons.json` | The Lucide icons the site includes, copied from lucide-static 0.460.0. A tag or category icon must be in here. |
+| `src/lib/icon-set.js` | Draws any Lucide icon (lucide-static 0.460.0) at build time, so any icon name Strapi accepts shows. Strapi checks names against the same version. |
+| `src/lib/icons.json` | The few icons the browser needs for the search page, copied from lucide-static 0.460.0. |
 | `server.mjs`, `forms.mjs` | The production server: serves pages, rebuilds in the background on request or nightly at 3 am, and handles the forms |
 
 ## Running on the server
