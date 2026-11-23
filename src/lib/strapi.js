@@ -90,6 +90,13 @@ export const POST_STATUSES = {
   unverified: { label: 'Unverified', note: 'Not checked yet.' },
 };
 
+// A Strapi timestamp (UTC) as the calendar date in Canberra, "2026-11-22".
+export function sydneyDate(ts) {
+  if (!ts) return null;
+  const d = new Date(ts);
+  return Number.isNaN(d.getTime()) ? null : d.toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+}
+
 // Shapes one place for the pages. Exported for tests.
 export function shapePlace(p) {
   const loc = p.location ?? null;
@@ -115,6 +122,8 @@ export function shapePlace(p) {
     website: p.website_url ?? '',
     facebook: p.facebook_url ?? '',
     checkedAt: p.checked_at ?? null,
+    // When the listing was last changed in Strapi, as a Sydney date.
+    updatedAt: sydneyDate(p.updatedAt) ?? p.checked_at ?? null,
     suburb: loc?.suburb ? { slug: loc.suburb.slug, name: loc.suburb.name } : null,
     // The place this one is inside, such as a building. Its children are worked out from the other places.
     parent: p.parent_place?.slug ? { slug: p.parent_place.slug, name: p.parent_place.name } : null,

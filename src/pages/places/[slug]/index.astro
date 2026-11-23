@@ -54,9 +54,13 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
     <div>
       <p class="kicker">{[place.category?.label, place.suburb?.name].filter(Boolean).join(' · ')}</p>
       <h1>{place.name}</h1>
-      <StatusTag status={place.postStatus} />
     </div>
   </div>
+  <p class="status-line">
+    <span class="status-label">Status:</span>
+    <StatusTag status={place.postStatus} />
+    {place.updatedAt && <span class="status-date">Last updated {shortDate(place.updatedAt)}</span>}
+  </p>
 
   {!isContainer && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
   {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} />}
