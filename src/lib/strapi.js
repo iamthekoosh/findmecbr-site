@@ -160,9 +160,13 @@ export function shapePlace(p) {
     lng: showAddress && loc?.lng != null ? Number(loc.lng) : null,
     serviceAreas: (p.service_areas ?? []).filter((a) => a.suburb).map((a) => ({ slug: a.suburb.slug, name: a.suburb.name })),
     facts: shapeFacts(p.facts),
+    // Open sessions only. A row switched to Closed (open: false) marks that day closed instead.
+    // Rows saved before the switch existed have no value and count as open.
     hours: (p.opening_hours ?? [])
+      .filter((h) => h.open !== false && h.opens_at && h.closes_at)
       .map((h) => ({ day: WEEKDAYS.indexOf(h.weekday), opens: String(h.opens_at).slice(0, 5), closes: String(h.closes_at).slice(0, 5) }))
       .sort((a, b) => a.day - b.day || a.opens.localeCompare(b.opens)),
+    closedDays: [...new Set((p.opening_hours ?? []).filter((h) => h.open === false).map((h) => WEEKDAYS.indexOf(h.weekday)))].sort(),
     exceptions: (p.hours_exceptions ?? []).map((x) => ({ date: x.on_date, closed: x.closed, opens: x.opens_at?.slice(0, 5), closes: x.closes_at?.slice(0, 5), note: x.note ?? '' })),
     actions: (p.action_tiles ?? []).filter((t) => t.active && t.checked_at && /^https:\/\//.test(t.url ?? ''))
       .map((t) => ({ action: t.action, label: t.label, provider: t.provider, url: t.url })),

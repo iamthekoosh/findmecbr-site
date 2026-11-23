@@ -22,16 +22,17 @@ export function clock(hhmm) {
   return m ? `${h12}:${String(m).padStart(2, '0')}${suffix}` : `${h12}${suffix}`;
 }
 
-// One row per weekday, Monday first. Days with no hours say "Hours not confirmed", never "Closed",
-// because no rows means unknown. Returns [] when no hours are recorded at all.
-export function weekHours(hours) {
-  if (!hours?.length) return [];
+// One row per weekday, Monday first. A day switched to Closed in Strapi says "Closed". Other days with
+// no hours say "Hours not confirmed", because no rows means unknown. Returns [] when nothing is recorded.
+// closedDays: day numbers (0 = Sunday) marked closed. Open sessions on the same day win.
+export function weekHours(hours, closedDays = []) {
+  if (!hours?.length && !closedDays.length) return [];
   const order = [1, 2, 3, 4, 5, 6, 0];
   return order.map((day) => {
-    const sessions = hours.filter((h) => h.day === day);
+    const sessions = (hours ?? []).filter((h) => h.day === day);
     return {
       day: DAY_NAMES[day],
-      text: sessions.length ? sessions.map((s) => `${clock(s.opens)} to ${clock(s.closes)}`).join(', ') : 'Hours not confirmed',
+      text: sessions.length ? sessions.map((s) => `${clock(s.opens)} to ${clock(s.closes)}`).join(', ') : closedDays.includes(day) ? 'Closed' : 'Hours not confirmed',
     };
   });
 }

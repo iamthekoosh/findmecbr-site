@@ -197,3 +197,17 @@ test('inherited tiles get their own "At <place>" section and lose the "From" sub
   assert.deepEqual(out.inherited.map((s) => [s.heading, s.tiles.map((t) => t.slug)]), [['At Cooleman Court', ['toilets', 'post-box']], ['At Holder Consulting Suite', ['lift']]]);
   assert.equal(evidenceBadge(out.inherited[0].tiles[0]).subtitle, '');
 });
+
+test('a day switched to Closed shows as Closed, and has no sessions', () => {
+  const p = shapePlace({ ...raw, opening_hours: [
+    { weekday: 'monday', opens_at: '09:00:00.000', closes_at: '17:00:00.000' }, // saved before the switch: open
+    { weekday: 'saturday', open: true, opens_at: '10:00:00.000', closes_at: '14:00:00.000' },
+    { weekday: 'sunday', open: false, opens_at: null, closes_at: null },
+  ] });
+  assert.deepEqual(p.hours.map((h) => h.day), [1, 6]);
+  assert.deepEqual(p.closedDays, [0]);
+  const week = Object.fromEntries(weekHours(p.hours, p.closedDays).map((d) => [d.day, d.text]));
+  assert.equal(week.Sunday, 'Closed');
+  assert.equal(week.Tuesday, 'Hours not confirmed');
+  assert.match(week.Monday, /9/);
+});

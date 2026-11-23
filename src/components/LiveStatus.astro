@@ -5,8 +5,8 @@
 // between site rebuilds. Without JavaScript it reads "Opening hours" and still opens.
 import Icon from './Icon.astro';
 import { weekHours, shortDate } from '../lib/format.js';
-const { hours = [], exceptions = [] } = Astro.props;
-const week = weekHours(hours);
+const { hours = [], exceptions = [], closedDays = [] } = Astro.props;
+const week = weekHours(hours, closedDays);
 const DAY_INDEX = [1, 2, 3, 4, 5, 6, 0]; // weekHours lists Monday first.
 ---
 {hours.length > 0 && (

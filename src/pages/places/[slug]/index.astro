@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 const { place } = Astro.props;
 // A parent place (one with places inside) is just a container: no website, photos or opening hours.
 const isContainer = place.children.length > 0;
-const hours = isContainer ? [] : weekHours(place.hours);
+const hours = isContainer ? [] : weekHours(place.hours, place.closedDays);
 const website = isContainer ? '' : place.website;
 const directions = place.locationType === 'physical' ? directionsUrl(place) : '';
 const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
@@ -66,7 +66,7 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
 
   {!isContainer && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
   {place.short && <p class="lede">{place.short}</p>}
-  {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} />}
+  {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} closedDays={place.closedDays} />}
 
   {place.parent && (
     <a class="rowtile" href={`/places/${place.parent.slug}/`}>
