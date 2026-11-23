@@ -52,7 +52,6 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
   <div class="place-head">
     <span class="logo-slot lg">{place.logo ? <img src={place.logo.src} alt={place.logo.alt} /> : initials}</span>
     <div>
-      <p class="kicker">{[place.category?.label, place.suburb?.name].filter(Boolean).join(' · ')}</p>
       <h1>{place.name}</h1>
     </div>
   </div>
