@@ -112,6 +112,24 @@ export function tileSetsFor(place, sets = []) {
     .filter((s) => s.tiles.length);
 }
 
+// Splits a place's tiles into its own and the inherited ones. Inherited tiles get a section for each place
+// they came from, headed "At Cooleman Court", in the order they were inherited (parent place first, then centre).
+// They lose `from`, so the tile doesn't also say "From Cooleman Court". Occasions ("Good for") stay as they are.
+export function splitInherited(facts = [], tileSets = []) {
+  const isInherited = (f) => f.from && f.group !== 'occasion';
+  const at = new Map();
+  for (const f of facts.filter(isInherited)) {
+    if (!at.has(f.from)) at.set(f.from, []);
+    const { from, ...own } = f;
+    at.get(f.from).push(own);
+  }
+  return {
+    facts: facts.filter((f) => !isInherited(f)),
+    tileSets: tileSets.map((s) => ({ ...s, tiles: s.tiles.filter((t) => !isInherited(t)) })).filter((s) => s.tiles.length),
+    inherited: [...at].map(([from, tiles]) => ({ heading: `At ${from}`, tiles: orderFacts(tiles) })),
+  };
+}
+
 // A place inside another place, or in a centre, inherits that place's tiles (facts) and tile sets.
 // Its own tile wins, unless its own is Unconfirmed and the inherited one is known.
 // Order: the parent place (and its own parents and centre, all the way up), then the place's centre.

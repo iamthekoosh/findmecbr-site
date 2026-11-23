@@ -180,3 +180,20 @@ test('a place inside another place, or in a centre, inherits its tiles', async (
   inheritFacts([a, b]);
   assert.deepEqual(a.facts.map((x) => x.slug).sort(), ['x', 'y'], 'a loop of parents does not hang');
 });
+
+test('inherited tiles get their own "At <place>" section and lose the "From" subtitle', async () => {
+  const { splitInherited, evidenceBadge } = await import('../src/lib/format.js');
+  const facts = [
+    { slug: 'takeaway', label: 'Takeaway', group: 'feature', section: 'food_drink', evidence: 'confirmed' },
+    { slug: 'toilets', label: 'Toilets', group: 'feature', section: 'facilities', evidence: 'confirmed', from: 'Cooleman Court' },
+    { slug: 'post-box', label: 'Post Box', group: 'feature', section: 'nearby', evidence: 'business_says', from: 'Cooleman Court' },
+    { slug: 'lift', label: 'Lift', group: 'feature', section: 'access', evidence: 'confirmed', from: 'Holder Consulting Suite' },
+    { slug: 'with-kids', label: 'With kids', group: 'occasion', evidence: 'confirmed', from: 'Cooleman Court' },
+  ];
+  const sets = [{ heading: 'Extra services', tiles: [facts[0], facts[2]] }, { heading: 'Only inherited', tiles: [facts[1]] }];
+  const out = splitInherited(facts, sets);
+  assert.deepEqual(out.facts.map((f) => f.slug), ['takeaway', 'with-kids']);
+  assert.deepEqual(out.tileSets.map((s) => [s.heading, s.tiles.map((t) => t.slug)]), [['Extra services', ['takeaway']]]);
+  assert.deepEqual(out.inherited.map((s) => [s.heading, s.tiles.map((t) => t.slug)]), [['At Cooleman Court', ['toilets', 'post-box']], ['At Holder Consulting Suite', ['lift']]]);
+  assert.equal(evidenceBadge(out.inherited[0].tiles[0]).subtitle, '');
+});
