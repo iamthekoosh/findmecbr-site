@@ -254,10 +254,10 @@ label{display:grid;gap:4px;font-weight:600}
 .status-verified{color:var(--color-confirmed)}
 .status-info_online{color:var(--color-info)}
 .status-unverified{color:var(--color-warning)}
-.status-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0}
+.status-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:0}
 .status-line .status{margin-top:0}
 .status-label{font-weight:700}
-.status-date{font-size:14px;color:var(--color-text-muted)}
+.status-date{font-size:14px;color:var(--color-text-muted);white-space:nowrap}
 
 /* Live open status under the photos: a dropdown that shows the week's hours. Colour plus words. */
 .live{margin:12px 0 0;border:1px solid var(--color-line);border-radius:var(--radius);background:var(--color-surface)}

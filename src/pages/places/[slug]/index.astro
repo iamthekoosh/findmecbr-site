@@ -59,7 +59,7 @@ const features = place.facts.filter((f) => f.group !== "occasion" && !inSets.has
   <p class="status-line">
     <span class="status-label">Status:</span>
     <StatusTag status={place.postStatus} />
-    {place.updatedAt && <span class="status-date">Last updated {shortDate(place.updatedAt)}</span>}
+    {place.updatedAt && <span class="status-date">Updated {shortDate(place.updatedAt)}</span>}
   </p>
 
   {!isContainer && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
