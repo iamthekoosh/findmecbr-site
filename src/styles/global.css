@@ -174,9 +174,11 @@ label{display:grid;gap:4px;font-weight:600}
 .fact-tiles{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;list-style:none;margin:0;padding:0}
 .fact-tile{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:2px 8px;padding:8px 10px;border:0;border-radius:var(--radius);background:var(--color-surface);overflow-wrap:break-word}
 .fact-tile .ic{width:22px;height:22px;color:var(--color-brand)}
-.fact-tile .fact-text{display:grid;gap:1px}
-.fact-tile .fact-label{font:700 15px/19px var(--font-body);color:var(--color-text)}
-.fact-tile .fact-sub{font:400 13px/17px var(--font-body);color:var(--color-text-muted)}
+/* Title and subtitle on one line, separated by a middot: "Off-street parking · 2 spaces behind the shop". */
+.fact-tile .fact-text{display:block;line-height:20px}
+.fact-tile .fact-label{font:700 15px/20px var(--font-body);color:var(--color-text)}
+.fact-tile .fact-sub{font:400 15px/20px var(--font-body);color:var(--color-text-muted)}
+.fact-tile .fact-dot{font:700 15px/20px var(--font-body);color:var(--color-text-muted)}
 /* How we know it: a small circle. Verified green tick, Info from online blue i, Unconfirmed amber ?. */
 .ev-dot{display:inline-flex;align-items:center;justify-content:center;flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;font:700 12px/1 var(--font-body)}
 .yes .ev-dot{color:var(--color-confirmed);background:var(--color-confirmed)}

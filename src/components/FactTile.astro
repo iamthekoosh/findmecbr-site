@@ -9,10 +9,7 @@ const b = evidenceBadge(fact, hasIcon);
 ---
 <li class={`fact-tile ${b.cls}`}>
   <Icon name={b.icon} />
-  <span class="fact-text">
-    <span class="fact-label">{b.label}</span>
-    {b.subtitle && <span class="fact-sub">{b.subtitle}</span>}
-  </span>
+  <span class="fact-text"><span class="fact-label">{b.label}</span>{b.subtitle && <><span class="fact-dot" aria-hidden="true"> · </span><span class="fact-sub">{b.subtitle}</span></>}</span>
   <span class="ev-dot" title={b.status} aria-hidden="true"></span>
   <span class="sr-only">{b.status}</span>
 </li>
