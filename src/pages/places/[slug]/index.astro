@@ -66,7 +66,7 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
   </p>
 
   {!isContainer && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
-  {place.short && <p class="lede">{place.short}</p>}
+  {place.short && <p class="lede"><b class="inline-label">About:</b> {place.short}</p>}
   {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} closedDays={place.closedDays} />}
 
   {place.parent && (
@@ -81,6 +81,24 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
       <span><Icon name="store" class="lead" /><span>In {place.centre.name}<small>See every place in {place.centre.name}</small></span></span>
       <Icon name="chevron-right" />
     </a>
+  )}
+
+  {(place.address || place.serviceAreas.length > 0 || place.basedIn) && (
+    <section class="where" aria-label="Where">
+      <p><b class="inline-label">Where:</b> {
+        place.address ? `${place.address}, ${[place.suburb?.name, place.state || 'ACT', place.postcode].filter(Boolean).join(' ')}`
+        : place.basedIn ? `Based in ${place.basedIn}.`
+        : place.locationType === 'physical' && place.suburb ? `${place.suburb.name}. The street address isn't shown.`
+        : 'Serves the suburbs below.'
+      }</p>
+      {place.address && place.basedIn && <p class="muted">Based in {place.basedIn}.</p>}
+      {place.serviceAreas.length > 0 && (
+        <>
+          <p class="muted">Confirmed to serve:</p>
+          <div class="chips">{place.serviceAreas.map((a) => a.hasPage ? <a class="chip" href={`/suburbs/${a.slug}/`}>{a.name}</a> : <span class="badge">{a.name}</span>)}</div>
+        </>
+      )}
+    </section>
   )}
 
   {place.actions.length > 0 && (
@@ -173,21 +191,6 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
     <section class="section">
       <h2>Opening hours</h2>
       <p class="muted">Hours not confirmed yet. Check with the business before you go.</p>
-    </section>
-  )}
-
-  {(place.address || place.serviceAreas.length > 0 || place.basedIn) && (
-    <section class="section">
-      <h2>Where</h2>
-      {place.address && <p>{[place.address, place.suburb?.name, `${place.state || 'ACT'} ${place.postcode}`.trim()].filter(Boolean).join(', ')}</p>}
-      {!place.address && place.locationType === 'physical' && place.suburb && <p>{place.suburb.name}. The street address isn't shown.</p>}
-      {place.basedIn && <p class="muted">Based in {place.basedIn}.</p>}
-      {place.serviceAreas.length > 0 && (
-        <>
-          <p class="muted">Confirmed to serve:</p>
-          <div class="chips">{place.serviceAreas.map((a) => a.hasPage ? <a class="chip" href={`/suburbs/${a.slug}/`}>{a.name}</a> : <span class="badge">{a.name}</span>)}</div>
-        </>
-      )}
     </section>
   )}
 
