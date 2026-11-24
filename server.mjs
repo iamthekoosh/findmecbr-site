@@ -31,7 +31,9 @@ const log = (...a) => console.log(new Date().toISOString(), ...a);
 function build() {
   if (building) { again = true; return; }
   building = true;
-  slot = slot === 0 ? 1 : 0;
+  // Always build into the folder that is not being served. (Flipping a counter would, after a
+  // failed build, point back at the live folder and delete it mid-build.)
+  slot = live === path.join(ROOT, 'site-0') ? 1 : 0;
   const out = path.join(ROOT, `site-${slot}`);
   fs.rmSync(out, { recursive: true, force: true });
   log(`Building into ${path.basename(out)}…`);
@@ -67,9 +69,12 @@ const TYPES = {
 function send(res, file, status = 200) {
   const ext = path.extname(file).toLowerCase();
   const hashed = file.includes(`${path.sep}_astro${path.sep}`);
+  // Never let a 404 be cached: during a deploy the old and new containers briefly serve
+  // different CSS names, and a cached 404 for a stylesheet left pages unstyled for hours.
+  const cache = status !== 200 ? 'no-store' : hashed ? 'public, max-age=31536000, immutable' : 'public, max-age=60';
   res.writeHead(status, {
     'Content-Type': TYPES[ext] || 'application/octet-stream',
-    'Cache-Control': hashed ? 'public, max-age=31536000, immutable' : 'public, max-age=60',
+    'Cache-Control': cache,
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     ...(process.env.SITE_STAGE && process.env.SITE_STAGE !== 'live' ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
@@ -78,7 +83,7 @@ function send(res, file, status = 200) {
 }
 
 http.createServer((req, res) => {
-  if (!live) { res.writeHead(503, { 'Content-Type': 'text/plain', 'Retry-After': '30' }); return res.end('Starting up. Try again in a moment.'); }
+  if (!live) { res.writeHead(503, { 'Content-Type': 'text/plain', 'Retry-After': '30', 'Cache-Control': 'no-store' }); return res.end('Starting up. Try again in a moment.'); }
   if (req.method === 'POST' && /^\/api\/forms\/(report|suggest|claim)$/.test(req.url.split('?')[0])) return handleForm(req, res, live);
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end(); }
   let p;
@@ -96,7 +101,7 @@ http.createServer((req, res) => {
   }
   const notFound = path.join(live, '404.html');
   if (fs.existsSync(notFound)) return send(res, notFound, 404);
-  res.writeHead(404); res.end('Not found');
+  res.writeHead(404, { 'Cache-Control': 'no-store' }); res.end('Not found');
 }).listen(PORT, '0.0.0.0', () => log(`Serving pages on ${PORT}`));
 
 // ---------- Rebuild trigger, for Strapi
