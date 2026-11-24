@@ -5,6 +5,8 @@
 //   POST /rebuild with header "x-rebuild-secret: <REBUILD_SECRET>". Several calls within
 //   REBUILD_DELAY_MS (default 30s) make one rebuild.
 // - A nightly rebuild at 3am Canberra time, so dates like sponsorship ends stay correct.
+// - Fuel prices from FuelCheck every 4 hours from 12am Canberra time (see fuel.mjs), then a rebuild.
+//   Only when FUELCHECK_KEY and FUELCHECK_SECRET are set.
 //
 // Each build goes into a fresh folder. Pages switch to it only once it has built successfully,
 // so a failed build never takes the site down.
@@ -13,6 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { handleForm } from './forms.mjs';
+import { fetchFuelPrices, saveFuelPrices, fuelFileAge, FUEL_HOURS } from './fuel.mjs';
 
 const ROOT = process.cwd();
 const PORT = Number(process.env.PORT || 4321);
@@ -114,12 +117,40 @@ http.createServer((req, res) => {
   res.writeHead(404); res.end();
 }).listen(REBUILD_PORT, '0.0.0.0', () => log(`Rebuild trigger on ${REBUILD_PORT}${SECRET ? '' : ' (off: no REBUILD_SECRET set)'}`));
 
-// ---------- Nightly rebuild at 3am Canberra time
+// ---------- Fuel prices: fetch, save, rebuild. A failed fetch keeps the last saved prices,
+// so the pages keep their old "checked" time rather than claiming to be newer.
+const FUEL_ON = Boolean(process.env.FUELCHECK_KEY && process.env.FUELCHECK_SECRET);
+async function alert(message) {
+  // An email to the owner when RESEND_API_KEY and ALERT_EMAIL are set. Otherwise only the log.
+  const { RESEND_API_KEY: key, ALERT_EMAIL: to, ALERT_FROM: from = 'alerts@findmecbr.com.au' } = process.env;
+  if (!key || !to) return;
+  try {
+    await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from, to, subject: 'Find Me CBR: fuel prices not updated', text: message }) });
+  } catch (e) { log(`Alert email failed: ${e.message}`); }
+}
+async function updateFuel(reason) {
+  try {
+    const shaped = await fetchFuelPrices();
+    saveFuelPrices(shaped);
+    log(`Fuel prices saved (${reason}): ${Object.keys(shaped.stations).length} ACT stations`);
+    scheduleBuild('fuel prices');
+  } catch (e) {
+    log(`Fuel prices not updated (${reason}): ${e.message}. Keeping the last saved prices.`);
+    alert(`The ${reason} fuel price fetch failed: ${e.message}. The site is still showing the last saved prices.`);
+  }
+}
+
+// ---------- Canberra clock: the nightly rebuild at 3am, and fuel prices every 4 hours
 let lastNightly = '';
+let lastFuel = '';
 setInterval(() => {
   const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
   const day = now.toDateString();
-  if (now.getHours() === 3 && lastNightly !== day) { lastNightly = day; scheduleBuild('nightly'); }
+  const hour = now.getHours();
+  if (hour === 3 && lastNightly !== day) { lastNightly = day; scheduleBuild('nightly'); }
+  if (FUEL_ON && FUEL_HOURS.includes(hour) && lastFuel !== `${day} ${hour}`) { lastFuel = `${day} ${hour}`; updateFuel(`${hour}:00`); }
 }, 60_000);
 
+// On start, fetch only if the saved prices are more than 4 hours old (the fetch then rebuilds again).
+if (FUEL_ON && fuelFileAge() > 4) updateFuel('start-up');
 build();

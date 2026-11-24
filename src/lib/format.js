@@ -48,7 +48,14 @@ export function factTile(fact, knownIcons = {}) {
 }
 
 // A listing shows its facts as one set of tiles, no headings, in this order: getting there first, occasions ("good for") last.
-const FACT_ORDER = ["getting_there", "access", "facilities", "food_drink", "services", "nearby"];
+const FACT_ORDER = ["live_information", "getting_there", "access", "facilities", "food_drink", "services", "nearby"];
+
+// Tile sets whose tiles are all in the Live Information section (such as Fuel prices) show together
+// at the top of a listing under "Live Information", as full-size tiles. Returns [live, other].
+export function splitLive(tileSets = []) {
+  const isLive = (s) => s.tiles.length > 0 && s.tiles.every((t) => t.section === 'live_information');
+  return [tileSets.filter(isLive), tileSets.filter((s) => !isLive(s))];
+}
 export function orderFacts(facts) {
   const rank = (f) => (f.group === "occasion" ? 99 : FACT_ORDER.includes(f.section) ? FACT_ORDER.indexOf(f.section) : 50);
   return facts.map((f, i) => [f, i]).sort((x, y) => rank(x[0]) - rank(y[0]) || x[1] - y[1]).map(([f]) => f);
@@ -80,7 +87,7 @@ export const typeOf = (kind) => CENTRE_TYPES[kind] ?? CENTRE_TYPES.local_shops;
 export function shapeTileSet(s) {
   return {
     name: s.name, heading: s.heading, position: s.position ?? 10, active: !!s.active,
-    tags: (s.tags ?? []).map((t) => ({ slug: t.slug, label: t.label, icon: t.icon ?? null })),
+    tags: (s.tags ?? []).map((t) => ({ slug: t.slug, label: t.label, icon: t.icon ?? null, section: t.section ?? null })),
   };
 }
 

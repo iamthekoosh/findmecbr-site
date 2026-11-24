@@ -5,6 +5,7 @@ import Icon from '../../../components/Icon.astro';
 import PhotoCarousel from '../../../components/PhotoCarousel.astro';
 import { loadSite, districtSections, STAGE } from '../../../lib/strapi.js';
 import { CENTRE_TYPES } from '../../../lib/format.js';
+import { districtFuel } from '../../../lib/fuel.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -20,6 +21,8 @@ const types = Object.entries(CENTRE_TYPES)
   .filter((t) => t.count > 0);
 const alpha = STAGE === 'alpha';
 const sections = districtSections(site, district);
+const fuel = districtFuel(site, district);
+const cheapest = fuel.fuels.find((f) => f.code === 'U91' || f.code === 'E10')?.rows.find((r) => r.fact.price != null);
 ---
 <Base title={district.name} description={district.intro || `Suburbs, local shops and centres in ${district.name}, Canberra.`} noindex={suburbs.length === 0}>
   <p class="kicker">District</p>
@@ -45,6 +48,18 @@ const sections = districtSections(site, district);
       )}
     </section>
   ))}
+
+  {fuel.stations.length > 0 && (
+    <section class="section">
+      <h2>Fuel prices</h2>
+      <div class="stack">
+        <a class="rowtile" href={`/districts/${district.slug}/fuel-prices/`}>
+          <span><Icon name="fuel" class="lead" /><span>Fuel prices in {district.name}<small>{cheapest ? `${cheapest.fact.label} from ${cheapest.fact.subtitle.split(' · ')[0]} · ` : ''}{fuel.stations.length} {fuel.stations.length === 1 ? 'station' : 'stations'}</small></span></span>
+          <Icon name="chevron-right" />
+        </a>
+      </div>
+    </section>
+  )}
 
   {suburbs.length > 0 && (
     <section class="section">

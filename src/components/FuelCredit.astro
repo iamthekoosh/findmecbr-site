@@ -1,0 +1,9 @@
+---
+// The line under fuel prices: when we checked, and the credit the CC BY 4.0 licence asks for.
+import { FUEL_CREDIT } from '../lib/fuel.js';
+const { checked } = Astro.props;
+---
+<p class="fuel-credit">
+  {checked ? `Prices reported by the station to FuelCheck, checked ${checked}.` : 'Prices reported by the station to FuelCheck. No prices are saved yet.'}
+  {' '}Fuel prices from <a href={FUEL_CREDIT.fuelcheck}>FuelCheck</a>, NSW Government, licensed under <a href={FUEL_CREDIT.licence}>CC BY 4.0</a>. Selected for Canberra and reformatted by Find Me CBR.
+</p>

@@ -1,0 +1,29 @@
+{
+  "_note": "SAMPLE fuel prices for the sample build. Not real.",
+  "checkedAt": "2026-11-24T05:00:00.000Z",
+  "source": "FuelCheck, NSW Government (CC BY 4.0)",
+  "stations": {
+    "99999": {
+      "name": "Sample Service Station",
+      "address": "1 SAMPLE ST, WESTON ACT 2611",
+      "prices": {
+        "E10": {
+          "price": 225.9,
+          "since": "2026-11-16T22:22:26"
+        },
+        "U91": {
+          "price": 227.9,
+          "since": "2026-11-16T22:22:26"
+        },
+        "P95": {
+          "price": 244.9,
+          "since": "2026-11-24T14:05:00"
+        },
+        "P98": {
+          "price": 254.9,
+          "since": "2026-11-16T22:22:26"
+        }
+      }
+    }
+  }
+}

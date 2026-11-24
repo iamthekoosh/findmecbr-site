@@ -90,3 +90,13 @@ Coolify app `findmecbr-site`, using the Dockerfile, with the domain `https://alp
 - Search hard filters need positive evidence. A tile synonym only matches Verified or Info from online tiles.
 - Pages that aren't live, or have nothing on them yet, are marked noindex.
 - No links to suburbs without a page.
+
+## Fuel prices (FuelCheck)
+
+The server fetches ACT fuel prices every 4 hours from 12am Canberra time (`fuel.mjs`), saves them to `data/fuel-prices.json` and rebuilds. Builds only read that file. Settings, all runtime only:
+
+- `FUELCHECK_KEY`, `FUELCHECK_SECRET`: turn the fetch on.
+- `FUEL_FILE`: where to save prices (default `data/fuel-prices.json`). Mount a storage volume on `/app/data` so prices survive redeploys.
+- `RESEND_API_KEY`, `ALERT_EMAIL` (and optional `ALERT_FROM`): email when a fetch fails.
+
+Data: FuelCheck, NSW Government, CC BY 4.0. The credit line is in `src/components/FuelCredit.astro`.

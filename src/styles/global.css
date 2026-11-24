@@ -86,6 +86,19 @@ label{display:grid;gap:4px;font-weight:600}
 .take{font-size:15px;line-height:22px}
 .take b{font-weight:700}
 .stamp{padding-top:8px;border-top:1px solid var(--color-line);font:400 12px/17px var(--font-mono);color:var(--color-text-muted)}
+.fuel-credit{margin-top:8px;font:400 12px/17px var(--font-body);color:var(--color-text-muted)}
+.fuel-credit a{color:inherit}
+.live-set{display:grid;gap:8px}
+.live-set+.live-set{margin-top:12px}
+.live-set h3{margin:0;font:600 15px/20px var(--font-display)}
+.live-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.live-tile{display:flex;flex-direction:column;justify-content:space-between;gap:4px;min-height:96px;padding:12px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius)}
+.live-name{display:flex;align-items:center;gap:8px;font-weight:600;line-height:20px}
+.live-name .ic{width:24px;height:24px;color:var(--color-brand)}
+.live-value{font:700 24px/28px var(--font-display)}
+.live-tile small{font:400 12px/18px var(--font-mono);color:var(--color-text-muted)}
+.live-tile.none .live-value{font:400 15px/20px var(--font-body);color:var(--color-text-muted)}
+@media (min-width:640px){.live-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .notice{padding:14px;background:var(--color-surface);border:2px solid var(--color-border);border-radius:var(--radius);display:grid;gap:10px}
 .health{font-size:15px;line-height:22px}
 

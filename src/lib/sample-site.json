@@ -1,654 +1,852 @@
 {
- "_note": "SAMPLE DATA ONLY, for checking pages locally with SITE_SAMPLE=1. Businesses, phone numbers and details are made up.",
- "districts": [
-  {
-   "slug": "weston-creek",
-   "name": "Weston Creek",
-   "image": {
-    "src": "/sample/district-weston-creek.svg",
-    "alt": "Sample: hills over Weston Creek",
-    "credit": null,
-    "width": 800,
-    "height": 1000
-   },
-   "intro": "SAMPLE: Weston Creek sits between the Cotter Road and the Molonglo River, with Cooleman Court at its heart and leafy streets around it.",
-   "photos": [
+  "_note": "SAMPLE DATA ONLY, for checking pages locally with SITE_SAMPLE=1. Businesses, phone numbers and details are made up.",
+  "districts": [
     {
-     "src": "/sample/district-weston-creek.svg",
-     "alt": "Sample: hills over Weston Creek",
-     "credit": null,
-     "width": 800,
-     "height": 1000,
-     "primary": true
+      "slug": "weston-creek",
+      "name": "Weston Creek",
+      "image": {
+        "src": "/sample/district-weston-creek.svg",
+        "alt": "Sample: hills over Weston Creek",
+        "credit": null,
+        "width": 800,
+        "height": 1000
+      },
+      "intro": "SAMPLE: Weston Creek sits between the Cotter Road and the Molonglo River, with Cooleman Court at its heart and leafy streets around it.",
+      "photos": [
+        {
+          "src": "/sample/district-weston-creek.svg",
+          "alt": "Sample: hills over Weston Creek",
+          "credit": null,
+          "width": 800,
+          "height": 1000,
+          "primary": true
+        },
+        {
+          "src": "/sample/cafe-deck.svg",
+          "alt": "Sample: an outdoor deck",
+          "credit": "Find Me CBR",
+          "width": 1200,
+          "height": 900,
+          "primary": false
+        }
+      ]
     },
     {
-     "src": "/sample/cafe-deck.svg",
-     "alt": "Sample: an outdoor deck",
-     "credit": "Find Me CBR",
-     "width": 1200,
-     "height": 900,
-     "primary": false
+      "slug": "molonglo-valley",
+      "name": "Molonglo Valley"
     }
-   ]
-  },
-  {
-   "slug": "molonglo-valley",
-   "name": "Molonglo Valley"
-  }
- ],
- "suburbs": [
-  {
-   "slug": "weston",
-   "name": "Weston",
-   "district": {
-    "slug": "weston-creek",
-    "name": "Weston Creek"
-   },
-   "intro": "",
-   "body": "SAMPLE: Weston is one of the oldest suburbs in Weston Creek, settled in the early 1970s.\n\nCooleman Court sits on its eastern edge, with the library, health centre and pools close by.",
-   "live": false,
-   "checkedAt": null,
-   "neighbours": [
+  ],
+  "suburbs": [
     {
-     "slug": "holder",
-     "name": "Holder"
+      "slug": "weston",
+      "name": "Weston",
+      "district": {
+        "slug": "weston-creek",
+        "name": "Weston Creek"
+      },
+      "intro": "",
+      "body": "SAMPLE: Weston is one of the oldest suburbs in Weston Creek, settled in the early 1970s.\n\nCooleman Court sits on its eastern edge, with the library, health centre and pools close by.",
+      "live": false,
+      "checkedAt": null,
+      "neighbours": [
+        {
+          "slug": "holder",
+          "name": "Holder"
+        },
+        {
+          "slug": "coombs",
+          "name": "Coombs"
+        }
+      ],
+      "image": null,
+      "lat": -35.34,
+      "lng": 149.05,
+      "stats": [
+        {
+          "value": "SAMPLE 3,800",
+          "label": "People",
+          "icon": "users",
+          "source": "Sample source",
+          "year": 2021,
+          "url": "https://example.com"
+        },
+        {
+          "value": "40",
+          "label": "Median age",
+          "icon": "cake",
+          "source": "Sample source",
+          "year": 2021,
+          "url": null
+        },
+        {
+          "value": "1,500",
+          "label": "Homes",
+          "icon": "house",
+          "source": "Sample source",
+          "year": 2021,
+          "url": null
+        },
+        {
+          "value": "12%",
+          "label": "Families with young kids",
+          "icon": "baby",
+          "source": "Sample source",
+          "year": 2021,
+          "url": null
+        }
+      ]
     },
     {
-     "slug": "coombs",
-     "name": "Coombs"
+      "slug": "holder",
+      "name": "Holder",
+      "district": {
+        "slug": "weston-creek",
+        "name": "Weston Creek"
+      },
+      "intro": "",
+      "body": "",
+      "live": false,
+      "checkedAt": null,
+      "neighbours": [
+        {
+          "slug": "weston",
+          "name": "Weston"
+        }
+      ],
+      "image": null,
+      "lat": -35.34,
+      "lng": 149.05
+    },
+    {
+      "slug": "duffy",
+      "name": "Duffy",
+      "district": {
+        "slug": "weston-creek",
+        "name": "Weston Creek"
+      },
+      "intro": "",
+      "body": "",
+      "live": false,
+      "checkedAt": null,
+      "neighbours": [
+        {
+          "slug": "holder",
+          "name": "Holder"
+        }
+      ],
+      "image": null,
+      "lat": -35.34,
+      "lng": 149.05
+    },
+    {
+      "slug": "coombs",
+      "name": "Coombs",
+      "district": {
+        "slug": "molonglo-valley",
+        "name": "Molonglo Valley"
+      },
+      "intro": "",
+      "body": "",
+      "live": false,
+      "checkedAt": null,
+      "neighbours": [
+        {
+          "slug": "weston",
+          "name": "Weston"
+        }
+      ],
+      "image": null,
+      "lat": -35.34,
+      "lng": 149.05
     }
-   ],
-   "image": null,
-   "lat": -35.34,
-   "lng": 149.05,
-   "stats": [
+  ],
+  "centres": [
     {
-     "value": "SAMPLE 3,800",
-     "label": "People",
-     "icon": "users",
-     "source": "Sample source",
-     "year": 2021,
-     "url": "https://example.com"
+      "slug": "cooleman-court",
+      "name": "Cooleman Court",
+      "kind": "shopping_mall",
+      "suburb": {
+        "slug": "weston",
+        "name": "Weston"
+      },
+      "address": "",
+      "intro": "",
+      "body": "",
+      "live": false,
+      "image": null,
+      "facts": [
+        {
+          "slug": "off-street-parking",
+          "label": "Off-street parking",
+          "subtitle": "2 spaces behind the shop",
+          "icon": "square-parking",
+          "section": "getting_there",
+          "group": "feature",
+          "question": null,
+          "active": true,
+          "checkedAt": "2026-11-19"
+        },
+        {
+          "slug": "near-bus-stop",
+          "label": "Near a bus stop",
+          "subtitle": "",
+          "icon": "bus",
+          "section": "nearby",
+          "group": "feature",
+          "question": null,
+          "active": true,
+          "checkedAt": "2026-11-19"
+        },
+        {
+          "slug": "step-free-entry",
+          "label": "Step-free entry",
+          "subtitle": "",
+          "icon": "accessibility",
+          "section": "access",
+          "group": "feature",
+          "question": null,
+          "active": true,
+          "checkedAt": "2026-11-19"
+        },
+        {
+          "slug": "accessible-toilet",
+          "label": "Accessible toilet",
+          "subtitle": "",
+          "icon": "toilet",
+          "section": "access",
+          "group": "feature",
+          "question": null,
+          "active": true,
+          "checkedAt": "2026-11-19"
+        }
+      ],
+      "tileSetChoice": []
     },
     {
-     "value": "40",
-     "label": "Median age",
-     "icon": "cake",
-     "source": "Sample source",
-     "year": 2021,
-     "url": null
-    },
-    {
-     "value": "1,500",
-     "label": "Homes",
-     "icon": "house",
-     "source": "Sample source",
-     "year": 2021,
-     "url": null
-    },
-    {
-     "value": "12%",
-     "label": "Families with young kids",
-     "icon": "baby",
-     "source": "Sample source",
-     "year": 2021,
-     "url": null
+      "slug": "coombs-shops",
+      "name": "Coombs Shops",
+      "kind": "local_shops",
+      "suburb": {
+        "slug": "coombs",
+        "name": "Coombs"
+      },
+      "address": "",
+      "intro": "",
+      "body": "",
+      "live": false,
+      "image": null
     }
-   ]
-  },
-  {
-   "slug": "holder",
-   "name": "Holder",
-   "district": {
-    "slug": "weston-creek",
-    "name": "Weston Creek"
-   },
-   "intro": "",
-   "body": "",
-   "live": false,
-   "checkedAt": null,
-   "neighbours": [
+  ],
+  "categories": [
     {
-     "slug": "weston",
-     "name": "Weston"
+      "slug": "cafe",
+      "label": "Cafe",
+      "plural": "Cafes",
+      "kind": "venue",
+      "icon": "coffee",
+      "active": true
+    },
+    {
+      "slug": "cleaner",
+      "label": "Cleaner",
+      "plural": "Cleaners",
+      "kind": "service",
+      "icon": "sparkles",
+      "active": true
+    },
+    {
+      "slug": "service-station",
+      "label": "Service station",
+      "plural": "Service stations",
+      "kind": "venue",
+      "icon": "fuel",
+      "active": true
     }
-   ],
-   "image": null,
-   "lat": -35.34,
-   "lng": 149.05
-  },
-  {
-   "slug": "duffy",
-   "name": "Duffy",
-   "district": {
-    "slug": "weston-creek",
-    "name": "Weston Creek"
-   },
-   "intro": "",
-   "body": "",
-   "live": false,
-   "checkedAt": null,
-   "neighbours": [
+  ],
+  "places": [
     {
-     "slug": "holder",
-     "name": "Holder"
+      "slug": "sample-cafe",
+      "information": [
+        {
+          "kind": "information",
+          "title": "Free wifi",
+          "details": "Ask at the counter for the password."
+        },
+        {
+          "kind": "information",
+          "title": "Dogs welcome outside",
+          "details": "Water bowls by the door."
+        },
+        {
+          "kind": "take_note",
+          "title": "Cash only"
+        },
+        {
+          "kind": "warning",
+          "title": "Steep stairs at the entry",
+          "details": "There is no ramp. Call ahead for help."
+        }
+      ],
+      "name": "Sample Cafe",
+      "location_type": "physical",
+      "description_short": "SAMPLE: coffee and toasties inside Cooleman Court.",
+      "description_full": "This is sample text.\n\nIt shows how a longer description reads.",
+      "our_take": "Good for a slow catch-up.",
+      "is_health": false,
+      "phone": "02 5550 0101",
+      "website_url": "https://example.com",
+      "social_links": [
+        {
+          "platform": "facebook",
+          "url": "https://www.facebook.com/example"
+        },
+        {
+          "platform": "instagram",
+          "url": "https://www.instagram.com/example",
+          "handle": "@example.cafe"
+        },
+        {
+          "platform": "tiktok",
+          "url": "https://www.tiktok.com/@example"
+        }
+      ],
+      "checked_at": "2026-11-19",
+      "primary_category": {
+        "slug": "cafe",
+        "label": "Cafe",
+        "plural": "Cafes",
+        "icon": "coffee"
+      },
+      "location": {
+        "show_public_address": true,
+        "public_address": "Shop 1, Cooleman Court",
+        "postcode": "2611",
+        "lat": -35.34,
+        "lng": 149.056,
+        "suburb": {
+          "slug": "weston",
+          "name": "Weston"
+        },
+        "in_centre": true,
+        "centre": {
+          "slug": "cooleman-court",
+          "name": "Cooleman Court"
+        }
+      },
+      "facts": [
+        {
+          "tag": {
+            "slug": "off-street-parking",
+            "label": "Off-street parking",
+            "group": "feature",
+            "section": "getting_there",
+            "icon": "square-parking"
+          },
+          "checked_at": "2026-11-19",
+          "subtitle": "2 spaces behind the shop"
+        },
+        {
+          "tag": {
+            "slug": "near-bus-stop",
+            "label": "Near a bus stop",
+            "group": "feature",
+            "section": "nearby",
+            "icon": "bus"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "step-free-entry",
+            "label": "Step-free entry",
+            "group": "feature",
+            "section": "access",
+            "icon": "accessibility"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "accessible-toilet",
+            "label": "Accessible toilet",
+            "group": "feature",
+            "section": "access",
+            "icon": "toilet"
+          },
+          "checked_at": null
+        },
+        {
+          "tag": {
+            "slug": "free-wifi",
+            "label": "Free Wi-Fi",
+            "group": "feature",
+            "section": "facilities",
+            "icon": "wifi"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "outdoor-seating",
+            "label": "Outdoor seating",
+            "group": "feature",
+            "section": "facilities",
+            "icon": "sun"
+          },
+          "checked_at": "2026-11-19",
+          "subtitle": "Covered deck, 6 tables"
+        },
+        {
+          "tag": {
+            "slug": "dogs-welcome",
+            "label": "Dogs welcome",
+            "group": "feature",
+            "section": "facilities",
+            "icon": "dog"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "vegan-options",
+            "label": "Vegan options",
+            "group": "feature",
+            "section": "food_drink",
+            "icon": "sprout"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "takeaway",
+            "label": "Takeaway",
+            "group": "feature",
+            "section": "food_drink",
+            "icon": "shopping-bag"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "card-payments",
+            "label": "Card payments",
+            "group": "feature",
+            "section": "services",
+            "icon": "credit-card"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "coffee-catch-up",
+            "label": "Coffee catch-up",
+            "group": "occasion",
+            "question": "occasion"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "with-kids",
+            "label": "With kids",
+            "group": "occasion",
+            "question": "who"
+          },
+          "checked_at": "2026-11-19"
+        },
+        {
+          "tag": {
+            "slug": "weekend-morning",
+            "label": "Weekend morning",
+            "group": "occasion",
+            "question": "when"
+          },
+          "checked_at": "2026-11-19"
+        }
+      ],
+      "opening_hours": [
+        {
+          "weekday": "monday",
+          "opens_at": "07:00:00.000",
+          "closes_at": "15:00:00.000"
+        },
+        {
+          "weekday": "tuesday",
+          "opens_at": "07:00:00.000",
+          "closes_at": "15:00:00.000"
+        },
+        {
+          "weekday": "wednesday",
+          "opens_at": "07:00:00.000",
+          "closes_at": "15:00:00.000"
+        },
+        {
+          "weekday": "thursday",
+          "opens_at": "07:00:00.000",
+          "closes_at": "15:00:00.000"
+        },
+        {
+          "weekday": "friday",
+          "opens_at": "07:00:00.000",
+          "closes_at": "15:00:00.000"
+        },
+        {
+          "weekday": "saturday",
+          "opens_at": "08:00:00.000",
+          "closes_at": "12:30:00.000"
+        }
+      ],
+      "hours_exceptions": [
+        {
+          "on_date": "2026-12-25",
+          "closed": true,
+          "note": "Christmas Day"
+        }
+      ],
+      "action_tiles": [
+        {
+          "action": "order",
+          "label": "Order ahead",
+          "provider": "Example Ordering",
+          "url": "https://example.com/order",
+          "active": true,
+          "checked_at": "2026-11-19"
+        }
+      ],
+      "photos": [
+        {
+          "file": {
+            "url": "/sample/cafe-counter.svg",
+            "width": 1200,
+            "height": 900
+          },
+          "alt_text": "Sample: the counter",
+          "credit": null,
+          "permission": "Sample",
+          "is_primary": false
+        },
+        {
+          "file": {
+            "url": "/sample/cafe-front.svg",
+            "width": 1200,
+            "height": 900
+          },
+          "alt_text": "Sample: the shopfront",
+          "credit": "Find Me CBR",
+          "permission": "Sample",
+          "is_primary": true
+        },
+        {
+          "file": {
+            "url": "/sample/cafe-deck.svg",
+            "width": 1200,
+            "height": 900
+          },
+          "alt_text": "Sample: the outdoor deck",
+          "credit": null,
+          "permission": "Sample",
+          "is_primary": false
+        }
+      ],
+      "menu": {
+        "show": true,
+        "kind": "images",
+        "checked_at": "2026-11-19",
+        "url": null,
+        "images": [
+          {
+            "url": "/sample/menu-1.svg",
+            "width": 800,
+            "height": 1100,
+            "alternativeText": "Sample menu, page 1: drinks"
+          },
+          {
+            "url": "/sample/menu-2.svg",
+            "width": 800,
+            "height": 1100,
+            "alternativeText": "Sample menu, page 2: food"
+          }
+        ],
+        "valid_as_of": "2026-11-01"
+      }
+    },
+    {
+      "slug": "sample-cleaning",
+      "name": "Sample Cleaning",
+      "location_type": "mobile",
+      "description_short": "SAMPLE: home and end-of-lease cleaning.",
+      "is_health": false,
+      "phone": "02 5550 0102",
+      "checked_at": "2026-11-19",
+      "based_in": "Duffy",
+      "primary_category": {
+        "slug": "cleaner",
+        "label": "Cleaner",
+        "plural": "Cleaners",
+        "icon": "sparkles"
+      },
+      "location": {
+        "show_public_address": false,
+        "public_address": "1 Private St",
+        "lat": -35.33,
+        "lng": 149.03,
+        "suburb": {
+          "slug": "duffy",
+          "name": "Duffy"
+        },
+        "in_centre": false
+      },
+      "service_areas": [
+        {
+          "suburb": {
+            "slug": "weston",
+            "name": "Weston"
+          }
+        },
+        {
+          "suburb": {
+            "slug": "holder",
+            "name": "Holder"
+          }
+        },
+        {
+          "suburb": {
+            "slug": "coombs",
+            "name": "Coombs"
+          }
+        }
+      ],
+      "menu": {
+        "show": true,
+        "kind": "link",
+        "url": "https://example.com/prices",
+        "checked_at": "2026-11-19",
+        "images": [],
+        "valid_as_of": "2026-10-15"
+      }
+    },
+    {
+      "slug": "sample-service-station",
+      "name": "Sample Service Station",
+      "fuelcheck_code": "99999",
+      "location_type": "physical",
+      "post_status": "info_online",
+      "place_class": "business",
+      "description_short": "SAMPLE: a service station, to show fuel prices.",
+      "checked_at": "2026-11-24",
+      "primary_category": {
+        "slug": "service-station",
+        "label": "Service station",
+        "plural": "Service stations",
+        "icon": "fuel",
+        "kind": "venue"
+      },
+      "location": {
+        "show_public_address": true,
+        "public_address": "1 Sample St",
+        "postcode": "2611",
+        "lat": -35.343,
+        "lng": 149.05,
+        "suburb": {
+          "slug": "weston",
+          "name": "Weston"
+        },
+        "in_centre": false
+      },
+      "tile_sets": [
+        {
+          "name": "Fuel prices"
+        }
+      ],
+      "facts": [
+        {
+          "tag": {
+            "slug": "fuel-e10",
+            "label": "E10",
+            "group": "feature",
+            "section": "live_information",
+            "icon": "fuel"
+          }
+        },
+        {
+          "tag": {
+            "slug": "fuel-u91",
+            "label": "Unleaded 91",
+            "group": "feature",
+            "section": "live_information",
+            "icon": "fuel"
+          }
+        },
+        {
+          "tag": {
+            "slug": "fuel-p95",
+            "label": "Premium 95",
+            "group": "feature",
+            "section": "live_information",
+            "icon": "fuel"
+          }
+        },
+        {
+          "tag": {
+            "slug": "fuel-p98",
+            "label": "Premium 98",
+            "group": "feature",
+            "section": "live_information",
+            "icon": "fuel"
+          }
+        },
+        {
+          "tag": {
+            "slug": "fuel-pdl",
+            "label": "Premium Diesel",
+            "group": "feature",
+            "section": "live_information",
+            "icon": "fuel"
+          }
+        }
+      ]
     }
-   ],
-   "image": null,
-   "lat": -35.34,
-   "lng": 149.05
-  },
-  {
-   "slug": "coombs",
-   "name": "Coombs",
-   "district": {
-    "slug": "molonglo-valley",
-    "name": "Molonglo Valley"
-   },
-   "intro": "",
-   "body": "",
-   "live": false,
-   "checkedAt": null,
-   "neighbours": [
+  ],
+  "tags": [
     {
-     "slug": "weston",
-     "name": "Weston"
-    }
-   ],
-   "image": null,
-   "lat": -35.34,
-   "lng": 149.05
-  }
- ],
- "centres": [
-  {
-   "slug": "cooleman-court",
-   "name": "Cooleman Court",
-   "kind": "shopping_mall",
-   "suburb": {
-    "slug": "weston",
-    "name": "Weston"
-   },
-   "address": "",
-   "intro": "",
-   "body": "",
-   "live": false,
-   "image": null,
-   "facts": [
-    {
-     "slug": "off-street-parking",
-     "label": "Off-street parking",
-     "subtitle": "2 spaces behind the shop",
-     "icon": "square-parking",
-     "section": "getting_there",
-     "group": "feature",
-     "question": null,
-     "active": true,
-     "checkedAt": "2026-11-19"
-    },
-    {
-     "slug": "near-bus-stop",
-     "label": "Near a bus stop",
-     "subtitle": "",
-     "icon": "bus",
-     "section": "nearby",
-     "group": "feature",
-     "question": null,
-     "active": true,
-     "checkedAt": "2026-11-19"
-    },
-    {
-     "slug": "step-free-entry",
-     "label": "Step-free entry",
-     "subtitle": "",
-     "icon": "accessibility",
-     "section": "access",
-     "group": "feature",
-     "question": null,
-     "active": true,
-     "checkedAt": "2026-11-19"
-    },
-    {
-     "slug": "accessible-toilet",
-     "label": "Accessible toilet",
-     "subtitle": "",
-     "icon": "toilet",
-     "section": "access",
-     "group": "feature",
-     "question": null,
-     "active": true,
-     "checkedAt": "2026-11-19"
-    }
-   ],
-   "tileSetChoice": []
-  },
-  {
-   "slug": "coombs-shops",
-   "name": "Coombs Shops",
-   "kind": "local_shops",
-   "suburb": {
-    "slug": "coombs",
-    "name": "Coombs"
-   },
-   "address": "",
-   "intro": "",
-   "body": "",
-   "live": false,
-   "image": null
-  }
- ],
- "categories": [
-  {
-   "slug": "cafe",
-   "label": "Cafe",
-   "plural": "Cafes",
-   "kind": "venue",
-   "icon": "coffee",
-   "active": true
-  },
-  {
-   "slug": "cleaner",
-   "label": "Cleaner",
-   "plural": "Cleaners",
-   "kind": "service",
-   "icon": "sparkles",
-   "active": true
-  }
- ],
- "places": [
-  {
-   "slug": "sample-cafe",
-   "information": [
-    { "kind": "information", "title": "Free wifi", "details": "Ask at the counter for the password." },
-    { "kind": "information", "title": "Dogs welcome outside", "details": "Water bowls by the door." },
-    { "kind": "take_note", "title": "Cash only" },
-    { "kind": "warning", "title": "Steep stairs at the entry", "details": "There is no ramp. Call ahead for help." }
-   ],
-   "name": "Sample Cafe",
-   "location_type": "physical",
-   "description_short": "SAMPLE: coffee and toasties inside Cooleman Court.",
-   "description_full": "This is sample text.\n\nIt shows how a longer description reads.",
-   "our_take": "Good for a slow catch-up.",
-   "is_health": false,
-   "phone": "02 5550 0101",
-   "website_url": "https://example.com",
-   "social_links": [{ "platform": "facebook", "url": "https://www.facebook.com/example" }, { "platform": "instagram", "url": "https://www.instagram.com/example", "handle": "@example.cafe" }, { "platform": "tiktok", "url": "https://www.tiktok.com/@example" }],
-   "checked_at": "2026-11-19",
-   "primary_category": {
-    "slug": "cafe",
-    "label": "Cafe",
-    "plural": "Cafes",
-    "icon": "coffee"
-   },
-   "location": {
-    "show_public_address": true,
-    "public_address": "Shop 1, Cooleman Court",
-    "postcode": "2611",
-    "lat": -35.34,
-    "lng": 149.056,
-    "suburb": {
-     "slug": "weston",
-     "name": "Weston"
-    },
-    "in_centre": true,
-    "centre": {
-     "slug": "cooleman-court",
-     "name": "Cooleman Court"
-    }
-   },
-   "facts": [
-    {
-     "tag": {
-      "slug": "off-street-parking",
-      "label": "Off-street parking",
-      "group": "feature",
-      "section": "getting_there",
-      "icon": "square-parking"
-     },
-     "checked_at": "2026-11-19",
-     "subtitle": "2 spaces behind the shop"
-    },
-    {
-     "tag": {
-      "slug": "near-bus-stop",
-      "label": "Near a bus stop",
-      "group": "feature",
-      "section": "nearby",
-      "icon": "bus"
-     },
-     "checked_at": "2026-11-19"
-    },
-    {
-     "tag": {
       "slug": "step-free-entry",
       "label": "Step-free entry",
       "group": "feature",
-      "section": "access",
-      "icon": "accessibility"
-     },
-     "checked_at": "2026-11-19"
+      "question": null,
+      "icon": null,
+      "active": true
     },
     {
-     "tag": {
-      "slug": "accessible-toilet",
-      "label": "Accessible toilet",
-      "group": "feature",
-      "section": "access",
-      "icon": "toilet"
-     },
-     "checked_at": null
-    },
-    {
-     "tag": {
-      "slug": "free-wifi",
-      "label": "Free Wi-Fi",
-      "group": "feature",
-      "section": "facilities",
-      "icon": "wifi"
-     },
-     "checked_at": "2026-11-19"
-    },
-    {
-     "tag": {
-      "slug": "outdoor-seating",
-      "label": "Outdoor seating",
-      "group": "feature",
-      "section": "facilities",
-      "icon": "sun"
-     },
-     "checked_at": "2026-11-19",
-     "subtitle": "Covered deck, 6 tables"
-    },
-    {
-     "tag": {
       "slug": "dogs-welcome",
       "label": "Dogs welcome",
       "group": "feature",
-      "section": "facilities",
-      "icon": "dog"
-     },
-     "checked_at": "2026-11-19"
+      "question": null,
+      "icon": null,
+      "active": true
     },
     {
-     "tag": {
-      "slug": "vegan-options",
-      "label": "Vegan options",
-      "group": "feature",
-      "section": "food_drink",
-      "icon": "sprout"
-     },
-     "checked_at": "2026-11-19"
-    },
-    {
-     "tag": {
-      "slug": "takeaway",
-      "label": "Takeaway",
-      "group": "feature",
-      "section": "food_drink",
-      "icon": "shopping-bag"
-     },
-     "checked_at": "2026-11-19"
-    },
-    {
-     "tag": {
-      "slug": "card-payments",
-      "label": "Card payments",
-      "group": "feature",
-      "section": "services",
-      "icon": "credit-card"
-     },
-     "checked_at": "2026-11-19"
-    },
-    {
-     "tag": {
       "slug": "coffee-catch-up",
       "label": "Coffee catch-up",
       "group": "occasion",
-      "question": "occasion"
-     },
-     "checked_at": "2026-11-19"
+      "question": "occasion",
+      "icon": "coffee",
+      "active": true
     },
     {
-     "tag": {
       "slug": "with-kids",
       "label": "With kids",
       "group": "occasion",
-      "question": "who"
-     },
-     "checked_at": "2026-11-19"
+      "question": "who",
+      "icon": "users",
+      "active": true
     },
     {
-     "tag": {
       "slug": "weekend-morning",
       "label": "Weekend morning",
       "group": "occasion",
-      "question": "when"
-     },
-     "checked_at": "2026-11-19"
+      "question": "when",
+      "icon": "clock",
+      "active": true
+    },
+    {
+      "slug": "fuel-e10",
+      "label": "E10",
+      "group": "feature",
+      "question": null,
+      "icon": "fuel",
+      "active": false
+    },
+    {
+      "slug": "fuel-u91",
+      "label": "Unleaded 91",
+      "group": "feature",
+      "question": null,
+      "icon": "fuel",
+      "active": false
+    },
+    {
+      "slug": "fuel-p95",
+      "label": "Premium 95",
+      "group": "feature",
+      "question": null,
+      "icon": "fuel",
+      "active": false
+    },
+    {
+      "slug": "fuel-p98",
+      "label": "Premium 98",
+      "group": "feature",
+      "question": null,
+      "icon": "fuel",
+      "active": false
+    },
+    {
+      "slug": "fuel-pdl",
+      "label": "Premium Diesel",
+      "group": "feature",
+      "question": null,
+      "icon": "fuel",
+      "active": false
     }
-   ],
-   "opening_hours": [
+  ],
+  "synonyms": [
     {
-     "weekday": "monday",
-     "opens_at": "07:00:00.000",
-     "closes_at": "15:00:00.000"
+      "term": "sparky",
+      "category": null,
+      "suburb": null,
+      "tag": null
     },
     {
-     "weekday": "tuesday",
-     "opens_at": "07:00:00.000",
-     "closes_at": "15:00:00.000"
+      "term": "coffee",
+      "category": "cafe",
+      "suburb": null,
+      "tag": null
     },
     {
-     "weekday": "wednesday",
-     "opens_at": "07:00:00.000",
-     "closes_at": "15:00:00.000"
-    },
-    {
-     "weekday": "thursday",
-     "opens_at": "07:00:00.000",
-     "closes_at": "15:00:00.000"
-    },
-    {
-     "weekday": "friday",
-     "opens_at": "07:00:00.000",
-     "closes_at": "15:00:00.000"
-    },
-    {
-     "weekday": "saturday",
-     "opens_at": "08:00:00.000",
-     "closes_at": "12:30:00.000"
+      "term": "cooleman court",
+      "category": null,
+      "suburb": "weston",
+      "tag": null
     }
-   ],
-   "hours_exceptions": [
+  ],
+  "tileSets": [
     {
-     "on_date": "2026-12-25",
-     "closed": true,
-     "note": "Christmas Day"
+      "name": "Fuel prices",
+      "heading": "Fuel prices",
+      "position": 5,
+      "active": true,
+      "tags": [
+        {
+          "slug": "fuel-e10",
+          "label": "E10",
+          "icon": "fuel",
+          "section": "live_information"
+        },
+        {
+          "slug": "fuel-u91",
+          "label": "Unleaded 91",
+          "icon": "fuel",
+          "section": "live_information"
+        },
+        {
+          "slug": "fuel-p95",
+          "label": "Premium 95",
+          "icon": "fuel",
+          "section": "live_information"
+        },
+        {
+          "slug": "fuel-p98",
+          "label": "Premium 98",
+          "icon": "fuel",
+          "section": "live_information"
+        },
+        {
+          "slug": "fuel-pdl",
+          "label": "Premium Diesel",
+          "icon": "fuel",
+          "section": "live_information"
+        }
+      ]
     }
-   ],
-   "action_tiles": [
-    {
-     "action": "order",
-     "label": "Order ahead",
-     "provider": "Example Ordering",
-     "url": "https://example.com/order",
-     "active": true,
-     "checked_at": "2026-11-19"
-    }
-   ],
-   "photos": [
-    {
-     "file": {
-      "url": "/sample/cafe-counter.svg",
-      "width": 1200,
-      "height": 900
-     },
-     "alt_text": "Sample: the counter",
-     "credit": null,
-     "permission": "Sample",
-     "is_primary": false
-    },
-    {
-     "file": {
-      "url": "/sample/cafe-front.svg",
-      "width": 1200,
-      "height": 900
-     },
-     "alt_text": "Sample: the shopfront",
-     "credit": "Find Me CBR",
-     "permission": "Sample",
-     "is_primary": true
-    },
-    {
-     "file": {
-      "url": "/sample/cafe-deck.svg",
-      "width": 1200,
-      "height": 900
-     },
-     "alt_text": "Sample: the outdoor deck",
-     "credit": null,
-     "permission": "Sample",
-     "is_primary": false
-    }
-   ],
-   "menu": {
-    "show": true,
-    "kind": "images",
-    "checked_at": "2026-11-19",
-    "url": null,
-    "images": [
-     {
-      "url": "/sample/menu-1.svg",
-      "width": 800,
-      "height": 1100,
-      "alternativeText": "Sample menu, page 1: drinks"
-     },
-     {
-      "url": "/sample/menu-2.svg",
-      "width": 800,
-      "height": 1100,
-      "alternativeText": "Sample menu, page 2: food"
-     }
-    ],
-    "valid_as_of": "2026-11-01"
-   }
-  },
-  {
-   "slug": "sample-cleaning",
-   "name": "Sample Cleaning",
-   "location_type": "mobile",
-   "description_short": "SAMPLE: home and end-of-lease cleaning.",
-   "is_health": false,
-   "phone": "02 5550 0102",
-   "checked_at": "2026-11-19",
-   "based_in": "Duffy",
-   "primary_category": {
-    "slug": "cleaner",
-    "label": "Cleaner",
-    "plural": "Cleaners",
-    "icon": "sparkles"
-   },
-   "location": {
-    "show_public_address": false,
-    "public_address": "1 Private St",
-    "lat": -35.33,
-    "lng": 149.03,
-    "suburb": {
-     "slug": "duffy",
-     "name": "Duffy"
-    },
-    "in_centre": false
-   },
-   "service_areas": [
-    {
-     "suburb": {
-      "slug": "weston",
-      "name": "Weston"
-     }
-    },
-    {
-     "suburb": {
-      "slug": "holder",
-      "name": "Holder"
-     }
-    },
-    {
-     "suburb": {
-      "slug": "coombs",
-      "name": "Coombs"
-     }
-    }
-   ],
-   "menu": {
-    "show": true,
-    "kind": "link",
-    "url": "https://example.com/prices",
-    "checked_at": "2026-11-19",
-    "images": [],
-    "valid_as_of": "2026-10-15"
-   }
-  }
- ],
- "tags": [
-  {
-   "slug": "step-free-entry",
-   "label": "Step-free entry",
-   "group": "feature",
-   "question": null,
-   "icon": null,
-   "active": true
-  },
-  {
-   "slug": "dogs-welcome",
-   "label": "Dogs welcome",
-   "group": "feature",
-   "question": null,
-   "icon": null,
-   "active": true
-  },
-  {
-   "slug": "coffee-catch-up",
-   "label": "Coffee catch-up",
-   "group": "occasion",
-   "question": "occasion",
-   "icon": "coffee",
-   "active": true
-  },
-  {
-   "slug": "with-kids",
-   "label": "With kids",
-   "group": "occasion",
-   "question": "who",
-   "icon": "users",
-   "active": true
-  },
-  {
-   "slug": "weekend-morning",
-   "label": "Weekend morning",
-   "group": "occasion",
-   "question": "when",
-   "icon": "clock",
-   "active": true
-  }
- ],
- "synonyms": [
-  {
-   "term": "sparky",
-   "category": null,
-   "suburb": null,
-   "tag": null
-  },
-  {
-   "term": "coffee",
-   "category": "cafe",
-   "suburb": null,
-   "tag": null
-  },
-  {
-   "term": "cooleman court",
-   "category": null,
-   "suburb": "weston",
-   "tag": null
-  }
- ]
+  ]
 }

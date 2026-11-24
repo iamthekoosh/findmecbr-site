@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { shapeTileSet, tileSetsFor, inheritFacts } from './format.js';
+import { loadFuel, applyFuel } from './fuel.js';
 
 const BASE = (process.env.STRAPI_URL || 'http://localhost:1337').replace(/\/$/, '');
 
@@ -140,6 +141,8 @@ export function shapePlace(p) {
     id: p.documentId ?? null,
     slug: p.slug,
     name: p.name,
+    // The station's code on FuelCheck. Its fuel tiles get prices at build time (see fuel.js).
+    fuelcheckCode: p.fuelcheck_code ? String(p.fuelcheck_code) : null,
     // Tile sets picked on the place (by name). They group its tiles on the page.
     tileSetChoice: (p.tile_sets ?? []).map((s) => s.name),
     otherCategories: (p.other_categories ?? []).map((c) => ({ slug: c.slug })),
@@ -202,7 +205,7 @@ export async function loadSite() {
   // Sample data for checking pages locally, without touching Strapi. Never used for a real build.
   if (process.env.SITE_SAMPLE === '1') {
     const sample = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'src', 'lib', 'sample-site.json'), 'utf8'));
-    cached = { ...sample, places: sample.places.map(shapePlace) };
+    cached = { ...sample, places: sample.places.map(shapePlace), tileSets: (sample.tileSets ?? []).map(shapeTileSet), fuelData: loadFuel(true) };
     return finish(cached);
   }
   const [districts, suburbs, centres, categories, places, tags, synonyms, tileSets] = await Promise.all([
@@ -258,6 +261,7 @@ export async function loadSite() {
     tags: tags.map((t) => ({ slug: t.slug, label: t.label, group: t.group, question: t.question ?? null, icon: t.icon ?? null, active: !!t.active })),
     tileSets: tileSets.map(shapeTileSet),
     synonyms: synonyms.map((x) => ({ term: x.term, category: x.category?.slug ?? null, suburb: x.suburb?.slug ?? null, tag: x.tag?.slug ?? null })),
+    fuelData: loadFuel(),
   };
   return finish(cached);
 }
@@ -270,6 +274,8 @@ function finish(site) {
   const bySlug = new Map(site.places.map((p) => [p.slug, p]));
   for (const p of site.places) if (p.parent && !bySlug.has(p.parent.slug)) p.parent = null;
   for (const p of site.places) p.children = site.places.filter((c) => c.parent?.slug === p.slug);
+  // Prices into the fuel tiles of stations with a FuelCheck code, before tiles are inherited or grouped.
+  applyFuel(site.places, site.fuelData);
   // A place inside another place, or in a centre, inherits its tiles (only published parents count).
   inheritFacts(site.places, site.centres);
   // Each place's tile sections, from the tile sets in Strapi.

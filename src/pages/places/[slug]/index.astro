@@ -7,8 +7,10 @@ import FactTile from '../../../components/FactTile.astro';
 import PlaceCard from '../../../components/PlaceCard.astro';
 import PhotoCarousel from '../../../components/PhotoCarousel.astro';
 import LiveStatus from '../../../components/LiveStatus.astro';
+import FuelCredit from '../../../components/FuelCredit.astro';
+import LiveTile from '../../../components/LiveTile.astro';
 import { loadSite, STAGE, INFO_KINDS } from '../../../lib/strapi.js';
-import { shortDate, weekHours, directionsUrl, telUrl, ACTION_WORDS, orderFacts, splitInherited } from '../../../lib/format.js';
+import { shortDate, weekHours, directionsUrl, telUrl, ACTION_WORDS, orderFacts, splitInherited, splitLive } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -44,6 +46,8 @@ const { facts: ownFacts, tileSets, inherited } = splitInherited(place.facts, pla
 // Facts shown in a tile set aren't repeated under "What we know".
 const inSets = new Set(tileSets.flatMap((s) => s.tiles.map((t) => t.slug)));
 const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.slug));
+// Live Information (fuel prices) shows near the top as full-size tiles; other tile sets stay lower down.
+const [liveSets, otherSets] = splitLive(tileSets);
 ---
 <Base title={`${place.name}, ${place.suburb?.name ?? 'Canberra'}`} description={desc}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(ld)} />
@@ -140,6 +144,19 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
   {place.menu?.kind === 'link' && place.menu.validAsOf && <p class="valid-as-of"><Icon name="calendar" />Menu valid as of: <b>{shortDate(place.menu.validAsOf)}</b></p>}
 
 
+  {liveSets.length > 0 && (
+    <section class="section live-info">
+      <h2>Live Information</h2>
+      {liveSets.map((set) => (
+        <div class="live-set">
+          <h3>{set.heading}</h3>
+          <ul class="live-tiles">{set.tiles.map((f) => <LiveTile fact={f} />)}</ul>
+        </div>
+      ))}
+      {place.fuel && liveSets.some((s) => s.tiles.some((f) => f.fuel)) && <FuelCredit checked={place.fuel.checked} />}
+    </section>
+  )}
+
   {place.information.length > 0 && (
     <section class="section">
       <h2>Information</h2>
@@ -162,7 +179,7 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
     </section>
   )}
 
-  {tileSets.map((set) => (
+  {otherSets.map((set) => (
     <section class="section">
       <h2>{set.heading}</h2>
       <ul class="fact-tiles">{set.tiles.map((f) => <FactTile fact={f} />)}</ul>
@@ -173,6 +190,7 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
     <section class="section">
       <h2>What we know</h2>
       <ul class="fact-tiles">{orderFacts(features).map((f) => <FactTile fact={f} />)}</ul>
+      {place.fuel && features.some((f) => f.fuel) && <FuelCredit checked={place.fuel.checked} />}
     </section>
   )}
 

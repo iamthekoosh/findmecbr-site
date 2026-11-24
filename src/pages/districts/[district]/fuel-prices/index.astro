@@ -1,0 +1,41 @@
+---
+// Fuel prices in a district: for each fuel, its stations cheapest first. Only districts with a published station get the page.
+import Base from '../../../../layouts/Base.astro';
+import Icon from '../../../../components/Icon.astro';
+import Crumbs from '../../../../components/Crumbs.astro';
+import FuelCredit from '../../../../components/FuelCredit.astro';
+import { loadSite } from '../../../../lib/strapi.js';
+import { districtFuel } from '../../../../lib/fuel.js';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.districts.filter((d) => site.pagedDistricts.has(d.slug))
+    .map((district) => ({ district, fuel: districtFuel(site, district) }))
+    .filter((x) => x.fuel.stations.length)
+    .map(({ district, fuel }) => ({ params: { district: district.slug }, props: { district, fuel } }));
+}
+
+const { district, fuel } = Astro.props;
+const n = fuel.stations.length;
+---
+<Base title={`Fuel prices in ${district.name}`} description={`Petrol, diesel and LPG prices at ${n} service ${n === 1 ? 'station' : 'stations'} in ${district.name}, Canberra, cheapest first. From FuelCheck, updated every 4 hours.`}>
+  <Crumbs items={[{ label: district.name, href: `/districts/${district.slug}/` }]} />
+  <h1>Fuel prices in {district.name}</h1>
+  <p class="lede">{n} service {n === 1 ? 'station' : 'stations'}, cheapest first. Prices are what each station last reported, and we check every 4 hours.</p>
+
+  {fuel.fuels.map((f) => (
+    <section class="section">
+      <h2>{f.label}</h2>
+      <div class="stack">
+        {f.rows.map(({ place, fact }) => (
+          <a class="rowtile" href={`/places/${place.slug}/`}>
+            <span><Icon name="fuel" class="lead" /><span>{place.name}<small>{[fact.subtitle, place.suburb?.name].filter(Boolean).join(' · ')}</small></span></span>
+            <Icon name="chevron-right" />
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <FuelCredit checked={fuel.checked} />
+</Base>
