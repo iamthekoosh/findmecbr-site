@@ -66,6 +66,10 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
 
   {!isContainer && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
   {place.short && <p class="lede"><b class="inline-label">About:</b> {place.short}</p>}
+  {place.ourTake && (
+    <p class="take"><Icon name="message-square" /><span><b>Our take:</b> {place.ourTake}</span></p>
+  )}
+  {place.isHealth && <p class="muted health">We don't give opinions on health services. Check with the practice about your needs.</p>}
   {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} closedDays={place.closedDays} />}
 
   {place.parent && (
@@ -135,10 +139,6 @@ const features = ownFacts.filter((f) => f.group !== "occasion" && !inSets.has(f.
   )}
   {place.menu?.kind === 'link' && place.menu.validAsOf && <p class="valid-as-of"><Icon name="calendar" />Menu valid as of: <b>{shortDate(place.menu.validAsOf)}</b></p>}
 
-  {place.ourTake && (
-    <p class="take"><Icon name="message-square" /><span><b>Our take:</b> {place.ourTake}</span></p>
-  )}
-  {place.isHealth && <p class="muted health">We don't give opinions on health services. Check with the practice about your needs.</p>}
 
   {place.information.length > 0 && (
     <section class="section">
