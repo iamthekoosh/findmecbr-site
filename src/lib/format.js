@@ -1,4 +1,4 @@
-// Plain-words formatting for dates, hours and evidence. Pure functions, tested in tests/format.test.js.
+// Plain-words formatting for dates, hours and tiles. Pure functions, tested in tests/format.test.js.
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -37,25 +37,14 @@ export function weekHours(hours, closedDays = []) {
   });
 }
 
-// The identity's evidence wording: "Step-free entry: confirmed", "…: business says yes", "…: not confirmed".
-export function evidenceText(fact) {
-  if (fact.evidence === 'confirmed') return { mark: '✓', text: `${fact.label}: confirmed`, cls: 'yes' };
-  if (fact.evidence === 'business_says') return { mark: '', text: `${fact.label}: business says yes`, cls: 'biz' };
-  return { mark: '?', text: `${fact.label}: not confirmed`, cls: 'unk' };
-}
-
-// A fact as a tile: its icon, the fact, an optional subtitle, and a colour-coded tag for how we know it.
-// The tag's own icon is used when it has one, otherwise one that shows the evidence.
-export const EVIDENCE_TAGS = { confirmed: 'Verified', business_says: 'Info from online', unknown: 'Unconfirmed' };
+// A fact as a tile: its icon, the fact and an optional subtitle. The tag's own icon is used when it has one,
+// otherwise a tick.
 // knownIcons: a function that says whether an icon exists, or an object of icons by name.
-export function evidenceBadge(fact, knownIcons = {}) {
-  const status = EVIDENCE_TAGS[fact.evidence] ?? EVIDENCE_TAGS.unknown;
-  const cls = { confirmed: 'yes', business_says: 'biz' }[fact.evidence] ?? 'unk';
-  const fallback = { confirmed: 'check', business_says: 'globe' }[fact.evidence] ?? 'circle-help';
+export function factTile(fact, knownIcons = {}) {
   const known = typeof knownIcons === 'function' ? knownIcons(fact.icon) : knownIcons[fact.icon];
-  const icon = fact.icon && known ? fact.icon : fallback;
+  const icon = fact.icon && known ? fact.icon : 'check';
   const subtitle = (fact.subtitle ?? '').trim() || (fact.from ? `From ${fact.from}` : '');
-  return { icon, label: fact.label, subtitle, status, cls };
+  return { icon, label: fact.label, subtitle };
 }
 
 // A listing shows its facts as one set of tiles, no headings, in this order: getting there first, occasions ("good for") last.
@@ -132,7 +121,7 @@ export function splitInherited(facts = [], tileSets = []) {
 }
 
 // A place inside another place, or in a centre, inherits that place's tiles (facts) and tile sets.
-// Its own tile wins, unless its own is Unconfirmed and the inherited one is known.
+// Its own tile wins.
 // Order: the parent place (and its own parents and centre, all the way up), then the place's centre.
 // Inherited tiles carry `from` (the name of the place they came from). Safe to run twice.
 export function inheritFacts(places, centres = []) {
@@ -148,7 +137,6 @@ export function inheritFacts(places, centres = []) {
         const i = facts.findIndex((x) => x.slug === f.slug);
         const inherited = { ...f, from: f.from ?? from };
         if (i === -1) facts.push(inherited);
-        else if (facts[i].evidence === 'unknown' && f.evidence !== 'unknown') facts[i] = inherited;
       }
       for (const s of fromSets) if (!sets.includes(s)) sets.push(s);
     };

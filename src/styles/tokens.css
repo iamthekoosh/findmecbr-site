@@ -1,5 +1,6 @@
 /* Find Me CBR design tokens, draft v0.3. See identity/colors.md for usage rules. */
 :root {
+  color-scheme: light;
   /* Colour: light */
   --color-brand: #1F4D3A;
   --color-on-brand: #F7F3E8;
@@ -40,8 +41,11 @@
   --motion-ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
+/* Dark colours. They follow the device unless the reader picks Light or Dark in the menu,
+   which sets data-theme on <html>. Keep the two blocks below the same. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
     --color-brand: #8FCBAA;
     --color-on-brand: #143528;
     --color-bg: #111916;
@@ -57,6 +61,24 @@
     --color-info: #8CC4E6;
     /* Sponsored label stays wattle with dark text in both modes */
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-brand: #8FCBAA;
+  --color-on-brand: #143528;
+  --color-bg: #111916;
+  --color-surface: #1A2420;
+  --color-text: #EFEBDD;
+  --color-text-muted: #B3B5A8;
+  --color-border: #6F7A72;
+  --color-line: #39443E;
+  --color-confirmed: #8FCBAA;
+  --color-unknown: #B3B5A8;
+  --color-warning: #E7B75A;
+  --color-error: #F09A8C;
+  --color-info: #8CC4E6;
+  /* Sponsored label stays wattle with dark text in both modes */
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -6,7 +6,6 @@ import PlaceCard from '../../../components/PlaceCard.astro';
 import { loadSite, byCategory } from '../../../lib/strapi.js';
 import Crumbs from '../../../components/Crumbs.astro';
 import FactTile from '../../../components/FactTile.astro';
-import FactKey from '../../../components/FactKey.astro';
 import { typeOf, directionsUrl, hideListedChildren, orderFacts } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
@@ -44,7 +43,6 @@ const directions = directionsUrl({ address: centre.address || centre.name, subur
     <section class="section">
       <h2>{set.heading}</h2>
       <ul class="fact-tiles">{set.tiles.map((f) => <FactTile fact={f} />)}</ul>
-      <FactKey />
     </section>
   ))}
 
@@ -52,7 +50,6 @@ const directions = directionsUrl({ address: centre.address || centre.name, subur
     <section class="section">
       <h2>What we know</h2>
       <ul class="fact-tiles">{orderFacts(features).map((f) => <FactTile fact={f} />)}</ul>
-      <FactKey />
     </section>
   )}
 

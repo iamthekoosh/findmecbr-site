@@ -184,7 +184,6 @@
      "group": "feature",
      "question": null,
      "active": true,
-     "evidence": "confirmed",
      "checkedAt": "2026-11-19"
     },
     {
@@ -196,7 +195,6 @@
      "group": "feature",
      "question": null,
      "active": true,
-     "evidence": "confirmed",
      "checkedAt": "2026-11-19"
     },
     {
@@ -208,7 +206,6 @@
      "group": "feature",
      "question": null,
      "active": true,
-     "evidence": "confirmed",
      "checkedAt": "2026-11-19"
     },
     {
@@ -220,7 +217,6 @@
      "group": "feature",
      "question": null,
      "active": true,
-     "evidence": "confirmed",
      "checkedAt": "2026-11-19"
     }
    ],
@@ -264,6 +260,7 @@
    "slug": "sample-cafe",
    "information": [
     { "kind": "information", "title": "Free wifi", "details": "Ask at the counter for the password." },
+    { "kind": "information", "title": "Dogs welcome outside", "details": "Water bowls by the door." },
     { "kind": "take_note", "title": "Cash only" },
     { "kind": "warning", "title": "Steep stairs at the entry", "details": "There is no ramp. Call ahead for help." }
    ],
@@ -308,7 +305,6 @@
       "section": "getting_there",
       "icon": "square-parking"
      },
-     "evidence": "confirmed",
      "checked_at": "2026-11-19",
      "subtitle": "2 spaces behind the shop"
     },
@@ -320,7 +316,6 @@
       "section": "nearby",
       "icon": "bus"
      },
-     "evidence": "confirmed",
      "checked_at": "2026-11-19"
     },
     {
@@ -331,7 +326,6 @@
       "section": "access",
       "icon": "accessibility"
      },
-     "evidence": "confirmed",
      "checked_at": "2026-11-19"
     },
     {
@@ -342,7 +336,6 @@
       "section": "access",
       "icon": "toilet"
      },
-     "evidence": "unknown",
      "checked_at": null
     },
     {
@@ -353,7 +346,6 @@
       "section": "facilities",
       "icon": "wifi"
      },
-     "evidence": "business_says",
      "checked_at": "2026-11-19"
     },
     {
@@ -364,7 +356,6 @@
       "section": "facilities",
       "icon": "sun"
      },
-     "evidence": "confirmed",
      "checked_at": "2026-11-19",
      "subtitle": "Covered deck, 6 tables"
     },
@@ -376,7 +367,6 @@
       "section": "facilities",
       "icon": "dog"
      },
-     "evidence": "business_says",
      "checked_at": "2026-11-19"
     },
     {
@@ -387,7 +377,6 @@
       "section": "food_drink",
       "icon": "sprout"
      },
-     "evidence": "business_says",
      "checked_at": "2026-11-19"
     },
     {
@@ -398,7 +387,6 @@
       "section": "food_drink",
       "icon": "shopping-bag"
      },
-     "evidence": "confirmed",
      "checked_at": "2026-11-19"
     },
     {
@@ -409,7 +397,6 @@
       "section": "services",
       "icon": "credit-card"
      },
-     "evidence": "confirmed",
      "checked_at": "2026-11-19"
     },
     {
@@ -419,7 +406,6 @@
       "group": "occasion",
       "question": "occasion"
      },
-     "evidence": "confirmed",
      "checked_at": "2026-11-19"
     },
     {
@@ -429,7 +415,6 @@
       "group": "occasion",
       "question": "who"
      },
-     "evidence": "business_says",
      "checked_at": "2026-11-19"
     },
     {
@@ -439,7 +424,6 @@
       "group": "occasion",
       "question": "when"
      },
-     "evidence": "confirmed",
      "checked_at": "2026-11-19"
     }
    ],

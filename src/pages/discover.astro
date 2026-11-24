@@ -13,7 +13,7 @@ const QUESTIONS = [
   ['when', 'When?'],
 ];
 const site = await loadSite();
-const placeCount = (slug) => site.places.filter((p) => p.facts.some((f) => f.slug === slug && f.evidence !== 'unknown')).length;
+const placeCount = (slug) => site.places.filter((p) => p.facts.some((f) => f.slug === slug)).length;
 const groups = QUESTIONS
   .map(([key, label]) => ({ label, tags: site.tags.filter((t) => t.active && t.group === 'occasion' && t.question === key).map((t) => ({ t, n: placeCount(t.slug) })).filter((x) => x.n > 0) }))
   .filter((g) => g.tags.length > 0);

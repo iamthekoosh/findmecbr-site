@@ -118,25 +118,25 @@ export function search(params, site, opts = {}) {
     } else if (origin && cond.radius) {
       if (p.lat == null || kmBetween(origin.lat, origin.lng, p.lat, p.lng) > cond.radius) return false;
     }
-    // Hard filters need positive evidence. Missing data never passes.
-    if (cond.step && p.facts[FILTER_TAGS.step] !== 'confirmed') return false;
+    // Hard filters need the place to have the tile. Missing data never passes.
+    if (cond.step && !p.facts[FILTER_TAGS.step]) return false;
     if (cond.open && isOpenNow(p, now) !== true) return false;
-    if (cond.dogs && !['confirmed', 'business_says'].includes(p.facts[FILTER_TAGS.dogs])) return false;
-    if (cond.free && p.facts[FILTER_TAGS.free] !== 'confirmed') return false;
-    // A tile asked for by name: Verified or Info from online. Unconfirmed tiles don't count.
-    if (cond.has && !['confirmed', 'business_says'].includes(p.facts[cond.has])) return false;
+    if (cond.dogs && !p.facts[FILTER_TAGS.dogs]) return false;
+    if (cond.free && !p.facts[FILTER_TAGS.free]) return false;
+    // A tile asked for by name.
+    if (cond.has && !p.facts[cond.has]) return false;
     return true;
   });
 
   const distanceTo = (p) => (origin && p.type !== 'mobile' && p.lat != null ? kmBetween(origin.lat, origin.lng, p.lat, p.lng) : null);
   const score = (p) => {
-    const levels = Object.values(p.facts);
-    const confirmed = levels.length ? levels.filter((l) => l === 'confirmed').length / levels.length : 0;
+    // Fuller listings rank a little higher: up to six tiles count.
+    const features = Math.min(1, Object.keys(p.facts).length / 6);
     const filled = [p.short, p.phone, p.website, p.hours.length].filter(Boolean).length / 4;
     const match = cond.cat || cond.occ || cond.has ? 1 : cond.words.length ? 0.5 : 0.25;
     const d = isService ? null : distanceTo(p);
     const proximity = d == null ? 0 : Math.max(0, 1 - d / PROXIMITY_KM);
-    return WEIGHTS.match * match + WEIGHTS.proximity * proximity + WEIGHTS.features * confirmed + WEIGHTS.quality * filled;
+    return WEIGHTS.match * match + WEIGHTS.proximity * proximity + WEIGHTS.features * features + WEIGHTS.quality * filled;
   };
   const byScore = (a, b) => score(b) - score(a) || a.name.localeCompare(b.name);
   // Near me: closest first. Services that come to you have no distance, so they follow, best first.

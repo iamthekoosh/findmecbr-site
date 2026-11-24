@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { iconBody, hasIcon } from '../src/lib/icon-set.js';
-import { evidenceBadge } from '../src/lib/format.js';
+import { factTile } from '../src/lib/format.js';
 
 test('any Lucide icon can be drawn, not only those in icons.json', () => {
   assert.match(iconBody('phone-call'), /<path d="M/);
@@ -18,7 +18,7 @@ test('old Lucide names and the brand logos still draw', () => {
   for (const name of ['facebook', 'instagram', 'linkedin', 'youtube']) assert.match(iconBody(name), /<path |<rect /, name);
 });
 
-test('a tile uses its icon when it exists, else the status icon', () => {
-  assert.equal(evidenceBadge({ icon: 'trash-2', evidence: 'confirmed' }, hasIcon).icon, 'trash-2');
-  assert.equal(evidenceBadge({ icon: 'nope', evidence: 'confirmed' }, hasIcon).icon, 'check');
+test('a tile uses its icon when it exists, else a tick', () => {
+  assert.equal(factTile({ icon: 'trash-2' }, hasIcon).icon, 'trash-2');
+  assert.equal(factTile({ icon: 'nope' }, hasIcon).icon, 'check');
 });

@@ -109,7 +109,7 @@ export function shapeInformation(rows) {
 
 // Tiles (facts) on a place or centre: each one's tag and how we know it.
 export function shapeFacts(facts) {
-  return (facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, subtitle: f.subtitle ?? '', icon: f.tag.icon ?? null, section: f.tag.section ?? null, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false, evidence: f.evidence, checkedAt: f.checked_at }));
+  return (facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, subtitle: f.subtitle ?? '', icon: f.tag.icon ?? null, section: f.tag.section ?? null, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false }));
 }
 
 // Social media platforms in the order their buttons show, with a name and a Lucide icon.
@@ -299,8 +299,8 @@ export function publicData(site) {
       id: p.id, slug: p.slug, name: p.name, status: p.postStatus, cat: p.category?.slug ?? null, type: p.locationType, sub: p.suburb?.slug ?? null, subName: p.suburb?.name ?? '',
       centre: p.centre?.name ?? null, lat: p.lat, lng: p.lng, areas: p.serviceAreas.map((a) => a.slug), short: p.short, phone: p.phone, website: p.website,
       checked: p.checkedAt, hours: days(p.hours), logo: p.logo?.src ?? null,
-      facts: Object.fromEntries(p.facts.filter((f) => f.group === 'feature').map((f) => [f.slug, f.evidence])),
-      occ: p.facts.filter((f) => f.group === 'occasion' && f.active && f.evidence !== 'unknown').map((f) => f.slug),
+      facts: Object.fromEntries(p.facts.filter((f) => f.group === 'feature').map((f) => [f.slug, 1])),
+      occ: p.facts.filter((f) => f.group === 'occasion' && f.active).map((f) => f.slug),
     })),
   };
 }

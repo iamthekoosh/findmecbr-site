@@ -1,15 +1,12 @@
 ---
-// A fact about a place as a compact tile: icon, the fact, an optional subtitle, and a small circle for how we know it
-// (✓ Verified, i Info from online, ? Unconfirmed). The status is also in hidden text for screen readers.
+// A fact about a place as a compact tile: icon, the fact and an optional subtitle.
 import Icon from './Icon.astro';
 import { hasIcon } from '../lib/icon-set.js';
-import { evidenceBadge } from '../lib/format.js';
+import { factTile } from '../lib/format.js';
 const { fact } = Astro.props;
-const b = evidenceBadge(fact, hasIcon);
+const b = factTile(fact, hasIcon);
 ---
-<li class={`fact-tile ${b.cls}`}>
+<li class="fact-tile">
   <Icon name={b.icon} />
   <span class="fact-text"><span class="fact-label">{b.label}</span>{b.subtitle && <><span class="fact-dot" aria-hidden="true"> · </span><span class="fact-sub">{b.subtitle}</span></>}</span>
-  <span class="ev-dot" title={b.status} aria-hidden="true"></span>
-  <span class="sr-only">{b.status}</span>
 </li>

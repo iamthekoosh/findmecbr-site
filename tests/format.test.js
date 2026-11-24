@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { shortDate, clock, weekHours, evidenceText, directionsUrl, telUrl } from '../src/lib/format.js';
+import { shortDate, clock, weekHours, directionsUrl, telUrl } from '../src/lib/format.js';
 import { shapePlace, shapeInformation, toQuery, byCategory } from '../src/lib/strapi.js';
 
 test('dates read plainly', () => {
@@ -20,12 +20,6 @@ test('missing days are not confirmed, never closed', () => {
   assert.equal(rows[0].text, '7am to 3pm');
   assert.equal(rows[1].text, 'Hours not confirmed');
   assert.deepEqual(weekHours([]), []);
-});
-
-test('evidence uses the identity wording', () => {
-  assert.equal(evidenceText({ label: 'Step-free entry', evidence: 'confirmed' }).text, 'Step-free entry: confirmed');
-  assert.equal(evidenceText({ label: 'Step-free entry', evidence: 'business_says' }).text, 'Step-free entry: business says yes');
-  assert.equal(evidenceText({ label: 'Step-free entry', evidence: 'unknown' }).text, 'Step-free entry: not confirmed');
 });
 
 test('directions and calls', () => {
@@ -112,15 +106,15 @@ test('tile sets group the tiles a place has, in set order; other tiles are left 
   const place = {
     tileSetChoice: ['Extras', 'Deli', 'Off'],
     facts: [
-      { slug: 'liquor', label: 'Liquor', evidence: 'business_says', icon: null },
-      { slug: 'ice', label: 'Ice', evidence: 'unknown', icon: null },
-      { slug: 'sliced-meats', label: 'Sliced meats', evidence: 'confirmed', icon: null },
+      { slug: 'liquor', label: 'Liquor', icon: null },
+      { slug: 'ice', label: 'Ice', icon: null },
+      { slug: 'sliced-meats', label: 'Sliced meats', icon: null },
     ],
   };
   const sets = tileSetsFor(place, [extras, deli, off]);
   assert.deepEqual(sets.map((s) => s.heading), ['At the deli', 'Extra services'], 'lower position first; sets that are off left out');
   assert.deepEqual(sets[0].tiles.map((t) => t.slug), ['sliced-meats', 'liquor']);
-  assert.deepEqual(sets[1].tiles.map((t) => [t.label, t.evidence]), [['Ice', 'unknown']], 'a tile shows once, and removed tiles (Lotto) do not show');
+  assert.deepEqual(sets[1].tiles.map((t) => t.label), ['Ice'], 'a tile shows once, and removed tiles (Lotto) do not show');
   assert.equal(sets[0].tiles[1].icon, null, 'no icon on the fact or the deli tag');
   assert.equal(sets[1].tiles[0].icon, 'snowflake', "a fact without its own icon uses the tag's");
   assert.equal(tileSetsFor({ ...place, tileSetChoice: [] }, [extras]).length, 0, 'no sets picked: no set sections');
@@ -158,44 +152,44 @@ test('social media links: https only, in platform order', async () => {
 });
 
 test('a place inside another place, or in a centre, inherits its tiles', async () => {
-  const { inheritFacts, evidenceBadge } = await import('../src/lib/format.js');
-  const f = (slug, evidence, extra = {}) => ({ slug, label: slug, evidence, group: 'feature', ...extra });
-  const centre = { slug: 'cc', name: 'Cooleman Court', facts: [f('parking', 'confirmed'), f('toilets', 'business_says')], tileSetChoice: ['Centre'] };
-  const suite = { slug: 'suite', name: 'Consulting Suite', parent: null, centre: { slug: 'cc' }, facts: [f('lift', 'confirmed')], tileSetChoice: [] };
-  const clinic = { slug: 'clinic', name: 'Clinic', parent: { slug: 'suite' }, centre: null, facts: [f('parking', 'unknown'), f('toilets', 'confirmed', { subtitle: 'Ours' })], tileSetChoice: ['Clinic'] };
-  const loner = { slug: 'loner', name: 'Loner', parent: null, centre: null, facts: [f('wifi', 'confirmed')], tileSetChoice: [] };
+  const { inheritFacts, factTile } = await import('../src/lib/format.js');
+  const f = (slug, extra = {}) => ({ slug, label: slug, group: 'feature', ...extra });
+  const centre = { slug: 'cc', name: 'Cooleman Court', facts: [f('parking'), f('toilets')], tileSetChoice: ['Centre'] };
+  const suite = { slug: 'suite', name: 'Consulting Suite', parent: null, centre: { slug: 'cc' }, facts: [f('lift')], tileSetChoice: [] };
+  const clinic = { slug: 'clinic', name: 'Clinic', parent: { slug: 'suite' }, centre: null, facts: [f('toilets', { subtitle: 'Ours' })], tileSetChoice: ['Clinic'] };
+  const loner = { slug: 'loner', name: 'Loner', parent: null, centre: null, facts: [f('wifi')], tileSetChoice: [] };
   inheritFacts([clinic, suite, loner], [centre]);
-  const by = (p) => Object.fromEntries(p.facts.map((x) => [x.slug, [x.evidence, x.from ?? null]]));
-  assert.deepEqual(by(suite), { lift: ['confirmed', null], parking: ['confirmed', 'Cooleman Court'], toilets: ['business_says', 'Cooleman Court'] });
-  assert.deepEqual(by(clinic), { parking: ['confirmed', 'Cooleman Court'], toilets: ['confirmed', null], lift: ['confirmed', 'Consulting Suite'] },
-    'own tile wins unless it is Unconfirmed; inherits through the parent up to its centre');
+  const by = (p) => Object.fromEntries(p.facts.map((x) => [x.slug, x.from ?? null]));
+  assert.deepEqual(by(suite), { lift: null, parking: 'Cooleman Court', toilets: 'Cooleman Court' });
+  assert.deepEqual(by(clinic), { toilets: null, lift: 'Consulting Suite', parking: 'Cooleman Court' },
+    'own tile wins; inherits through the parent up to its centre');
   assert.deepEqual(clinic.tileSetChoice, ['Clinic', 'Centre'], 'tile sets come along too');
-  assert.deepEqual(by(loner), { wifi: ['confirmed', null] }, 'a place on its own is unchanged');
-  assert.equal(evidenceBadge(clinic.facts.find((x) => x.slug === 'lift')).subtitle, 'From Consulting Suite');
-  assert.equal(evidenceBadge(clinic.facts.find((x) => x.slug === 'toilets')).subtitle, 'Ours');
+  assert.deepEqual(by(loner), { wifi: null }, 'a place on its own is unchanged');
+  assert.equal(factTile(clinic.facts.find((x) => x.slug === 'lift')).subtitle, 'From Consulting Suite');
+  assert.equal(factTile(clinic.facts.find((x) => x.slug === 'toilets')).subtitle, 'Ours');
   inheritFacts([clinic, suite, loner], [centre]);
   assert.equal(clinic.facts.length, 3, 'running twice adds nothing');
-  const a = { slug: 'a', name: 'A', parent: { slug: 'b' }, facts: [f('x', 'confirmed')] };
-  const b = { slug: 'b', name: 'B', parent: { slug: 'a' }, facts: [f('y', 'confirmed')] };
+  const a = { slug: 'a', name: 'A', parent: { slug: 'b' }, facts: [f('x')] };
+  const b = { slug: 'b', name: 'B', parent: { slug: 'a' }, facts: [f('y')] };
   inheritFacts([a, b]);
   assert.deepEqual(a.facts.map((x) => x.slug).sort(), ['x', 'y'], 'a loop of parents does not hang');
 });
 
 test('inherited tiles get their own "At <place>" section and lose the "From" subtitle', async () => {
-  const { splitInherited, evidenceBadge } = await import('../src/lib/format.js');
+  const { splitInherited, factTile } = await import('../src/lib/format.js');
   const facts = [
-    { slug: 'takeaway', label: 'Takeaway', group: 'feature', section: 'food_drink', evidence: 'confirmed' },
-    { slug: 'toilets', label: 'Toilets', group: 'feature', section: 'facilities', evidence: 'confirmed', from: 'Cooleman Court' },
-    { slug: 'post-box', label: 'Post Box', group: 'feature', section: 'nearby', evidence: 'business_says', from: 'Cooleman Court' },
-    { slug: 'lift', label: 'Lift', group: 'feature', section: 'access', evidence: 'confirmed', from: 'Holder Consulting Suite' },
-    { slug: 'with-kids', label: 'With kids', group: 'occasion', evidence: 'confirmed', from: 'Cooleman Court' },
+    { slug: 'takeaway', label: 'Takeaway', group: 'feature', section: 'food_drink' },
+    { slug: 'toilets', label: 'Toilets', group: 'feature', section: 'facilities', from: 'Cooleman Court' },
+    { slug: 'post-box', label: 'Post Box', group: 'feature', section: 'nearby', from: 'Cooleman Court' },
+    { slug: 'lift', label: 'Lift', group: 'feature', section: 'access', from: 'Holder Consulting Suite' },
+    { slug: 'with-kids', label: 'With kids', group: 'occasion', from: 'Cooleman Court' },
   ];
   const sets = [{ heading: 'Extra services', tiles: [facts[0], facts[2]] }, { heading: 'Only inherited', tiles: [facts[1]] }];
   const out = splitInherited(facts, sets);
   assert.deepEqual(out.facts.map((f) => f.slug), ['takeaway', 'with-kids']);
   assert.deepEqual(out.tileSets.map((s) => [s.heading, s.tiles.map((t) => t.slug)]), [['Extra services', ['takeaway']]]);
   assert.deepEqual(out.inherited.map((s) => [s.heading, s.tiles.map((t) => t.slug)]), [['At Cooleman Court', ['toilets', 'post-box']], ['At Holder Consulting Suite', ['lift']]]);
-  assert.equal(evidenceBadge(out.inherited[0].tiles[0]).subtitle, '');
+  assert.equal(factTile(out.inherited[0].tiles[0]).subtitle, '');
 });
 
 test('a day switched to Closed shows as Closed, and has no sessions', () => {

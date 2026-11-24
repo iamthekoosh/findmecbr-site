@@ -95,7 +95,7 @@ function chips(params, cond, site) {
 function noResults(params, cond, site) {
   const opts = [];
   const off = (key, label) => opts.push(`<a class="btn btn-row" href="${link(params, { [key]: null })}">${label}</a>`);
-  if (cond.step) off('step', 'Include places without confirmed step-free entry');
+  if (cond.step) off('step', 'Include places without step-free entry');
   if (cond.open) off('open', 'Include places that may be closed');
   if (cond.dogs) off('dogs', 'Remove the dogs filter');
   if (cond.free) off('free', 'Remove the free filter');

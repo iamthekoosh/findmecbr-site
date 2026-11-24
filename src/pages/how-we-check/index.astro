@@ -1,21 +1,15 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
-import FactTile from '../../components/FactTile.astro';
 ---
-<Base title="How we check" description="What Verified, Info from online and Unconfirmed mean on Find Me CBR.">
+<Base title="How we check" description="What Verified, Info from online and Unverified mean on Find Me CBR.">
   <div class="prose">
     <h1>How we check</h1>
-    <p>Every place shows the date we last checked it. Each fact says how we know it:</p>
-    <ul class="fact-tiles">
-      <FactTile fact={{ label: 'Step-free entry', subtitle: 'Ramp at the side door', evidence: 'confirmed', icon: 'accessibility' }} />
-      <FactTile fact={{ label: 'Step-free entry', evidence: 'business_says', icon: 'accessibility' }} />
-      <FactTile fact={{ label: 'Step-free entry', evidence: 'unknown', icon: 'accessibility' }} />
-    </ul>
+    <p>Every place shows the date we last checked it, and a tag for how well we've checked it:</p>
     <ul>
-      <li><strong>Verified:</strong> we saw it ourselves, or tested it in person.</li>
-      <li><strong>Info from online:</strong> it's on the business's own website or socials, or the business told us. We haven't seen it ourselves yet.</li>
-      <li><strong>Unconfirmed:</strong> we don't know yet. We never guess.</li>
+      <li><strong>Verified:</strong> we confirmed it with the business or in person.</li>
+      <li><strong>Info from online:</strong> taken from the business's own website, socials or other public sources. We haven't confirmed it with them yet.</li>
+      <li><strong>Unverified:</strong> we haven't checked it yet. We never guess.</li>
       <li><strong>Our take:</strong> our opinion, clearly marked. It's never paid for, and we don't give opinions on health services.</li>
     </ul>
     <p>A service, such as a cleaner or electrician, only appears for a suburb they've told us they cover. Where they're based doesn't count.</p>

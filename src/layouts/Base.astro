@@ -20,12 +20,21 @@ const menu = [
   { href: '/services/', icon: 'store', label: 'Businesses' },
   { href: '/search/', icon: 'search', label: 'Search' },
 ];
+// Auto follows the phone or computer's own setting. Light and Dark are saved in this browser only.
+const themes = [
+  { value: 'auto', icon: 'sun-moon', label: 'Auto' },
+  { value: 'light', icon: 'sun', label: 'Light' },
+  { value: 'dark', icon: 'moon', label: 'Dark' },
+];
 ---
 <!doctype html>
 <html lang="en-AU">
   <head>
     <meta charset="utf-8" />
-    <script is:inline>document.documentElement.classList.add('js')</script>
+    <script is:inline>
+      // Runs before the page paints, so a saved Light or Dark choice doesn't flash the other colours.
+      (function(){var d=document.documentElement;d.classList.add('js');try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')d.dataset.theme=t}catch(e){}})();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -54,6 +63,12 @@ const menu = [
     <div class="menu-wrap" id="main-menu">
       <nav class="menu" aria-label="Main">
         {menu.map((m) => <a href={m.href} aria-current={here.startsWith(m.href) ? 'page' : undefined}><Icon name={m.icon} />{m.label}</a>)}
+        <div class="theme" role="group" aria-labelledby="theme-label">
+          <span class="theme-label" id="theme-label">Colours</span>
+          <div class="theme-opts">
+            {themes.map((t) => <button type="button" data-theme-pick={t.value} aria-pressed={t.value === 'auto' ? 'true' : 'false'}><Icon name={t.icon} />{t.label}</button>)}
+          </div>
+        </div>
       </nav>
     </div>
     <main id="main" tabindex="-1">
@@ -83,6 +98,18 @@ const menu = [
       btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && wrap.classList.contains('open')) { set(false); btn.focus(); } });
       document.addEventListener('click', (e) => { if (wrap.classList.contains('open') && !wrap.contains(e.target) && !btn.contains(e.target)) set(false); });
+
+      // Colours: Auto, Light or Dark. The choice is kept in this browser (localStorage) and nowhere else.
+      const root = document.documentElement;
+      const picks = document.querySelectorAll('[data-theme-pick]');
+      const show = (t) => picks.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themePick === t)));
+      show(root.dataset.theme || 'auto');
+      picks.forEach((b) => b.addEventListener('click', () => {
+        const t = b.dataset.themePick;
+        if (t === 'auto') delete root.dataset.theme; else root.dataset.theme = t;
+        try { if (t === 'auto') localStorage.removeItem('theme'); else localStorage.setItem('theme', t); } catch {}
+        show(t);
+      }));
     </script>
   </body>
 </html>
