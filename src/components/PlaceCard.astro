@@ -16,8 +16,10 @@ const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slic
       </span>
       <span>
         <span class="name">{place.name}</span>
-        <StatusTag status={place.postStatus} />
-        <span class="sub">{[place.category?.label, where].filter(Boolean).join(' · ')}</span>
+        <span class="card-meta">
+          <StatusTag status={place.postStatus} />
+          <span class="sub">{[place.category?.label, where].filter(Boolean).join(' · ')}</span>
+        </span>
       </span>
     </span>
     <Icon name="chevron-right" />

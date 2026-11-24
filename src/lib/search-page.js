@@ -50,6 +50,9 @@ function describe(c, site) {
   return sub ? `Places in ${sub}` : c.near ? 'Places near you' : 'All places';
 }
 
+// Same labels as POST_STATUSES in strapi.js (that file isn't loaded in the browser).
+const STATUS = { verified: 'Verified', info_online: 'Info from online', unverified: 'Unverified' };
+
 function card(p, site, km) {
   const cat = site.categories.find((c) => c.slug === p.cat);
   const where = [p.centre, p.subName].filter(Boolean).join(', ');
@@ -57,7 +60,7 @@ function card(p, site, km) {
   // No action buttons or checked date in results, so the list stays short. Both are on the place page.
   return `<article class="card">
     <a class="card-head" href="/places/${esc(p.slug)}/"><span class="card-main"><span class="logo-slot">${p.logo ? `<img src="${esc(p.logo)}" alt="" loading="lazy">` : esc(initials)}</span>
-      <span><span class="name">${esc(p.name)}</span><span class="sub">${esc([cat?.label, where, km != null ? `${km.toFixed(1)} km` : null].filter(Boolean).join(' · '))}</span></span></span>${ic('chevron-right')}</a>
+      <span><span class="name">${esc(p.name)}</span><span class="card-meta"><span class="status status-${STATUS[p.status] ? p.status : 'unverified'}">${STATUS[p.status] ?? STATUS.unverified}</span><span class="sub">${esc([cat?.label, where, km != null ? `${km.toFixed(1)} km` : null].filter(Boolean).join(' · '))}</span></span></span></span>${ic('chevron-right')}</a>
     ${p.short ? `<p>${esc(p.short)}</p>` : ''}
   </article>`;
 }

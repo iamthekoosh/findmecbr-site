@@ -310,3 +310,9 @@ label{display:grid;gap:4px;font-weight:600}
 .inline-label{font-weight:700}
 .where{display:grid;gap:6px}
 .where p{margin:0}
+
+/* List cards: status tag and breadcrumb (category, centre, suburb) on one line. */
+.card-meta{display:block;margin-top:4px;line-height:24px}
+.card-meta .status{margin-right:6px;vertical-align:1px}
+.card-meta .status{margin-top:0}
+.card-meta .sub{display:inline;color:var(--color-text);font-weight:700}
