@@ -62,8 +62,9 @@ npm run build
 | `src/lib/format.js` | Display helpers: hours (`weekHours`, with Closed days), evidence circles, tile sets (`tileSetsFor`), inherited tiles (`inheritFacts`, `splitInherited`), hiding children (`hideListedChildren`) |
 | `src/lib/live-hours.js` | The live open status, worked out in the browser |
 | `src/lib/search.js` | Rules-based search: synonyms (including tile synonyms such as "beer"), hard filters, ranking, and Near me (`NEAR_KM`, sorted by distance) |
-| `src/lib/icon-set.js` | Draws any Lucide icon (lucide-static 0.460.0) at build time, so any icon name Strapi accepts shows. Strapi checks names against the same version. |
-| `src/lib/icons.json` | The few icons the browser needs for the search page, copied from lucide-static 0.460.0. |
+| `src/lib/icon-set.js` | Draws any Lucide icon (lucide-static 1.70.0) at build time, including old names Lucide still answers to, so any icon name Strapi accepts shows. Strapi checks names against the same version: after upgrading Lucide here, run `node scripts/lucide-icons.mjs ../findmecbr-site/node_modules/lucide-static` in the CMS. |
+| `src/lib/icons.json` | The few icons the browser needs for the search page, copied from lucide-static 1.70.0. |
+| `src/lib/brand-icons.json` | The Facebook, Instagram, LinkedIn and YouTube logos, which Lucide removed in 1.0. Copied from lucide-static 0.460.0. |
 | `server.mjs`, `forms.mjs` | The production server: serves pages, rebuilds in the background on request or nightly at 3 am, and handles the forms. The form spam limit counts by `CF-Connecting-IP`. |
 
 ## Running on the server
