@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { shortDate, clock, weekHours, evidenceText, directionsUrl, telUrl } from '../src/lib/format.js';
-import { shapePlace, toQuery, byCategory } from '../src/lib/strapi.js';
+import { shapePlace, shapeInformation, toQuery, byCategory } from '../src/lib/strapi.js';
 
 test('dates read plainly', () => {
   assert.equal(shortDate('2026-11-19'), '19 Nov 2026');
@@ -210,4 +210,10 @@ test('a day switched to Closed shows as Closed, and has no sessions', () => {
   assert.equal(week.Sunday, 'Closed');
   assert.equal(week.Tuesday, 'Hours not confirmed');
   assert.match(week.Monday, /9/);
+});
+
+test('information tiles keep their order and drop rows with no title or an unknown kind', () => {
+  const rows = [{ kind: 'warning', title: 'Steep stairs' }, { kind: 'take_note', title: '' }, { kind: 'bogus', title: 'x' }, { kind: 'information', title: 'Free wifi', details: 'Ask' }];
+  assert.deepEqual(shapeInformation(rows), [{ kind: 'warning', title: 'Steep stairs', details: '' }, { kind: 'information', title: 'Free wifi', details: 'Ask' }]);
+  assert.deepEqual(shapeInformation(undefined), []);
 });

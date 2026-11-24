@@ -97,6 +97,16 @@ export function sydneyDate(ts) {
   return Number.isNaN(d.getTime()) ? null : d.toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
 }
 
+// The three kinds of information tile, with the icon and words shown on the site.
+export const INFO_KINDS = {
+  information: { label: 'Information', icon: 'info' },
+  take_note: { label: 'Take note', icon: 'notebook-pen' },
+  warning: { label: 'Warning', icon: 'triangle-alert' },
+};
+export function shapeInformation(rows) {
+  return (rows ?? []).filter((n) => n.title && INFO_KINDS[n.kind]).map((n) => ({ kind: n.kind, title: n.title, details: n.details ?? '' }));
+}
+
 // Tiles (facts) on a place or centre: each one's tag and how we know it.
 export function shapeFacts(facts) {
   return (facts ?? []).filter((f) => f.tag).map((f) => ({ slug: f.tag.slug, label: f.tag.label, subtitle: f.subtitle ?? '', icon: f.tag.icon ?? null, section: f.tag.section ?? null, group: f.tag.group, question: f.tag.question ?? null, active: f.tag.active !== false, evidence: f.evidence, checkedAt: f.checked_at }));
@@ -160,6 +170,8 @@ export function shapePlace(p) {
     lng: showAddress && loc?.lng != null ? Number(loc.lng) : null,
     serviceAreas: (p.service_areas ?? []).filter((a) => a.suburb).map((a) => ({ slug: a.suburb.slug, name: a.suburb.name })),
     facts: shapeFacts(p.facts),
+    // Information tiles, in the owner's order: Information, Take Note or Warning, each with a title and optional details.
+    information: shapeInformation(p.information),
     // Open sessions only. A row switched to Closed (open: false) marks that day closed instead.
     // Rows saved before the switch existed have no value and count as open.
     hours: (p.opening_hours ?? [])
@@ -212,6 +224,7 @@ export async function loadSite() {
         opening_hours: true,
         hours_exceptions: true,
         action_tiles: true,
+        information: true,
         social_links: true,
         menu: { populate: ['images'] },
         logo: { populate: ['file'] },

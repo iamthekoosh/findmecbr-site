@@ -262,6 +262,11 @@
  "places": [
   {
    "slug": "sample-cafe",
+   "information": [
+    { "kind": "information", "title": "Free wifi", "details": "Ask at the counter for the password." },
+    { "kind": "take_note", "title": "Cash only" },
+    { "kind": "warning", "title": "Steep stairs at the entry", "details": "There is no ramp. Call ahead for help." }
+   ],
    "name": "Sample Cafe",
    "location_type": "physical",
    "description_short": "SAMPLE: coffee and toasties inside Cooleman Court.",

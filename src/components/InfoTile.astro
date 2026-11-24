@@ -1,0 +1,15 @@
+---
+// An information tile: its kind (Information, Take note or Warning) as a coloured icon and word, the title, and any details.
+import Icon from './Icon.astro';
+import { INFO_KINDS } from '../lib/strapi.js';
+const { note } = Astro.props;
+const k = INFO_KINDS[note.kind];
+---
+<li class={`info-tile info-${note.kind}`}>
+  <Icon name={k.icon} />
+  <span class="info-text">
+    <span class="info-kind">{k.label}</span>
+    <span class="info-title">{note.title}</span>
+    {note.details && <span class="info-details">{note.details}</span>}
+  </span>
+</li>
