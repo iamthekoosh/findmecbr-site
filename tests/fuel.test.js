@@ -25,7 +25,7 @@ test('keeps ACT stations only, and leaves out EV', () => {
 
 test('labels: date, or the time when it is today; checked time in Canberra', () => {
   assert.equal(sinceLabel('2026-11-16T22:22:26', '2026-11-24'), '16 Nov');
-  assert.equal(sinceLabel('2026-11-24T07:42:00', '2026-11-24'), '7:42 am');
+  assert.equal(sinceLabel('2026-11-24T07:42:00', '2026-11-24'), '7:42 am today');
   assert.equal(checkedLabel('2026-11-24T05:00:00.000Z'), '4 pm, 24 Nov'); // AEDT, UTC+11
 });
 
@@ -33,7 +33,7 @@ test('fills fuel tiles on stations with a code; others are untouched', () => {
   const station = { fuelcheckCode: '18806', facts: [{ slug: 'fuel-u91', label: 'Unleaded 91' }, { slug: 'fuel-p98', label: 'Premium 98' }, { slug: 'ice', label: 'Ice', subtitle: 'Bags' }] };
   const other = { fuelcheckCode: null, facts: [{ slug: 'fuel-u91', label: 'Unleaded 91', subtitle: 'by hand' }] };
   applyFuel([station, other], shapePrices(raw, '2026-11-24T05:00:00.000Z'), '2026-11-24');
-  assert.equal(station.facts[0].subtitle, '227.9c · since 16 Nov');
+  assert.equal(station.facts[0].subtitle, '227.9c · Last change: 16 Nov');
   assert.equal(station.facts[1].subtitle, 'No current price');
   assert.equal(station.facts[2].subtitle, 'Bags');
   assert.equal(other.facts[0].subtitle, 'by hand');

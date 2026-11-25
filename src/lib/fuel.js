@@ -21,11 +21,11 @@ export function loadFuel(sample = false) {
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const clock = (h, m) => `${h % 12 || 12}${m ? `:${String(m).padStart(2, '0')}` : ''} ${h >= 12 ? 'pm' : 'am'}`;
 
-// A Canberra local time "2026-11-16T22:22:26" as "16 Nov", or "10:22 pm" when it's today.
+// A Canberra local time "2026-11-16T22:22:26" as "16 Nov", or "10:22 pm today" when it's today.
 export function sinceLabel(local, today) {
   const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(local ?? '');
   if (!m) return '';
-  if (`${m[1]}-${m[2]}-${m[3]}` === today) return clock(Number(m[4]), Number(m[5]));
+  if (`${m[1]}-${m[2]}-${m[3]}` === today) return `${clock(Number(m[4]), Number(m[5]))} today`;
   return `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]}`;
 }
 
@@ -39,7 +39,7 @@ export function checkedLabel(iso) {
 
 export const priceLabel = (cents) => `${cents.toFixed(1)}c`;
 
-// Fills each fuel tile's subtitle with its price: "225.9c · since 16 Nov", or "No current price".
+// Fills each fuel tile's subtitle with its price: "225.9c · Last change: 16 Nov", or "No current price".
 // Only on places with a FuelCheck code; other places keep their tiles as entered.
 export function applyFuel(places, fuel, today = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' })) {
   for (const p of places) {
@@ -54,7 +54,7 @@ export function applyFuel(places, fuel, today = new Date().toLocaleDateString('e
       if (pr) {
         p.fuel.prices[code] = pr;
         const since = sinceLabel(pr.since, today);
-        f.subtitle = `${priceLabel(pr.price)}${since ? ` · since ${since}` : ''}`;
+        f.subtitle = `${priceLabel(pr.price)}${since ? ` · Last change: ${since}` : ''}`;
         f.price = pr.price;
       } else {
         f.subtitle = 'No current price';
