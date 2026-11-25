@@ -41,6 +41,19 @@ export function liveStatus(hours = [], exceptions = [], now) {
   const today = sessionsOn(now.date, now.day, hours, exceptions);
   const current = [...yesterday.map(([o, c]) => [o - 1440, c - 1440]), ...today].find(([o, c]) => t >= o && t < c);
   if (current) {
+    // A session that ends at midnight carries on into the next day's session from midnight (24 hours days).
+    let end = current[1];
+    for (let n = 1; n <= 7 && end === 1440 * n; n++) {
+      const next = sessionsOn(addDays(now.date, n), (now.day + n) % 7, hours, exceptions).find(([o]) => o === 0);
+      if (!next) break;
+      end = 1440 * n + next[1];
+    }
+    if (end >= 1440 * 7) return { state: 'open', text: 'Open 24 hours', detail: '' };
+    if (end > 1440) {
+      const days = Math.floor((end - 1) / 1440);
+      const when = days === 1 ? 'tomorrow' : DAY_SHORT[(now.day + days) % 7];
+      return { state: 'open', text: 'Open now', detail: end % 1440 === 0 ? `Until midnight ${days === 1 ? 'tonight' : DAY_SHORT[(now.day + days - 1) % 7]}` : `Until ${when} ${clockText(end % 1440)}` };
+    }
     const left = current[1] - t;
     if (left <= 60) return { state: 'closing', text: `Closing in ${left} min${left === 1 ? '' : 's'}`, detail: `Closes ${clockText(current[1])}` };
     return { state: 'open', text: 'Open now', detail: `Until ${clockText(current[1])}` };

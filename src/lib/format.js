@@ -32,7 +32,7 @@ export function weekHours(hours, closedDays = []) {
     const sessions = (hours ?? []).filter((h) => h.day === day);
     return {
       day: DAY_NAMES[day],
-      text: sessions.length ? sessions.map((s) => `${clock(s.opens)} to ${clock(s.closes)}`).join(', ') : closedDays.includes(day) ? 'Closed' : 'Hours not confirmed',
+      text: sessions.length ? sessions.map((s) => (s.opens === '00:00' && s.closes === '24:00' ? '24 hours' : `${clock(s.opens)} to ${clock(s.closes)}`)).join(', ') : closedDays.includes(day) ? 'Closed' : 'Hours not confirmed',
     };
   });
 }

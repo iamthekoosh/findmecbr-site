@@ -32,3 +32,24 @@ test('Canberra time and clock text', () => {
   assert.equal(clockText(1200), '8pm');
   assert.equal(clockText(720), '12pm');
 });
+
+test('24 hours: every day open all day reads "Open 24 hours"', async () => {
+  const { liveStatus } = await import('../src/lib/live-hours.js');
+  const hours = [0, 1, 2, 3, 4, 5, 6].map((day) => ({ day, opens: '00:00', closes: '24:00' }));
+  const s = liveStatus(hours, [], { date: '2026-11-25', day: 3, minutes: 23 * 60 + 30 });
+  assert.equal(s.text, 'Open 24 hours');
+});
+
+test('24 hours one day, then normal hours: open until the next close', async () => {
+  const { liveStatus } = await import('../src/lib/live-hours.js');
+  const hours = [{ day: 3, opens: '00:00', closes: '24:00' }, { day: 4, opens: '00:00', closes: '22:00' }];
+  const s = liveStatus(hours, [], { date: '2026-11-25', day: 3, minutes: 23 * 60 + 30 });
+  assert.equal(s.state, 'open');
+  assert.equal(s.detail, 'Until tomorrow 10pm');
+});
+
+test('the week list shows "24 hours"', async () => {
+  const { weekHours } = await import('../src/lib/format.js');
+  const w = weekHours([{ day: 1, opens: '00:00', closes: '24:00' }]);
+  assert.equal(w[0].text, '24 hours');
+});
