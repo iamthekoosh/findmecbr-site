@@ -211,3 +211,9 @@ test('information tiles keep their order and drop rows with no title or an unkno
   assert.deepEqual(shapeInformation(rows), [{ kind: 'warning', title: 'Steep stairs', details: '' }, { kind: 'information', title: 'Free wifi', details: 'Ask' }]);
   assert.deepEqual(shapeInformation(undefined), []);
 });
+
+test('build label: short commit, Canberra date and time', async () => {
+  const { buildLabel } = await import('../src/lib/build-info.js');
+  assert.equal(buildLabel('3f4a828ca05f3b1a4ad213d03612bcff6dc975cd', new Date('2026-11-26T11:19:00Z')), 'Build 3f4a828 · 26 Nov 2026, 10:19 pm');
+  assert.equal(buildLabel('', new Date('2026-07-01T00:05:00Z')), 'Build · 1 Jul 2026, 10:05 am');
+});

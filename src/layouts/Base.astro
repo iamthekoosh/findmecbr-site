@@ -8,6 +8,7 @@ import '../styles/tokens.css';
 import '../styles/global.css';
 
 import { STAGE } from '../lib/strapi.js';
+import { BUILD_LABEL } from '../lib/build-info.js';
 import Icon from '../components/Icon.astro';
 const { title, description = 'Canberra, suburb by suburb. Checked.' } = Astro.props;
 const testing = STAGE !== 'live';
@@ -50,7 +51,7 @@ const themes = [
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    {testing && <p class="proto">{STAGE.toUpperCase()}: a test version. Listings may be incomplete.</p>}
+    {testing && <p class="proto">{STAGE.toUpperCase()}: a test version. Listings may be incomplete.<span class="proto-build">{BUILD_LABEL}</span></p>}
     <header class="top">
       <div class="top-in">
         <a class="logo" href="/" aria-label="Find Me CBR home">
