@@ -5,7 +5,6 @@ import path from 'node:path';
 
 // Our fuel tags (Strapi seed data/seed/fuel-prices.json) → FuelCheck fuel codes.
 export const FUEL_TAGS = { 'fuel-e10': 'E10', 'fuel-u91': 'U91', 'fuel-p95': 'P95', 'fuel-p98': 'P98', 'fuel-dl': 'DL', 'fuel-pdl': 'PDL', 'fuel-lpg': 'LPG', 'fuel-e85': 'E85' };
-export const FUEL_ORDER = Object.values(FUEL_TAGS);
 
 export const FUEL_CREDIT = {
   text: 'Fuel prices from FuelCheck, NSW Government, licensed under CC BY 4.0. Selected for Canberra and reformatted by Find Me CBR.',
@@ -61,17 +60,4 @@ export function applyFuel(places, fuel, today = new Date().toLocaleDateString('e
       }
     }
   }
-}
-
-// A district's fuel prices: for each fuel, the stations in its suburbs that sell it, cheapest first.
-export function districtFuel(site, district) {
-  const subs = new Set(site.suburbs.filter((s) => s.district?.slug === district.slug).map((s) => s.slug));
-  const stations = site.places.filter((p) => p.fuel && subs.has(p.suburb?.slug));
-  const fuels = FUEL_ORDER.map((code) => {
-    const tag = Object.keys(FUEL_TAGS).find((k) => FUEL_TAGS[k] === code);
-    const rows = stations.map((p) => ({ place: p, fact: p.facts.find((f) => f.slug === tag) })).filter((r) => r.fact)
-      .sort((a, b) => (a.fact.price ?? Infinity) - (b.fact.price ?? Infinity) || a.place.name.localeCompare(b.place.name));
-    return { code, label: rows[0]?.fact.label ?? code, rows };
-  }).filter((f) => f.rows.length);
-  return { stations, fuels, checked: stations.find((p) => p.fuel.checked)?.fuel.checked ?? '' };
 }

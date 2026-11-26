@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { shapePrices, localTime } from '../fuel.mjs';
-import { applyFuel, sinceLabel, checkedLabel, districtFuel } from '../src/lib/fuel.js';
+import { applyFuel, sinceLabel, checkedLabel } from '../src/lib/fuel.js';
 
 const raw = {
   stations: [
@@ -45,14 +45,6 @@ test('no saved file: tiles say there is no current price', () => {
   applyFuel([station], null);
   assert.equal(station.facts[0].subtitle, 'No current price');
   assert.equal(station.fuel.checked, '');
-});
-
-test('district list: stations in its suburbs, cheapest first, unpriced last', () => {
-  const mk = (name, sub, price) => ({ name, suburb: { slug: sub }, fuel: { checked: 'x' }, facts: [{ slug: 'fuel-u91', label: 'Unleaded 91', price }] });
-  const site = { suburbs: [{ slug: 'weston', district: { slug: 'wc' } }, { slug: 'kambah', district: { slug: 'tug' } }],
-    places: [mk('B', 'weston', 230), mk('A', 'weston', undefined), mk('C', 'weston', 220), mk('K', 'kambah', 100)] };
-  const d = districtFuel(site, { slug: 'wc' });
-  assert.deepEqual(d.fuels[0].rows.map((r) => r.place.name), ['C', 'B', 'A']);
 });
 
 test('tile sets with only Live Information tiles go to the top', async () => {
