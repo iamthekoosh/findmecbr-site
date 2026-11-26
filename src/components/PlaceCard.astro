@@ -1,11 +1,12 @@
 ---
-// A place in a list. The whole head is a tile to the place page.
+// A place in a list. The whole head is a tile to the place page. Under it: category · where, then the short description.
 // Lists stay short: no action buttons or checked date here. Both are on the place page.
 import Icon from './Icon.astro';
 import StatusTag from './StatusTag.astro';
 const { place, showCentre = true, showChildren = true } = Astro.props;
 const kids = showChildren ? (place.children ?? []) : [];
 const where = [place.parent?.name ?? (place.centre && showCentre ? place.centre.name : null), place.suburb?.name].filter(Boolean).join(', ');
+const sub = [place.category?.label, where].filter(Boolean).join(' · ');
 const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 ---
 <article class="card">
@@ -16,14 +17,12 @@ const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slic
       </span>
       <span>
         <span class="name">{place.name}</span>
-        <span class="card-meta">
-          <StatusTag status={place.postStatus} />
-          <span class="sub">{[place.category?.label, where].filter(Boolean).join(' · ')}</span>
-        </span>
+        <span class="card-meta"><StatusTag status={place.postStatus} /></span>
       </span>
     </span>
     <Icon name="chevron-right" />
   </a>
+  {sub && <p class="card-sub">{sub}</p>}
   {place.short && <p>{place.short}</p>}
   {kids.length > 0 && (
     <div class="card-kids">

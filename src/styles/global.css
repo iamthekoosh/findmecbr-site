@@ -66,7 +66,7 @@ label{display:grid;gap:4px;font-weight:600}
 .social-grid .handle{font-weight:400;font-size:12px;line-height:15px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn-row{flex-direction:row;gap:8px;min-height:var(--tap-field);width:100%;font-size:15px}
 .rowtile{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:var(--tap-row);padding:8px 12px;background:var(--color-surface);color:var(--color-text);border:1px solid var(--color-border);border-radius:var(--radius);font-weight:600;line-height:20px;text-decoration:none}
-.rowtile small{display:block;font:400 12px/18px var(--font-mono);color:var(--color-text-muted)}
+.rowtile small{display:block;font:400 12px/18px var(--font-mono);color:var(--color-text)}
 .rowtile:active{background:var(--color-line)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap-chip);padding:6px 12px;border:1px solid var(--color-border);border-radius:var(--radius);background:transparent;color:var(--color-text);font:600 15px/20px var(--font-body);text-decoration:none;cursor:pointer}
@@ -77,7 +77,7 @@ label{display:grid;gap:4px;font-weight:600}
 .card{display:grid;gap:10px;padding:14px;background:var(--color-surface);border:1px solid var(--color-line);border-radius:var(--radius)}
 .card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:var(--tap-chip);color:inherit;text-decoration:none}
 .name{display:block;font:700 21px/25px var(--font-display)}
-.sub{display:block;font-size:15px;line-height:22px;color:var(--color-text-muted);font-weight:400}
+.sub{display:block;font-size:15px;line-height:22px;color:var(--color-text);font-weight:400}
 .sp{justify-self:start;padding:5px 8px;background:var(--color-sponsored-bg);color:var(--color-sponsored-text);border-radius:var(--radius);font:700 12px/12px var(--font-mono)}
 .facts{list-style:none;padding:0;font:400 13px/23px var(--font-mono);overflow-wrap:anywhere}
 .yes{color:var(--color-confirmed)}
@@ -96,7 +96,7 @@ label{display:grid;gap:4px;font-weight:600}
 .live-name{display:flex;align-items:center;gap:8px;font-weight:600;line-height:20px}
 .live-name .ic{width:24px;height:24px;color:var(--color-brand)}
 .live-value{font:700 24px/28px var(--font-display)}
-.live-tile small{font:400 12px/18px var(--font-mono);color:var(--color-text-muted)}
+.live-tile small{font:400 12px/18px var(--font-mono);color:var(--color-text)}
 .live-tile.none .live-value{font:400 15px/20px var(--font-body);color:var(--color-text-muted)}
 @media (min-width:640px){.live-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .notice{padding:14px;background:var(--color-surface);border:2px solid var(--color-border);border-radius:var(--radius);display:grid;gap:10px}
@@ -110,7 +110,7 @@ label{display:grid;gap:4px;font-weight:600}
 .gt:active,.rowtile:active{background:var(--color-line)}
 .gt .ic{width:24px;height:24px;color:var(--color-brand)}
 .gt.big .ic,.gt.stacked .ic{width:28px;height:28px}
-.gt small{display:block;font:400 12px/18px var(--font-mono);color:var(--color-text-muted)}
+.gt small{display:block;font:400 12px/18px var(--font-mono);color:var(--color-text)}
 .gt.wide{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;min-height:var(--tap-row)}
 .gt.big{min-height:112px;font:700 19px/22px var(--font-display)}
 .gt.big.wide{flex-direction:row;align-items:center;justify-content:flex-start;min-height:var(--tap-tile)}
@@ -181,8 +181,8 @@ label{display:grid;gap:4px;font-weight:600}
 /* Title and subtitle on one line, separated by a middot: "Off-street parking · 2 spaces behind the shop". */
 .fact-tile .fact-text{display:block;line-height:20px}
 .fact-tile .fact-label{font:700 15px/20px var(--font-body);color:var(--color-text)}
-.fact-tile .fact-sub{font:400 15px/20px var(--font-body);color:var(--color-text-muted)}
-.fact-tile .fact-dot{font:700 15px/20px var(--font-body);color:var(--color-text-muted)}
+.fact-tile .fact-sub{font:400 15px/20px var(--font-body);color:var(--color-text)}
+.fact-tile .fact-dot{font:700 15px/20px var(--font-body);color:var(--color-text)}
 /* Information on a place: one tile per kind, opened to show its entries. Entries read "Title · details". */
 .info-tiles{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
 .info-group{border-left:4px solid currentColor;border-radius:var(--radius);background:var(--color-surface)}
@@ -234,7 +234,7 @@ html:not(.js) .theme{display:none}
 .menu-pages li{display:grid;gap:4px}
 .menu-pages a{display:block;border:1px solid var(--color-line);border-radius:var(--radius);overflow:hidden;background:var(--color-surface)}
 .menu-pages img{display:block;width:100%;height:auto}
-.menu-pages small{font:400 12px/16px var(--font-mono);color:var(--color-text-muted);text-align:center}
+.menu-pages small{font:400 12px/16px var(--font-mono);color:var(--color-text);text-align:center}
 .valid-as-of{display:inline-flex;align-items:center;gap:6px;justify-self:start;margin:0;padding:4px 12px;border:1px solid var(--color-info);border-radius:999px;color:var(--color-info);background:color-mix(in srgb,var(--color-info) 12%,transparent);font:400 14px/20px var(--font-body)}
 .valid-as-of .ic{width:16px;height:16px}
 
@@ -244,7 +244,7 @@ html:not(.js) .theme{display:none}
 @media (min-width:640px){.district-tile{aspect-ratio:4/3}}
 .district-tile .ic{width:28px;height:28px;color:var(--color-brand)}
 .district-tile>span{font:700 20px/24px var(--font-display)}
-.district-tile small{display:block;margin-top:4px;font:400 13px/18px var(--font-body);color:var(--color-text-muted)}
+.district-tile small{display:block;margin-top:4px;font:400 13px/18px var(--font-body);color:var(--color-text)}
 .district-tile:active{background:var(--color-line)}
 .district-tile img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover}
 .district-tile.has-img::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgb(0 0 0 / .78),rgb(0 0 0 / .15) 60%,rgb(0 0 0 / .05))}
@@ -307,7 +307,7 @@ html:not(.js) .theme{display:none}
 .card-kids ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .kid{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:var(--tap-chip);padding:8px 12px;border:1px solid var(--color-line);border-radius:var(--radius);color:inherit;text-decoration:none}
 .kid b{display:block;font-weight:700}
-.kid small{display:block;font-size:13px;line-height:18px;color:var(--color-text-muted)}
+.kid small{display:block;font-size:13px;line-height:18px;color:var(--color-text)}
 
 /* Inline labels at the start of a line: "About:", "Where:". */
 .inline-label{font-weight:700}
@@ -318,4 +318,5 @@ html:not(.js) .theme{display:none}
 .card-meta{display:block;margin-top:4px;line-height:24px}
 .card-meta .status{margin-right:6px;vertical-align:1px}
 .card-meta .status{margin-top:0}
-.card-meta .sub{display:inline;color:var(--color-text);font-weight:700}
+/* Category · where, on its own line under the logo, name and status, above the short description. */
+.card-sub{font-size:15px;line-height:22px;font-weight:700}

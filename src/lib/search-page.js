@@ -56,11 +56,13 @@ const STATUS = { verified: 'Verified', info_online: 'Info from online', unverifi
 function card(p, site, km) {
   const cat = site.categories.find((c) => c.slug === p.cat);
   const where = [p.centre, p.subName].filter(Boolean).join(', ');
+  const sub = [cat?.label, where, km != null ? `${km.toFixed(1)} km` : null].filter(Boolean).join(' · ');
   const initials = p.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
   // No action buttons or checked date in results, so the list stays short. Both are on the place page.
   return `<article class="card">
     <a class="card-head" href="/places/${esc(p.slug)}/"><span class="card-main"><span class="logo-slot">${p.logo ? `<img src="${esc(p.logo)}" alt="" loading="lazy">` : esc(initials)}</span>
-      <span><span class="name">${esc(p.name)}</span><span class="card-meta"><span class="status status-${STATUS[p.status] ? p.status : 'unverified'}">${STATUS[p.status] ?? STATUS.unverified}</span><span class="sub">${esc([cat?.label, where, km != null ? `${km.toFixed(1)} km` : null].filter(Boolean).join(' · '))}</span></span></span></span>${ic('chevron-right')}</a>
+      <span><span class="name">${esc(p.name)}</span><span class="card-meta"><span class="status status-${STATUS[p.status] ? p.status : 'unverified'}">${STATUS[p.status] ?? STATUS.unverified}</span></span></span></span>${ic('chevron-right')}</a>
+    ${sub ? `<p class="card-sub">${esc(sub)}</p>` : ''}
     ${p.short ? `<p>${esc(p.short)}</p>` : ''}
   </article>`;
 }

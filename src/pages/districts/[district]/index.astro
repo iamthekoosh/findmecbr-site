@@ -34,7 +34,7 @@ const sections = districtSections(site, district);
       {sec.list.length > 0 ? (
         <div class="grid">
           {sec.list.map((c) => (
-            <a class="gt stacked" href={`/districts/${district.slug}/${sec.key}/${c.slug}/`}>
+            <a class="gt" href={`/districts/${district.slug}/${sec.key}/${c.slug}/`}>
               <Icon name={c.icon || 'store'} />
               <span>{c.plural}<small>{c.count} listed</small></span>
             </a>
