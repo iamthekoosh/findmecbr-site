@@ -92,6 +92,24 @@ test('a place shows in the district section that matches its class', async () =>
   assert.deepEqual(businesses.list.map((c) => c.slug), ['cafe']);
 });
 
+test('community and attraction places get their own district sections', async () => {
+  const { shapePlace, districtSections } = await import('../src/lib/strapi.js');
+  const where = { suburb: { slug: 'holder', name: 'Holder' } };
+  const church = shapePlace({ slug: 'c', name: 'C', place_class: 'community', primary_category: { slug: 'place-of-worship', plural: 'Places of worship', kind: 'venue' }, location: where });
+  const gallery = shapePlace({ slug: 'g', name: 'G', place_class: 'attraction', primary_category: { slug: 'art-gallery', plural: 'Art galleries', kind: 'venue' }, location: where });
+  const site = {
+    suburbs: [{ slug: 'holder', district: { slug: 'wc' } }],
+    categories: [{ slug: 'place-of-worship', plural: 'Places of worship', kind: 'venue', active: true }, { slug: 'art-gallery', plural: 'Art galleries', kind: 'venue', active: true }],
+    places: [church, gallery],
+  };
+  const sections = Object.fromEntries(districtSections(site, { slug: 'wc' }).map((x) => [x.placeClass, x]));
+  assert.deepEqual(sections.community.list.map((c) => c.slug), ['place-of-worship']);
+  assert.equal(sections.community.key, 'community');
+  assert.deepEqual(sections.attraction.list.map((c) => c.slug), ['art-gallery']);
+  assert.equal(sections.attraction.key, 'attractions');
+  assert.equal(sections.business.list.length, 0);
+});
+
 test('post status defaults to loaded and keeps known values', () => {
   assert.equal(shapePlace({ slug: 'a', name: 'A' }).postStatus, 'loaded');
   for (const s of ['online_capture', 'visited', 'complete']) assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: s }).postStatus, s);

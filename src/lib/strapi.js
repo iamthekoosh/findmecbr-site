@@ -78,9 +78,11 @@ const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'frida
 
 // A place's class decides which section of a district page it shows in, in this order.
 export const CLASSES = {
-  essential_service: { key: 'essential-services', title: 'Essential services', note: 'Schools, public services and similar.' },
-  service: { key: 'services', title: 'Services', note: 'They come to you, or you book them.' },
-  business: { key: 'businesses', title: 'Businesses', note: 'Shops, cafes and places to visit.' },
+  essential_service: { key: 'essential-services', title: 'Essential services', note: 'Schools, health and public services.' },
+  service: { key: 'services', title: 'Services', note: 'Someone does something for you.' },
+  business: { key: 'businesses', title: 'Businesses', note: 'Shops, cafes and places that sell things.' },
+  community: { key: 'community', title: 'Community', note: 'Parks, community groups, places of worship and non-profits.' },
+  attraction: { key: 'attractions', title: 'Attractions', note: 'Museums, galleries and places to visit.' },
 };
 
 // How far a listing has been checked, shown as a coloured tag under the name.
