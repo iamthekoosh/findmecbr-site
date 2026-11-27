@@ -51,7 +51,7 @@ function describe(c, site) {
 }
 
 // Same labels as POST_STATUSES in strapi.js (that file isn't loaded in the browser).
-const STATUS = { verified: 'Verified', info_online: 'Info from online', unverified: 'Unverified' };
+const STATUS = { loaded: 'Loaded', online_capture: 'Online Capture', visited: 'Visited', complete: 'Complete' };
 
 function card(p, site, km) {
   const cat = site.categories.find((c) => c.slug === p.cat);
@@ -61,7 +61,7 @@ function card(p, site, km) {
   // No action buttons or checked date in results, so the list stays short. Both are on the place page.
   return `<article class="card">
     <a class="card-head" href="/places/${esc(p.slug)}/"><span class="card-main"><span class="logo-slot">${p.logo ? `<img src="${esc(p.logo)}" alt="" loading="lazy">` : esc(initials)}</span>
-      <span><span class="name">${esc(p.name)}</span><span class="card-meta"><span class="status status-${STATUS[p.status] ? p.status : 'unverified'}">${STATUS[p.status] ?? STATUS.unverified}</span></span></span></span>${ic('chevron-right')}</a>
+      <span><span class="name">${esc(p.name)}</span><span class="card-meta"><span class="status status-${STATUS[p.status] ? p.status : 'loaded'}">${STATUS[p.status] ?? STATUS.loaded}</span></span></span></span>${ic('chevron-right')}</a>
     ${sub ? `<p class="card-sub">${esc(sub)}</p>` : ''}
     ${p.short ? `<p>${esc(p.short)}</p>` : ''}
   </article>`;

@@ -277,9 +277,10 @@ html:not(.js) .theme{display:none}
 
 /* Post status tag under a place's name. Colour plus words, never colour alone. */
 .status{display:inline-block;margin-top:4px;padding:2px 8px;border:1px solid currentColor;border-radius:999px;font:700 13px/18px var(--font-body);background:color-mix(in srgb,currentColor 12%,transparent)}
-.status-verified{color:var(--color-confirmed)}
-.status-info_online{color:var(--color-info)}
-.status-unverified{color:var(--color-warning)}
+.status-loaded{color:var(--color-warning)}
+.status-online_capture{color:var(--color-info)}
+.status-visited{color:var(--color-confirmed)}
+.status-complete{color:var(--color-on-brand);background:var(--color-confirmed);border-color:var(--color-confirmed)}
 .status-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:0}
 .status-line .status{margin-top:0}
 .status-label{font-weight:700}

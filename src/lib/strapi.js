@@ -84,11 +84,13 @@ export const CLASSES = {
 };
 
 // How far a listing has been checked, shown as a coloured tag under the name.
-// A place saved before the field existed counts as unverified.
+// A place saved before the field existed counts as loaded. The four statuses replaced Verified, Info from online
+// and Unverified on 27 Nov 2026; the tags come off the site at beta.
 export const POST_STATUSES = {
-  verified: { label: 'Verified', note: 'We confirmed this with the business or in person.' },
-  info_online: { label: 'Info from online', note: 'Taken from public online sources. Not yet confirmed with the business.' },
-  unverified: { label: 'Unverified', note: 'Not checked yet.' },
+  loaded: { label: 'Loaded', note: 'Added from a list or directory. Not checked yet.' },
+  online_capture: { label: 'Online Capture', note: "Checked against the business's own website, socials or other public sources. Not yet visited." },
+  visited: { label: 'Visited', note: 'We checked this in person.' },
+  complete: { label: 'Complete', note: 'We checked this in person and the listing is finished.' },
 };
 
 // A Strapi timestamp (UTC) as the calendar date in Canberra, "2026-11-22".
@@ -148,7 +150,7 @@ export function shapePlace(p) {
     otherCategories: (p.other_categories ?? []).map((c) => ({ slug: c.slug })),
     category: p.primary_category ? { slug: p.primary_category.slug, label: p.primary_category.label, plural: p.primary_category.plural, icon: p.primary_category.icon } : null,
     locationType: p.location_type,
-    postStatus: POST_STATUSES[p.post_status] ? p.post_status : 'unverified',
+    postStatus: POST_STATUSES[p.post_status] ? p.post_status : 'loaded',
     placeClass: CLASSES[p.place_class] ? p.place_class : (p.primary_category?.kind === 'service' ? 'service' : 'business'),
     short: p.description_short ?? '',
     full: p.description_full ?? '',

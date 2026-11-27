@@ -630,7 +630,7 @@
       "name": "Sample Service Station",
       "fuelcheck_code": "99999",
       "location_type": "physical",
-      "post_status": "info_online",
+      "post_status": "online_capture",
       "place_class": "business",
       "description_short": "SAMPLE: a service station, to show fuel prices.",
       "checked_at": "2026-11-24",

@@ -92,10 +92,10 @@ test('a place shows in the district section that matches its class', async () =>
   assert.deepEqual(businesses.list.map((c) => c.slug), ['cafe']);
 });
 
-test('post status defaults to unverified and keeps known values', () => {
-  assert.equal(shapePlace({ slug: 'a', name: 'A' }).postStatus, 'unverified');
-  assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'info_online' }).postStatus, 'info_online');
-  assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'nonsense' }).postStatus, 'unverified');
+test('post status defaults to loaded and keeps known values', () => {
+  assert.equal(shapePlace({ slug: 'a', name: 'A' }).postStatus, 'loaded');
+  for (const s of ['online_capture', 'visited', 'complete']) assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: s }).postStatus, s);
+  assert.equal(shapePlace({ slug: 'a', name: 'A', post_status: 'info_online' }).postStatus, 'loaded');
 });
 
 test('tile sets group the tiles a place has, in set order; other tiles are left for What we know', async () => {

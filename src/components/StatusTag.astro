@@ -1,7 +1,8 @@
 ---
 // The coloured post status tag shown under a place's name.
 import { POST_STATUSES } from '../lib/strapi.js';
-const { status = 'unverified' } = Astro.props;
-const s = POST_STATUSES[status] ?? POST_STATUSES.unverified;
+const { status = 'loaded' } = Astro.props;
+const key = POST_STATUSES[status] ? status : 'loaded';
+const s = POST_STATUSES[key];
 ---
-<span class={`status status-${status}`} title={s.note}>{s.label}</span>
+<span class={`status status-${key}`} title={s.note}>{s.label}</span>
