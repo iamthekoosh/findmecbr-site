@@ -5,7 +5,7 @@ import Base from '../../../../layouts/Base.astro';
 import Crumbs from '../../../../components/Crumbs.astro';
 import PlaceCard from '../../../../components/PlaceCard.astro';
 import { loadSite, placesFor } from '../../../../lib/strapi.js';
-import { hideListedChildren } from '../../../../lib/format.js';
+import { hideListedChildren, titleCase } from '../../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -27,7 +27,7 @@ const title = category.kind === 'service' ? `${category.plural} who service ${su
     ...(suburb.district ? [{ label: suburb.district.name, href: `/districts/${suburb.district.slug}/` }] : []),
     { label: suburb.name, href: `/suburbs/${suburb.slug}/` },
   ]} />
-  <h1>{title}</h1>
+  <h1>{titleCase(title)}</h1>
   {category.kind === 'service' && <p class="muted">Each of these confirmed they serve {suburb.name}. Where they're based doesn't count.</p>}
   <div class="stack">{places.map((p) => <PlaceCard place={p} />)}</div>
 </Base>

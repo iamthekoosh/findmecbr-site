@@ -6,7 +6,7 @@ import PlaceCard from '../../../components/PlaceCard.astro';
 import { loadSite, byCategory } from '../../../lib/strapi.js';
 import Crumbs from '../../../components/Crumbs.astro';
 import FactTile from '../../../components/FactTile.astro';
-import { typeOf, directionsUrl, hideListedChildren, orderFacts } from '../../../lib/format.js';
+import { typeOf, directionsUrl, hideListedChildren, orderFacts, titleCase } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -41,14 +41,14 @@ const directions = directionsUrl({ address: centre.address || centre.name, subur
 
   {tileSets.map((set) => (
     <section class="section">
-      <h2>{set.heading}</h2>
+      <h2>{titleCase(set.heading)}</h2>
       <ul class="fact-tiles">{set.tiles.map((f) => <FactTile fact={f} />)}</ul>
     </section>
   ))}
 
   {features.length > 0 && (
     <section class="section">
-      <h2>What we know</h2>
+      <h2>What We Know</h2>
       <ul class="fact-tiles">{orderFacts(features).map((f) => <FactTile fact={f} />)}</ul>
     </section>
   )}
@@ -62,7 +62,7 @@ const directions = directionsUrl({ address: centre.address || centre.name, subur
 
   {groups.map((g) => (
     <section class="section">
-      <h2 class="h2row"><Icon name={g.category.icon || 'store'} />{g.category.plural}</h2>
+      <h2 class="h2row"><Icon name={g.category.icon || 'store'} />{titleCase(g.category.plural)}</h2>
       <div class="stack">{g.places.map((p) => <PlaceCard place={p} showCentre={false} />)}</div>
     </section>
   ))}

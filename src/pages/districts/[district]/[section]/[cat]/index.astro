@@ -5,7 +5,7 @@ import Base from '../../../../../layouts/Base.astro';
 import Crumbs from '../../../../../components/Crumbs.astro';
 import PlaceCard from '../../../../../components/PlaceCard.astro';
 import { loadSite, placesInDistrict, CLASSES } from '../../../../../lib/strapi.js';
-import { hideListedChildren } from '../../../../../lib/format.js';
+import { hideListedChildren, titleCase } from '../../../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -26,7 +26,7 @@ const title = placeClass === 'service' ? `${category.plural} who service ${distr
 ---
 <Base title={title} description={`${title}, Canberra. Checked by hand, with the date we last checked.`}>
   <Crumbs items={[{ label: district.name, href: `/districts/${district.slug}/` }]} />
-  <h1>{title}</h1>
+  <h1>{titleCase(title)}</h1>
   {placeClass === 'service' && <p class="muted">Each of these confirmed they serve at least one suburb in {district.name}.</p>}
   <div class="stack">{places.map((p) => <PlaceCard place={p} />)}</div>
 </Base>

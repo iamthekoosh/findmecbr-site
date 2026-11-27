@@ -235,3 +235,15 @@ test('build label: short commit, Canberra date and time', async () => {
   assert.equal(buildLabel('3f4a828ca05f3b1a4ad213d03612bcff6dc975cd', new Date('2026-11-26T11:19:00Z')), 'Build 3f4a828 · 26 Nov 2026, 10:19 pm');
   assert.equal(buildLabel('', new Date('2026-07-01T00:05:00Z')), 'Build · 1 Jul 2026, 10:05 am');
 });
+
+test('titleCase capitalises headings but keeps small words, names and short forms', async () => {
+  const { titleCase } = await import('../src/lib/format.js');
+  assert.equal(titleCase('places of worship'), 'Places of Worship');
+  assert.equal(titleCase('What’s on offer'), 'What’s on Offer');
+  assert.equal(titleCase('walk-in centres in Weston'), 'Walk-In Centres in Weston');
+  assert.equal(titleCase('Martial arts/dance schools'), 'Martial Arts/Dance Schools');
+  assert.equal(titleCase('GPs who service Coombs'), 'GPs Who Service Coombs');
+  assert.equal(titleCase('a guide to the area'), 'A Guide to the Area');
+  assert.equal(titleCase("We couldn't find that page"), "We Couldn't Find That Page");
+  assert.equal(titleCase(''), '');
+});

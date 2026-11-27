@@ -169,3 +169,19 @@ export function hideListedChildren(places, shown = places) {
   const slugs = new Set(shown.map((p) => p.slug));
   return places.filter((p) => !(p.parent && slugs.has(p.parent.slug)));
 }
+
+// Headings are in Title Case (owner's rule, 28 Nov 2026). Every word starts with a capital, except small
+// joining words that are not first or last. Nothing is lowered except those small words, so names and short forms
+// (GPs, EV, McDonald's) stay as written. Each part of a hyphenated or slashed word gets a capital.
+const SMALL_WORDS = new Set(['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'in', 'of', 'on', 'or', 'the', 'to', 'with']);
+const capital = (w) => w.replace(/^([^\p{L}\p{N}]*)(\p{L})/u, (_, lead, c) => lead + c.toUpperCase());
+export function titleCase(text) {
+  if (!text) return '';
+  const words = String(text).split(/(\s+)/);
+  const last = words.length - 1;
+  return words.map((word, i) => {
+    if (/^\s+$/.test(word)) return word;
+    if (i > 0 && i < last && SMALL_WORDS.has(word.toLowerCase())) return word.toLowerCase();
+    return word.split(/([-/])/).map(capital).join('');
+  }).join('');
+}

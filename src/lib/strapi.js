@@ -78,7 +78,7 @@ const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'frida
 
 // A place's class decides which section of a district page it shows in, in this order.
 export const CLASSES = {
-  essential_service: { key: 'essential-services', title: 'Essential services', note: 'Schools, health and public services.' },
+  essential_service: { key: 'essential-services', title: 'Essential Services', note: 'Schools, health and public services.' },
   service: { key: 'services', title: 'Services', note: 'Someone does something for you.' },
   business: { key: 'businesses', title: 'Businesses', note: 'Shops, cafes and places that sell things.' },
   community: { key: 'community', title: 'Community', note: 'Parks, community groups, places of worship and non-profits.' },
@@ -350,7 +350,7 @@ export function byCategory(places) {
   const groups = new Map();
   for (const p of places) {
     const key = p.category?.slug ?? 'other';
-    if (!groups.has(key)) groups.set(key, { category: p.category ?? { slug: 'other', label: 'Other', plural: 'Other places', icon: 'store' }, places: [] });
+    if (!groups.has(key)) groups.set(key, { category: p.category ?? { slug: 'other', label: 'Other', plural: 'Other Places', icon: 'store' }, places: [] });
     groups.get(key).places.push(p);
   }
   return [...groups.values()].sort((a, b) => a.category.plural.localeCompare(b.category.plural));

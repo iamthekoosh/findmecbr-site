@@ -4,7 +4,7 @@ import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import PhotoCarousel from '../../../components/PhotoCarousel.astro';
 import { loadSite, districtSections, STAGE } from '../../../lib/strapi.js';
-import { CENTRE_TYPES } from '../../../lib/format.js';
+import { CENTRE_TYPES, titleCase } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -30,7 +30,7 @@ const sections = districtSections(site, district);
 
   {sections.map((sec) => (sec.list.length > 0 || alpha) && (
     <section class="section">
-      <h2>{sec.title}</h2>
+      <h2>{titleCase(sec.title)}</h2>
       {sec.list.length > 0 ? (
         <div class="grid">
           {sec.list.map((c) => (
@@ -57,7 +57,7 @@ const sections = districtSections(site, district);
 
   {types.length > 0 && (
     <section class="section">
-      <h2>Shops and centres</h2>
+      <h2>Shops and Centres</h2>
       <div class="stack">
         {types.map((t) => (
           <a class="rowtile" href={`/districts/${district.slug}/${t.slug}/`}>
