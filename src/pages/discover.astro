@@ -3,6 +3,7 @@
 // Picking one opens search, where more ideas can be added to narrow it down.
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import CategoryTiles from '../components/CategoryTiles.astro';
 import { loadSite } from '../lib/strapi.js';
 import { titleCase } from '../lib/format.js';
 
@@ -18,7 +19,10 @@ const placeCount = (slug) => site.places.filter((p) => p.facts.some((f) => f.slu
 const groups = QUESTIONS
   .map(([key, label]) => ({ label, tags: site.tags.filter((t) => t.active && t.group === 'occasion' && t.question === key).map((t) => ({ t, n: placeCount(t.slug) })).filter((x) => x.n > 0) }))
   .filter((g) => g.tags.length > 0);
-const venues = site.categories.filter((c) => c.active && c.kind === 'venue' && site.places.some((p) => p.category?.slug === c.slug));
+const venues = site.categories.filter((c) => c.active && c.kind === 'venue')
+  .map((c) => ({ ...c, count: site.places.filter((p) => p.category?.slug === c.slug).length }))
+  .filter((c) => c.count > 0)
+  .sort((x, y) => x.plural.localeCompare(y.plural));
 ---
 <Base title="Discover" description="Ideas for where to go in Weston Creek and Molonglo Valley: by occasion, who's coming, what you feel like, budget and time.">
   <h1>What Are You After?</h1>
@@ -36,7 +40,7 @@ const venues = site.categories.filter((c) => c.active && c.kind === 'venue' && s
   {venues.length > 0 && (
     <section class="section">
       <h2>Places to Go</h2>
-      <div class="grid">{venues.map((c) => <a class="gt" href={`/search/?cat=${c.slug}`}><Icon name={c.icon || 'store'} /><span>{c.plural}</span></a>)}</div>
+      <CategoryTiles list={venues} href={(c) => `/search/?cat=${c.slug}`} grouped />
     </section>
   )}
 

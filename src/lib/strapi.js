@@ -342,11 +342,8 @@ export function districtSections(site, district) {
       .map((c) => ({ ...c, count: placesInDistrict(site, district, c, placeClass).length }))
       .filter((c) => c.count > 0)
       .sort((x, y) => x.plural.localeCompare(y.plural)),
-  })).map((sec) => ({ ...sec, groups: GROUPED_CLASSES.includes(sec.placeClass) ? groupCategories(sec.list) : null }));
+  }));
 }
-
-// Classes whose categories are sorted into dropdowns on district pages, by each category's Group.
-export const GROUPED_CLASSES = ['business', 'service'];
 
 // A section's categories in dropdown groups, by each category's Group, A to Z with Other last.
 // Returns null when there's only one group, so the page shows plain tiles instead of a lone dropdown.

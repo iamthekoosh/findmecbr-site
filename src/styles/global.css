@@ -72,7 +72,7 @@ label{display:grid;gap:4px;font-weight:600}
 .cat-group{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius)}
 .cat-group summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:var(--tap-row);padding:8px 12px;font-weight:600;line-height:20px;cursor:pointer;list-style:none}
 .cat-group summary::-webkit-details-marker{display:none}
-.cat-group-main{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.cat-group-main{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 10px;min-width:0;flex:1}
 .cat-group-name{font:700 17px/22px var(--font-display)}
 .cat-group-icons{display:flex;align-items:center;gap:6px;color:var(--color-brand)}
 .cat-group-icons .ic{width:20px;height:20px}
@@ -299,8 +299,9 @@ html:not(.js) .theme{display:none}
 .empty-box{border-style:dashed;border-left-width:1px;color:var(--color-text-muted);font:400 13px/18px var(--font-mono);text-align:center}
 
 /* Suburb category tiles as tabs: the chosen tile is filled, and only its listings show. */
-.cat-tab[aria-selected="true"]{background:var(--color-brand);border-color:var(--color-brand);color:var(--color-on-brand)}
+.cat-tab.cat-tab[aria-selected="true"]{background:var(--color-brand);border-color:var(--color-brand);color:var(--color-on-brand)}
 .cat-tab[aria-selected="true"] .ic,.cat-tab[aria-selected="true"] small{color:var(--color-on-brand)}
+.cat-tab[aria-selected="true"] .count-badge{background:color-mix(in srgb,var(--color-on-brand) 22%,transparent);color:var(--color-on-brand)}
 .cat-panel{display:grid;gap:8px;margin-top:8px}
 .cat-panel h3{font:700 18px/22px var(--font-display);margin:0}
 
