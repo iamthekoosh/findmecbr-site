@@ -18,10 +18,12 @@ export async function getStaticPaths() {
 }
 
 const { place } = Astro.props;
-// A parent place (one with places inside) is just a container: no website, photos or opening hours.
+// A parent place (one with places inside) keeps its own website, social media, photos and hours when it has
+// them, such as a church or school that others meet in. Only what's missing is left out: no empty photo frame
+// and no "hours not confirmed" note, since a pure container (a medical hub) has none of its own.
 const isContainer = place.children.length > 0;
-const hours = isContainer ? [] : weekHours(place.hours, place.closedDays);
-const website = isContainer ? '' : place.website;
+const hours = weekHours(place.hours, place.closedDays);
+const website = place.website;
 const directions = place.locationType === 'physical' ? directionsUrl(place) : '';
 const initials = place.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 const where = [place.suburb?.name, place.state || 'ACT'].filter(Boolean).join(', ');
@@ -34,7 +36,7 @@ const ld = {
   name: place.name,
   description: place.short || undefined,
   telephone: place.phone || undefined,
-  url: (place.children.length ? '' : place.website) || undefined,
+  url: place.website || undefined,
   address: place.address || place.suburb ? {
     '@type': 'PostalAddress', streetAddress: place.address || undefined, addressLocality: place.suburb?.name, addressRegion: place.state || 'ACT', postalCode: place.postcode || undefined, addressCountry: 'AU',
   } : undefined,
@@ -68,13 +70,13 @@ const [liveSets, otherSets] = splitLive(tileSets);
     {place.updatedAt && <span class="status-date">Updated {shortDate(place.updatedAt)}</span>}
   </p>
 
-  {!isContainer && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
+  {(!isContainer || place.photos.length > 0) && <PhotoCarousel photos={place.photos} name={place.name} placeholder={STAGE === 'alpha'} />}
   {place.short && <p class="lede"><b class="inline-label">About:</b> {place.short}</p>}
   {place.ourTake && (
     <p class="take"><Icon name="message-square" /><span><b>Our take:</b> {place.ourTake}</span></p>
   )}
   {place.isHealth && <p class="muted health">We don't give opinions on health services. Check with the practice about your needs.</p>}
-  {!isContainer && <LiveStatus hours={place.hours} exceptions={place.exceptions} closedDays={place.closedDays} />}
+  {(!isContainer || hours.length > 0) && <LiveStatus hours={place.hours} exceptions={place.exceptions} closedDays={place.closedDays} />}
 
   {place.parent && (
     <a class="rowtile" href={`/places/${place.parent.slug}/`}>
@@ -128,7 +130,7 @@ const [liveSets, otherSets] = splitLive(tileSets);
       {place.menu?.kind === 'images' && <a class="btn" href={`/places/${place.slug}/menu/`}><Icon name="book-open" />Menu</a>}
     </div>
   )}
-  {!isContainer && place.socials.length > 0 && (
+  {place.socials.length > 0 && (
     <section class="socials" aria-label="Social media">
       <h2 class="socials-head">Social media</h2>
       <div class="social-grid">
