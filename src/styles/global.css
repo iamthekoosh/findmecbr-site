@@ -87,6 +87,10 @@ label{display:grid;gap:4px;font-weight:600}
 .cat-group summary:active{background:var(--color-line)}
 .cat-group-chev{flex:none;transition:transform var(--motion-base) var(--motion-ease)}
 .cat-group[open] .cat-group-chev{transform:rotate(180deg)}
+/* An open dropdown gets a light brand tint, so the tiles inside (plain surface) stand out from it. */
+.cat-group{transition:background-color var(--motion-base) var(--motion-ease)}
+.cat-group[open]{background:color-mix(in srgb,var(--color-brand) 12%,var(--color-surface))}
+.cat-group[open] .gt{background:var(--color-surface)}
 .cat-group>.grid{padding:0 8px 8px}
 /* Tiles inside a dropdown are always two per row, at every width, and an odd last tile stays half width. */
 .cat-group>.grid.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
