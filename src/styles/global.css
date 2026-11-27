@@ -68,6 +68,26 @@ label{display:grid;gap:4px;font-weight:600}
 .rowtile{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:var(--tap-row);padding:8px 12px;background:var(--color-surface);color:var(--color-text);border:1px solid var(--color-border);border-radius:var(--radius);font-weight:600;line-height:20px;text-decoration:none}
 .rowtile small{display:block;font:400 12px/18px var(--font-mono);color:var(--color-text)}
 .rowtile:active{background:var(--color-line)}
+/* District page: Businesses and Services sorted into dropdowns by category group. The summary is a full-width row button. */
+.cat-group{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius)}
+.cat-group summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:var(--tap-row);padding:8px 12px;font-weight:600;line-height:20px;cursor:pointer;list-style:none}
+.cat-group summary::-webkit-details-marker{display:none}
+.cat-group-main{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.cat-group-name{font:700 17px/22px var(--font-display)}
+.cat-group-icons{display:flex;align-items:center;gap:6px;color:var(--color-brand)}
+.cat-group-icons .ic{width:20px;height:20px}
+.cat-group-more{font:700 12px/18px var(--font-mono);color:var(--color-text-muted)}
+/* Number of places: a pill on dropdown rows, a round badge on category tiles. */
+.count-pill{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:52px;padding:4px 8px;border-radius:var(--radius);background:color-mix(in srgb,var(--color-brand) 16%,transparent);color:var(--color-text);line-height:1}
+.count-pill b{font:700 20px/22px var(--font-mono)}
+.count-pill span{font:400 11px/14px var(--font-mono)}
+.gt.counted{position:relative;padding-right:40px}
+.gt.counted .gt-name{overflow-wrap:normal;hyphens:auto}
+.count-badge{position:absolute;top:50%;right:8px;transform:translateY(-50%);min-width:24px;height:24px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:color-mix(in srgb,var(--color-brand) 16%,transparent);color:var(--color-text);font:700 13px/1 var(--font-mono)}
+.cat-group summary:active{background:var(--color-line)}
+.cat-group-chev{flex:none;transition:transform var(--motion-base) var(--motion-ease)}
+.cat-group[open] .cat-group-chev{transform:rotate(180deg)}
+.cat-group>.grid{padding:0 8px 8px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap-chip);padding:6px 12px;border:1px solid var(--color-border);border-radius:var(--radius);background:transparent;color:var(--color-text);font:600 15px/20px var(--font-body);text-decoration:none;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--color-brand);border-color:var(--color-brand);color:var(--color-on-brand)}

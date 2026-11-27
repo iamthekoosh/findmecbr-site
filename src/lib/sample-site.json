@@ -244,7 +244,8 @@
       "plural": "Cafes",
       "kind": "venue",
       "icon": "coffee",
-      "active": true
+      "active": true,
+      "group": "Food and Drink"
     },
     {
       "slug": "cleaner",
@@ -252,7 +253,8 @@
       "plural": "Cleaners",
       "kind": "service",
       "icon": "sparkles",
-      "active": true
+      "active": true,
+      "group": "Repairs and Cleaning"
     },
     {
       "slug": "service-station",
@@ -260,7 +262,8 @@
       "plural": "Service stations",
       "kind": "venue",
       "icon": "fuel",
-      "active": true
+      "active": true,
+      "group": "Motoring"
     }
   ],
   "places": [

@@ -20,6 +20,8 @@ const types = Object.entries(CENTRE_TYPES)
   .filter((t) => t.count > 0);
 const alpha = STAGE === 'alpha';
 const sections = districtSections(site, district);
+// How many category icons a closed dropdown shows before "+N".
+const ICONS_SHOWN = 5;
 ---
 <Base title={district.name} description={district.intro || `Suburbs, local shops and centres in ${district.name}, Canberra.`} noindex={suburbs.length === 0}>
   <p class="kicker">District</p>
@@ -31,12 +33,41 @@ const sections = districtSections(site, district);
   {sections.map((sec) => (sec.list.length > 0 || alpha) && (
     <section class="section">
       <h2>{titleCase(sec.title)}</h2>
-      {sec.list.length > 0 ? (
+      {sec.groups ? (
+        <div class="stack">
+          {sec.groups.map((g) => (
+            <details class="cat-group">
+              <summary>
+                <span class="cat-group-main">
+                  <span class="cat-group-name">{titleCase(g.name)}</span>
+                  <span class="cat-group-icons" aria-hidden="true">
+                    {g.list.slice(0, ICONS_SHOWN).map((c) => <Icon name={c.icon || 'store'} />)}
+                    {g.list.length > ICONS_SHOWN && <span class="cat-group-more">+{g.list.length - ICONS_SHOWN}</span>}
+                  </span>
+                  <span class="sr-only">{g.list.length} {g.list.length === 1 ? 'category' : 'categories'}</span>
+                </span>
+                <span class="count-pill"><b>{g.count}</b><span>{g.count === 1 ? 'place' : 'places'}</span></span>
+                <Icon name="chevron-down" class="cat-group-chev" />
+              </summary>
+              <div class="grid">
+                {g.list.map((c) => (
+                  <a class="gt counted" href={`/districts/${district.slug}/${sec.key}/${c.slug}/`}>
+                    <Icon name={c.icon || 'store'} />
+                    <span class="gt-name">{c.plural}</span>
+                    <span class="count-badge">{c.count}<span class="sr-only"> {c.count === 1 ? 'place' : 'places'}</span></span>
+                  </a>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      ) : sec.list.length > 0 ? (
         <div class="grid">
           {sec.list.map((c) => (
-            <a class="gt" href={`/districts/${district.slug}/${sec.key}/${c.slug}/`}>
+            <a class="gt counted" href={`/districts/${district.slug}/${sec.key}/${c.slug}/`}>
               <Icon name={c.icon || 'store'} />
-              <span>{c.plural}<small>{c.count} listed</small></span>
+              <span class="gt-name">{c.plural}</span>
+              <span class="count-badge">{c.count}<span class="sr-only"> {c.count === 1 ? 'place' : 'places'}</span></span>
             </a>
           ))}
         </div>

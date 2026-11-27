@@ -247,3 +247,19 @@ test('titleCase capitalises headings but keeps small words, names and short form
   assert.equal(titleCase("We couldn't find that page"), "We Couldn't Find That Page");
   assert.equal(titleCase(''), '');
 });
+
+test('groupCategories sorts categories into named groups, Other last, or none when only one group', async () => {
+  const { groupCategories } = await import('../src/lib/strapi.js');
+  const groups = groupCategories([
+    { slug: 'cafe', plural: 'Cafes', group: 'Food and Drink', count: 6 },
+    { slug: 'gym', plural: 'Gyms', group: '', count: 3 },
+    { slug: 'bakery', plural: 'Bakeries', group: 'food and drink', count: 1 },
+    { slug: 'barber', plural: 'Barbers', group: 'Hair and Beauty', count: 1 },
+  ]);
+  assert.deepEqual(groups.map((g) => [g.name, g.list.map((c) => c.slug), g.count]), [
+    ['Food and Drink', ['cafe', 'bakery'], 7],
+    ['Hair and Beauty', ['barber'], 1],
+    ['Other', ['gym'], 3],
+  ]);
+  assert.equal(groupCategories([{ slug: 'cafe', group: '', count: 1 }]), null);
+});

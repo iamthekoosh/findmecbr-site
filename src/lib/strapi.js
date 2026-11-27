@@ -263,7 +263,7 @@ export async function loadSite() {
       address: c.public_address ?? '', intro: c.intro ?? '', body: c.body ?? '', live: !!c.page_live, image: image(c.hero_image),
       facts: shapeFacts(c.facts), tileSetChoice: (c.tile_sets ?? []).map((s) => s.name),
     })),
-    categories: categories.map((c) => ({ slug: c.slug, label: c.label, plural: c.plural, kind: c.kind, icon: c.icon, active: !!c.active })),
+    categories: categories.map((c) => ({ slug: c.slug, label: c.label, plural: c.plural, kind: c.kind, icon: c.icon, group: (c.group ?? '').trim(), active: !!c.active })),
     places: shaped,
     tags: tags.map((t) => ({ slug: t.slug, label: t.label, group: t.group, question: t.question ?? null, icon: t.icon ?? null, active: !!t.active })),
     tileSets: tileSets.map(shapeTileSet),
@@ -342,7 +342,26 @@ export function districtSections(site, district) {
       .map((c) => ({ ...c, count: placesInDistrict(site, district, c, placeClass).length }))
       .filter((c) => c.count > 0)
       .sort((x, y) => x.plural.localeCompare(y.plural)),
-  }));
+  })).map((sec) => ({ ...sec, groups: GROUPED_CLASSES.includes(sec.placeClass) ? groupCategories(sec.list) : null }));
+}
+
+// Classes whose categories are sorted into dropdowns on district pages, by each category's Group.
+export const GROUPED_CLASSES = ['business', 'service'];
+
+// A section's categories in dropdown groups, by each category's Group, A to Z with Other last.
+// Returns null when there's only one group, so the page shows plain tiles instead of a lone dropdown.
+export function groupCategories(list) {
+  const groups = new Map();
+  for (const c of list) {
+    const name = c.group || 'Other';
+    const key = name.toLowerCase();
+    if (!groups.has(key)) groups.set(key, { name, list: [], count: 0 });
+    const g = groups.get(key);
+    g.list.push(c);
+    g.count += c.count ?? 0;
+  }
+  if (groups.size < 2) return null;
+  return [...groups.values()].sort((x, y) => (x.name === 'Other') - (y.name === 'Other') || x.name.localeCompare(y.name));
 }
 
 // Places grouped by category, in category order, for directory lists.
