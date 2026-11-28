@@ -1,0 +1,22 @@
+---
+// One category on a suburb page: a slim row like a fact tile (icon, name, count, chevron).
+// Tapping it opens the category's listings right under it. The id is the category slug,
+// so links such as /suburbs/weston/#cafe open it.
+import Icon from './Icon.astro';
+import PlaceCard from './PlaceCard.astro';
+
+const { category: c } = Astro.props;
+const places = (n) => (n === 1 ? 'place' : 'places');
+---
+<details class="cat-row" id={c.slug}>
+  <summary>
+    <Icon name={c.icon || 'store'} />
+    <span class="cat-row-name">{c.plural}</span>
+    <span class="count-badge">{c.count}<span class="sr-only"> {places(c.count)}</span></span>
+    <Icon name="chevron-down" class="cat-row-chev" />
+  </summary>
+  <div class="cat-row-body">
+    {c.note && <p class="muted">{c.note}</p>}
+    {c.places.map((p) => <PlaceCard place={p} />)}
+  </div>
+</details>

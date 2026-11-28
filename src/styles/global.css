@@ -78,12 +78,12 @@ label{display:grid;gap:4px;font-weight:600}
 .cat-group-icons .ic{width:20px;height:20px}
 .cat-group-more{font:700 12px/18px var(--font-mono);color:var(--color-text-muted)}
 /* Number of places: a pill on dropdown rows, a round badge on category tiles. */
-.count-pill{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:52px;padding:4px 8px;border-radius:var(--radius);background:color-mix(in srgb,var(--color-brand) 16%,transparent);color:var(--color-text);line-height:1}
+.count-pill{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:64px;padding:4px 0;border-radius:var(--radius);background:color-mix(in srgb,var(--color-brand) 16%,transparent);color:var(--color-text);line-height:1}
 .count-pill b{font:700 20px/22px var(--font-mono)}
 .count-pill span{font:400 11px/14px var(--font-mono)}
-.gt.counted{position:relative;padding-right:40px}
+.gt.counted{position:relative;padding-right:52px}
 .gt.counted .gt-name{overflow-wrap:normal;hyphens:auto}
-.count-badge{position:absolute;top:50%;right:8px;transform:translateY(-50%);min-width:24px;height:24px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:color-mix(in srgb,var(--color-brand) 16%,transparent);color:var(--color-text);font:700 13px/1 var(--font-mono)}
+.count-badge{position:absolute;top:50%;right:8px;transform:translateY(-50%);width:36px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:color-mix(in srgb,var(--color-brand) 16%,transparent);color:var(--color-text);font:700 13px/1 var(--font-mono)}
 .cat-group summary:active{background:var(--color-line)}
 .cat-group-chev{flex:none;transition:transform var(--motion-base) var(--motion-ease)}
 .cat-group[open] .cat-group-chev{transform:rotate(180deg)}
@@ -97,6 +97,19 @@ label{display:grid;gap:4px;font-weight:600}
 .cat-group>.grid>.gt:last-child:nth-child(odd){grid-column:auto}
 /* Half-width tiles: icon above the name, so long single words such as "Restaurants" fit beside the count. */
 .cat-group .gt.counted{flex-direction:column;align-items:flex-start;justify-content:center;gap:6px}
+/* Suburb pages: each category is a slim row like a fact tile, and opens its listings underneath. */
+.cat-rows{display:grid;gap:6px}
+.cat-group>.cat-rows{padding:0 8px 8px}
+.cat-row>summary{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:8px;min-height:var(--tap-chip);padding:8px 10px;border-radius:var(--radius);background:var(--color-surface);color:var(--color-text);cursor:pointer;list-style:none}
+.cat-row>summary::-webkit-details-marker{display:none}
+.cat-row>summary:active{background:var(--color-line)}
+.cat-row>summary .ic{width:22px;height:22px;color:var(--color-brand)}
+.cat-row>summary .cat-row-chev{width:20px;height:20px;color:var(--color-text);transition:transform var(--motion-base) var(--motion-ease)}
+.cat-row[open]>summary .cat-row-chev{transform:rotate(180deg)}
+.cat-row-name{font:700 15px/20px var(--font-body);overflow-wrap:break-word}
+.cat-row .count-badge{position:static;transform:none}
+.cat-row-body{display:grid;gap:8px;padding:8px 0 4px}
+.cat-row-body .muted{margin:0}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap-chip);padding:6px 12px;border:1px solid var(--color-border);border-radius:var(--radius);background:transparent;color:var(--color-text);font:600 15px/20px var(--font-body);text-decoration:none;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--color-brand);border-color:var(--color-brand);color:var(--color-on-brand)}
@@ -303,12 +316,6 @@ html:not(.js) .theme{display:none}
 .desc-box .prose p:last-child{margin-bottom:0}
 .empty-box{border-style:dashed;border-left-width:1px;color:var(--color-text-muted);font:400 13px/18px var(--font-mono);text-align:center}
 
-/* Suburb category tiles as tabs: the chosen tile is filled, and only its listings show. */
-.cat-tab.cat-tab[aria-selected="true"]{background:var(--color-brand);border-color:var(--color-brand);color:var(--color-on-brand)}
-.cat-tab[aria-selected="true"] .ic,.cat-tab[aria-selected="true"] small{color:var(--color-on-brand)}
-.cat-tab[aria-selected="true"] .count-badge{background:color-mix(in srgb,var(--color-on-brand) 22%,transparent);color:var(--color-on-brand)}
-.cat-panel{display:grid;gap:8px;margin-top:8px}
-.cat-panel h3{font:700 18px/22px var(--font-display);margin:0}
 
 /* Post status tag under a place's name. Colour plus words, never colour alone. */
 .status{display:inline-block;margin-top:4px;padding:2px 8px;border:1px solid currentColor;border-radius:999px;font:700 13px/18px var(--font-body);background:color-mix(in srgb,currentColor 12%,transparent)}

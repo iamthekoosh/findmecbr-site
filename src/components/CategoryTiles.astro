@@ -1,45 +1,25 @@
 ---
 // Category tiles with a count badge. With `grouped`, they sit in dropdowns by each category's Group
 // (A to Z, Other last), each showing its category icons and a count of places. A list with only one
-// group shows plain tiles. Used on district pages, the Businesses and Services page, Discover and suburb pages.
-// Props: list (categories, each with `count`), href (category → link), grouped (default false),
-// tabs (default false): the tiles are tabs for panels with the category's slug as id (suburb pages);
-// the first tile starts selected, and the page's script opens the dropdown of the selected tab.
+// group shows plain tiles. Used on district pages, the Businesses and Services page and Discover.
+// (Suburb pages use SuburbCategories, which opens listings inside the dropdowns.)
+// Props: list (categories, each with `count`), href (category → link), grouped (default false).
 import Icon from './Icon.astro';
+import CatGroupSummary from './CatGroupSummary.astro';
 import { groupCategories } from '../lib/strapi.js';
-import { titleCase } from '../lib/format.js';
 
-const { list, href, grouped = false, tabs = false, label = 'Categories' } = Astro.props;
+const { list, href, grouped = false } = Astro.props;
 const groups = grouped ? groupCategories(list) : null;
-// How many category icons a dropdown shows before "+N".
-const ICONS_SHOWN = 5;
 const places = (n) => (n === 1 ? 'place' : 'places');
-// The first tile on the page, in the order shown, starts selected.
-const first = (groups ? groups[0].list[0] : list[0])?.slug;
-const tabAttrs = (c) => (tabs
-  ? { class: 'gt counted cat-tab', id: `tab-${c.slug}`, role: 'tab', 'aria-controls': c.slug, 'aria-selected': c.slug === first ? 'true' : 'false' }
-  : { class: 'gt counted' });
-const listAttrs = (name) => (tabs ? { role: 'tablist', 'aria-label': name } : {});
 ---
 {groups ? (
   <div class="stack">
     {groups.map((g) => (
       <details class="cat-group">
-        <summary>
-          <span class="cat-group-main">
-            <span class="cat-group-name">{titleCase(g.name)}</span>
-            <span class="cat-group-icons" aria-hidden="true">
-              {g.list.slice(0, ICONS_SHOWN).map((c) => <Icon name={c.icon || 'store'} />)}
-              {g.list.length > ICONS_SHOWN && <span class="cat-group-more">+{g.list.length - ICONS_SHOWN}</span>}
-            </span>
-            <span class="sr-only">{g.list.length} {g.list.length === 1 ? 'category' : 'categories'}</span>
-          </span>
-          <span class="count-pill"><b>{g.count}</b><span>{places(g.count)}</span></span>
-          <Icon name="chevron-down" class="cat-group-chev" />
-        </summary>
-        <div class="grid" {...listAttrs(titleCase(g.name))}>
+        <CatGroupSummary group={g} />
+        <div class="grid">
           {g.list.map((c) => (
-            <a href={href(c)} {...tabAttrs(c)}>
+            <a href={href(c)} class="gt counted">
               <Icon name={c.icon || 'store'} />
               <span class="gt-name">{c.plural}</span>
               <span class="count-badge">{c.count}<span class="sr-only"> {places(c.count)}</span></span>
@@ -50,9 +30,9 @@ const listAttrs = (name) => (tabs ? { role: 'tablist', 'aria-label': name } : {}
     ))}
   </div>
 ) : (
-  <div class="grid" {...listAttrs(label)}>
+  <div class="grid">
     {list.map((c) => (
-      <a href={href(c)} {...tabAttrs(c)}>
+      <a href={href(c)} class="gt counted">
         <Icon name={c.icon || 'store'} />
         <span class="gt-name">{c.plural}</span>
         <span class="count-badge">{c.count}<span class="sr-only"> {places(c.count)}</span></span>

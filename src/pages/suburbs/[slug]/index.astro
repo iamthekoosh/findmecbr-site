@@ -2,11 +2,10 @@
 import StatTile from '../../../components/StatTile.astro';
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
-import PlaceCard from '../../../components/PlaceCard.astro';
 import Crumbs from '../../../components/Crumbs.astro';
-import CategoryTiles from '../../../components/CategoryTiles.astro';
+import SuburbCategories from '../../../components/SuburbCategories.astro';
 import { loadSite, placesFor, STAGE } from '../../../lib/strapi.js';
-import { hideListedChildren, titleCase } from '../../../lib/format.js';
+import { hideListedChildren } from '../../../lib/format.js';
 
 export async function getStaticPaths() {
   const site = await loadSite();
@@ -21,7 +20,7 @@ const here = site.places.filter((p) => p.suburb?.slug === suburb.slug);
 // Services that confirmed they come here, but aren't based here.
 const servicing = site.places.filter((p) => p.suburb?.slug !== suburb.slug && p.serviceAreas.some((a) => a.slug === suburb.slug));
 const centres = site.centres.filter((c) => c.suburb?.slug === suburb.slug);
-// One tab per category with places for this suburb: based here, or a service that confirmed it serves here.
+// One row per category with places for this suburb: based here, or a service that confirmed it serves here.
 // A place inside another place on this page shows on its parent's card instead of on its own.
 const allTabs = site.categories.map((c) => ({ c, places: placesFor(site, suburb, c) }));
 const onPage = allTabs.flatMap((t) => t.places);
@@ -68,55 +67,16 @@ const noindex = !suburb.live || here.length + servicing.length === 0;
   )}
 
   {tabs.length > 0 && (
-    <section class="section cat-tabs" data-cat-tabs>
+    <section class="section">
       <h2>Find in {suburb.name}</h2>
-      <CategoryTiles list={tabs.map((t) => ({ ...t.c, count: t.places.length }))} href={(c) => `#${c.slug}`} grouped tabs label={`Categories in ${suburb.name}`} />
-      {tabs.map((t) => (
-        <div class="cat-panel" id={t.c.slug} role="tabpanel" aria-labelledby={`tab-${t.c.slug}`}>
-          <h3 class="h2row"><Icon name={t.c.icon || 'store'} />{titleCase(t.c.kind === 'service' ? `${t.c.plural} who serve ${suburb.name}` : `${t.c.plural} in ${suburb.name}`)}</h3>
-          {t.c.kind === 'service' && t.places.some((p) => p.suburb?.slug !== suburb.slug) && <p class="muted">Each of these is based here, or confirmed they serve {suburb.name}.</p>}
-          <div class="stack">{t.places.map((p) => <PlaceCard place={p} />)}</div>
-        </div>
-      ))}
+      <SuburbCategories list={tabs.map((t) => ({
+        ...t.c,
+        count: t.places.length,
+        places: t.places,
+        note: t.c.kind === 'service' && t.places.some((p) => p.suburb?.slug !== suburb.slug) ? `Each of these is based here, or confirmed they serve ${suburb.name}.` : '',
+      }))} />
     </section>
   )}
-
-  <script>
-    // Category tiles work as tabs: only the chosen category's listings show.
-    // Without JavaScript, every list shows and each tile jumps to its list.
-    for (const root of document.querySelectorAll('[data-cat-tabs]')) {
-      const tabs = [...root.querySelectorAll('[role=tab]')];
-      const panels = [...root.querySelectorAll('[role=tabpanel]')];
-      const show = (id, focus) => {
-        const tab = tabs.find((t) => t.getAttribute('aria-controls') === id) ?? tabs[0];
-        for (const t of tabs) {
-          const on = t === tab;
-          t.setAttribute('aria-selected', on ? 'true' : 'false');
-          t.tabIndex = on ? 0 : -1;
-        }
-        for (const p of panels) p.hidden = p.id !== tab.getAttribute('aria-controls');
-        // A tab inside a closed group dropdown: open the dropdown so the chosen tile shows.
-        const group = tab.closest('details');
-        if (group) group.open = true;
-        if (focus) tab.focus();
-        return tab.getAttribute('aria-controls');
-      };
-      tabs.forEach((t, i) => {
-        t.addEventListener('click', (e) => {
-          e.preventDefault();
-          history.replaceState(null, '', '#' + show(t.getAttribute('aria-controls')));
-        });
-        t.addEventListener('keydown', (e) => {
-          const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-          if (!step) return;
-          e.preventDefault();
-          const next = tabs[(i + step + tabs.length) % tabs.length];
-          history.replaceState(null, '', '#' + show(next.getAttribute('aria-controls'), true));
-        });
-      });
-      show(location.hash.slice(1));
-    }
-  </script>
 
   {here.length + servicing.length === 0 && (
     <p class="empty">We haven't checked any places in {suburb.name} yet. Listings appear here once they've been checked by hand.</p>

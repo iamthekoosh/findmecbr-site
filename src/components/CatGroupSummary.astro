@@ -1,0 +1,23 @@
+---
+// The heading row of a category group dropdown: group name, its category icons, a count pill and a chevron.
+// Used by CategoryTiles and SuburbCategories.
+import Icon from './Icon.astro';
+import { titleCase } from '../lib/format.js';
+
+const { group } = Astro.props;
+// How many category icons a dropdown shows before "+N".
+const ICONS_SHOWN = 5;
+const places = (n) => (n === 1 ? 'place' : 'places');
+---
+<summary>
+  <span class="cat-group-main">
+    <span class="cat-group-name">{titleCase(group.name)}</span>
+    <span class="cat-group-icons" aria-hidden="true">
+      {group.list.slice(0, ICONS_SHOWN).map((c) => <Icon name={c.icon || 'store'} />)}
+      {group.list.length > ICONS_SHOWN && <span class="cat-group-more">+{group.list.length - ICONS_SHOWN}</span>}
+    </span>
+    <span class="sr-only">{group.list.length} {group.list.length === 1 ? 'category' : 'categories'}</span>
+  </span>
+  <span class="count-pill"><b>{group.count}</b><span>{places(group.count)}</span></span>
+  <Icon name="chevron-down" class="cat-group-chev" />
+</summary>

@@ -1,0 +1,36 @@
+---
+// Suburb pages: categories in group dropdowns, each category a row that opens its listings underneath.
+// A list with only one group shows the rows without a dropdown.
+// Props: list (categories, each with `count`, `places` and an optional `note`).
+import CatGroupSummary from './CatGroupSummary.astro';
+import CatRow from './CatRow.astro';
+import { groupCategories } from '../lib/strapi.js';
+
+const { list } = Astro.props;
+const groups = groupCategories(list);
+---
+<div class="stack" data-cat-rows>
+  {groups ? groups.map((g) => (
+    <details class="cat-group">
+      <CatGroupSummary group={g} />
+      <div class="cat-rows">{g.list.map((c) => <CatRow category={c} />)}</div>
+    </details>
+  )) : (
+    <div class="cat-rows">{list.map((c) => <CatRow category={c} />)}</div>
+  )}
+</div>
+
+<script>
+  // A link to a category (/suburbs/weston/#cafe) opens its row, and the dropdown around it.
+  const openFromHash = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const row = id ? document.getElementById(id) : null;
+    if (!row?.classList.contains('cat-row')) return;
+    row.open = true;
+    const group = row.parentElement?.closest('details');
+    if (group) group.open = true;
+    row.scrollIntoView({ block: 'start' });
+  };
+  openFromHash();
+  addEventListener('hashchange', openFromHash);
+</script>
