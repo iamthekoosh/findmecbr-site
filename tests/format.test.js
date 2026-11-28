@@ -207,6 +207,22 @@ test('a place inside another place, or in a centre, inherits its tiles', async (
   assert.deepEqual(a.facts.map((x) => x.slug).sort(), ['x', 'y'], 'a loop of parents does not hang');
 });
 
+test('a place in a place group shows the group tiles, after its parent and before its centre', async () => {
+  const { inheritFacts } = await import('../src/lib/format.js');
+  const f = (slug, extra = {}) => ({ slug, label: slug, group: 'feature', ...extra });
+  const group = { id: 'g1', name: 'Weston Arcade', facts: [f('lift'), f('parking')], tileSetChoice: ['Parking'] };
+  const centre = { slug: 'cc', name: 'Cooleman Court', facts: [f('parking'), f('toilets')], tileSetChoice: [] };
+  const shop = { slug: 'shop', name: 'Shop', parent: null, group: { id: 'g1' }, centre: { slug: 'cc' }, facts: [f('lift', { subtitle: 'Ours' })], tileSetChoice: [] };
+  const kid = { slug: 'kid', name: 'Kid', parent: { slug: 'shop' }, group: null, centre: null, facts: [], tileSetChoice: [] };
+  const other = { slug: 'other', name: 'Other', parent: null, group: { id: 'gone' }, centre: null, facts: [], tileSetChoice: [] };
+  inheritFacts([shop, kid, other], [centre], [group]);
+  const by = (p) => Object.fromEntries(p.facts.map((x) => [x.slug, x.from ?? null]));
+  assert.deepEqual(by(shop), { lift: null, parking: 'Weston Arcade', toilets: 'Cooleman Court' }, 'own tile wins; group before centre');
+  assert.deepEqual(shop.tileSetChoice, ['Parking']);
+  assert.deepEqual(by(kid), { lift: 'Shop', parking: 'Weston Arcade', toilets: 'Cooleman Court' }, 'passes down through a parent');
+  assert.deepEqual(by(other), {}, 'a missing group adds nothing');
+});
+
 test('inherited tiles get their own "At <place>" section and lose the "From" subtitle', async () => {
   const { splitInherited, factTile } = await import('../src/lib/format.js');
   const facts = [

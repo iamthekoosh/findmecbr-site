@@ -134,9 +134,10 @@ export function splitInherited(facts = [], tileSets = []) {
 
 // A place inside another place, or in a centre, inherits that place's tiles (facts) and tile sets.
 // Its own tile wins.
-// Order: the parent place (and its own parents and centre, all the way up), then the place's centre.
+// Order: the parent place (and its own parents, groups and centre, all the way up), then the place's group, then its centre.
 // Inherited tiles carry `from` (the name of the place they came from). Safe to run twice.
-export function inheritFacts(places, centres = []) {
+export function inheritFacts(places, centres = [], groups = []) {
+  const groupById = new Map(groups.map((g) => [g.id, g]));
   const bySlug = new Map(places.map((p) => [p.slug, p]));
   const centreBySlug = new Map(centres.map((c) => [c.slug, c]));
   const done = new Map();
@@ -157,6 +158,8 @@ export function inheritFacts(places, centres = []) {
       const up = resolve(parent, new Set([...seen, parent.slug]));
       take(parent.name, up.facts, up.tileSetChoice);
     }
+    const group = p.group && groupById.get(p.group.id);
+    if (group) take(group.name, group.facts ?? [], group.tileSetChoice ?? []);
     const centre = p.centre && centreBySlug.get(p.centre.slug);
     if (centre) take(centre.name, centre.facts ?? [], centre.tileSetChoice ?? []);
     const out = { facts, tileSetChoice: sets };

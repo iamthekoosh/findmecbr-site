@@ -169,6 +169,8 @@ export function shapePlace(p) {
     suburb: loc?.suburb ? { slug: loc.suburb.slug, name: loc.suburb.name } : null,
     // The place this one is inside, such as a building. Its children are worked out from the other places.
     parent: p.parent_place?.slug ? { slug: p.parent_place.slug, name: p.parent_place.name } : null,
+    // The place group it's in (a building, street or arcade). Groups have no page; the place shows their tiles.
+    group: p.place_group?.documentId ? { id: p.place_group.documentId, name: p.place_group.name } : null,
     centre: loc?.in_centre && loc?.centre ? { slug: loc.centre.slug, name: loc.centre.name } : null,
     address: showAddress ? (loc?.public_address ?? '') : '',
     postcode: loc?.postcode ?? '',
@@ -216,7 +218,7 @@ export async function loadSite() {
     cached = { ...sample, places: sample.places.map(shapePlace), tileSets: (sample.tileSets ?? []).map(shapeTileSet), fuelData: loadFuel(true) };
     return finish(cached);
   }
-  const [districts, suburbs, centres, categories, places, tags, synonyms, tileSets] = await Promise.all([
+  const [districts, suburbs, centres, categories, places, tags, synonyms, tileSets, groups] = await Promise.all([
     getAll('districts', { sort: 'name', populate: { hero_image: { populate: ['file'] }, photos: { populate: ['file'] } } }),
     getAll('suburbs', { sort: 'name', populate: { district: true, neighbours: true, stats: true, hero_image: { populate: ['file'] } } }),
     getAll('centres', { sort: 'name', populate: { suburb: true, hero_image: { populate: ['file'] }, facts: { populate: ['tag'] }, tile_sets: true } }),
@@ -232,6 +234,7 @@ export async function loadSite() {
         facts: { populate: ['tag'] },
         tile_sets: true,
         parent_place: true,
+        place_group: true,
         opening_hours: true,
         hours_exceptions: true,
         action_tiles: true,
@@ -245,6 +248,7 @@ export async function loadSite() {
     getOptional('tags', { sort: 'label' }),
     getOptional('search-synonyms', { populate: ['category', 'suburb', 'tag'] }),
     getOptional('tile-sets', { populate: ['categories', 'tags'] }),
+    getOptional('place-groups', { populate: { facts: { populate: ['tag'] }, tile_sets: true } }),
   ]);
 
   const shaped = places.map(shapePlace);
@@ -264,6 +268,7 @@ export async function loadSite() {
       address: c.public_address ?? '', intro: c.intro ?? '', body: c.body ?? '', live: !!c.page_live, image: image(c.hero_image),
       facts: shapeFacts(c.facts), tileSetChoice: (c.tile_sets ?? []).map((s) => s.name),
     })),
+    groups: groups.map((g) => ({ id: g.documentId, name: g.name, facts: shapeFacts(g.facts), tileSetChoice: (g.tile_sets ?? []).map((s) => s.name) })),
     categories: categories.map((c) => ({ slug: c.slug, label: c.label, plural: c.plural, kind: c.kind, icon: c.icon, group: (c.group ?? '').trim(), active: !!c.active })),
     places: shaped,
     tags: tags.map((t) => ({ slug: t.slug, label: t.label, group: t.group, question: t.question ?? null, icon: t.icon ?? null, active: !!t.active })),
@@ -284,8 +289,8 @@ function finish(site) {
   for (const p of site.places) p.children = site.places.filter((c) => c.parent?.slug === p.slug);
   // Prices into the fuel tiles of stations with a FuelCheck code, before tiles are inherited or grouped.
   applyFuel(site.places, site.fuelData);
-  // A place inside another place, or in a centre, inherits its tiles (only published parents count).
-  inheritFacts(site.places, site.centres);
+  // A place inside another place, a place group or a centre inherits its tiles (only published parents count).
+  inheritFacts(site.places, site.centres, site.groups ?? []);
   // Each place's tile sections, from the tile sets in Strapi.
   for (const p of site.places) p.tileSets = tileSetsFor(p, site.tileSets ?? []);
   for (const c of site.centres) c.tileSets = tileSetsFor({ facts: c.facts ?? [], tileSetChoice: c.tileSetChoice ?? [] }, site.tileSets ?? []);
