@@ -319,6 +319,8 @@ export function publicData(site) {
       centre: p.centre?.name ?? null, lat: p.lat, lng: p.lng, areas: p.serviceAreas.map((a) => a.slug), short: p.short, phone: p.phone, website: p.website,
       checked: p.checkedAt, hours: days(p.hours), logo: p.logo?.src ?? null,
       facts: Object.fromEntries(p.facts.filter((f) => f.group === 'feature').map((f) => [f.slug, 1])),
+      // Tiles a child place only has because its parent place has them. Tile searches leave these out.
+      ...(() => { const pf = p.facts.filter((f) => f.fromParent && f.group === 'feature').map((f) => f.slug); return pf.length ? { parentFacts: pf } : {}; })(),
       occ: p.facts.filter((f) => f.group === 'occasion' && f.active).map((f) => f.slug),
     })),
   };

@@ -125,8 +125,8 @@ export function search(params, site, opts = {}) {
     if (cond.open && isOpenNow(p, now) !== true) return false;
     if (cond.dogs && !p.facts[FILTER_TAGS.dogs]) return false;
     if (cond.free && !p.facts[FILTER_TAGS.free]) return false;
-    // A tile asked for by name.
-    if (cond.has && !p.facts[cond.has]) return false;
+    // A tile asked for by name. A child place doesn't match on a tile it only gets from its parent place.
+    if (cond.has && (!p.facts[cond.has] || p.parentFacts?.includes(cond.has))) return false;
     return true;
   });
 

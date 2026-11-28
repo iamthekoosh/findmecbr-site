@@ -145,10 +145,11 @@ export function inheritFacts(places, centres = [], groups = []) {
     if (done.has(p.slug)) return done.get(p.slug);
     const facts = [...(p.facts ?? [])];
     const sets = [...(p.tileSetChoice ?? [])];
-    const take = (from, fromFacts, fromSets) => {
+    // fromParent marks tiles that came down from a parent place, so search can leave them out.
+    const take = (from, fromFacts, fromSets, fromParent = false) => {
       for (const f of fromFacts) {
         const i = facts.findIndex((x) => x.slug === f.slug);
-        const inherited = { ...f, from: f.from ?? from };
+        const inherited = { ...f, from: f.from ?? from, fromParent: !!f.fromParent || fromParent };
         if (i === -1) facts.push(inherited);
       }
       for (const s of fromSets) if (!sets.includes(s)) sets.push(s);
@@ -156,7 +157,7 @@ export function inheritFacts(places, centres = [], groups = []) {
     const parent = p.parent && bySlug.get(p.parent.slug);
     if (parent && !seen.has(parent.slug)) {
       const up = resolve(parent, new Set([...seen, parent.slug]));
-      take(parent.name, up.facts, up.tileSetChoice);
+      take(parent.name, up.facts, up.tileSetChoice, true);
     }
     const group = p.group && groupById.get(p.group.id);
     if (group) take(group.name, group.facts ?? [], group.tileSetChoice ?? []);

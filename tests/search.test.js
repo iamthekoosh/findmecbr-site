@@ -67,6 +67,14 @@ test('a tile title finds places that have that tile', () => {
   assert.deepEqual(search({ q: 'liquor rivett' }, site).results.map((r) => r.slug), ['b-cafe']);
 });
 
+test('a tile search leaves out child places that only get the tile from their parent', () => {
+  const child = { ...site.places[1], slug: 'b-kiosk', name: 'B Kiosk', facts: { liquor: 1 }, parentFacts: ['liquor'] };
+  const own = { ...site.places[1], slug: 'b-bar', name: 'B Bar', facts: { liquor: 1 } };
+  const s = { ...site, places: [...site.places, child, own] };
+  assert.deepEqual(search({ q: 'liquor' }, s).results.map((r) => r.slug).sort(), ['b-bar', 'b-cafe']);
+  assert.deepEqual(search({ q: 'beer' }, s).results.map((r) => r.slug).sort(), ['b-bar', 'b-cafe']);
+});
+
 test('near me puts the closest places first and leaves out far ones', () => {
   // Standing in Rivett: B Cafe is next door, A Cafe is about 2.2 km away.
   const origin = { lat: -35.346, lng: 149.038, suburb: 'rivett' };
