@@ -1,14 +1,15 @@
 ---
 // One category on a suburb page: a slim row like a fact tile (icon, name, count, chevron).
 // Tapping it opens the category's listings right under it. The id is the category slug,
-// so links such as /suburbs/weston/#cafe open it.
+// so links such as /suburbs/weston/#cafe open it. With `open` (the only category in its group),
+// it starts open, so the listings show as soon as the group does.
 import Icon from './Icon.astro';
 import PlaceCard from './PlaceCard.astro';
 
-const { category: c } = Astro.props;
+const { category: c, open = false } = Astro.props;
 const places = (n) => (n === 1 ? 'place' : 'places');
 ---
-<details class="cat-row" id={c.slug}>
+<details class="cat-row" id={c.slug} open={open}>
   <summary>
     <Icon name={c.icon || 'store'} />
     <span class="cat-row-name">{c.plural}</span>

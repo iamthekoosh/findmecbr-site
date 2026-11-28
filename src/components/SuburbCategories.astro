@@ -1,6 +1,7 @@
 ---
 // Suburb pages: categories in group dropdowns, each category a row that opens its listings underneath.
-// A list with only one group shows the rows without a dropdown.
+// A list with only one group shows the rows without a dropdown. A row that is the only one in its
+// group (or list) starts open, so there's no second tap.
 // Props: list (categories, each with `count`, `places` and an optional `note`).
 import CatGroupSummary from './CatGroupSummary.astro';
 import CatRow from './CatRow.astro';
@@ -13,10 +14,10 @@ const groups = groupCategories(list);
   {groups ? groups.map((g) => (
     <details class="cat-group">
       <CatGroupSummary group={g} />
-      <div class="cat-rows">{g.list.map((c) => <CatRow category={c} />)}</div>
+      <div class="cat-rows">{g.list.map((c) => <CatRow category={c} open={g.list.length === 1} />)}</div>
     </details>
   )) : (
-    <div class="cat-rows">{list.map((c) => <CatRow category={c} />)}</div>
+    <div class="cat-rows">{list.map((c) => <CatRow category={c} open={list.length === 1} />)}</div>
   )}
 </div>
 
