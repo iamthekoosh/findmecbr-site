@@ -159,6 +159,8 @@ label{display:grid;gap:4px;font-weight:600}
 .logo-slot img{width:100%;height:100%;object-fit:contain}
 .logo-slot .ic{width:28px;height:28px}
 .logo-slot.lg{width:72px;height:72px}
+/* Result tiles: a bigger logo box so the logo reads at a glance. */
+.card-head .logo-slot{width:88px;height:88px;font-size:22px;line-height:26px}
 .place-head{display:flex;align-items:center;gap:12px}
 .place-head h1{min-width:0}
 .card-main{display:flex;align-items:center;gap:12px;min-width:0}

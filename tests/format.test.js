@@ -277,3 +277,10 @@ test('groupCategories sorts categories into named groups, Other last, or none wh
   ]);
   assert.equal(groupCategories([{ slug: 'cafe', group: '', count: 1 }]), null);
 });
+
+test('a logo is a plain image, with alt text from the place name', () => {
+  assert.equal(shapePlace(raw).logo, null);
+  const p = shapePlace({ ...raw, logo: { url: '/sample/logo.png', width: 200, height: 200, alternativeText: null } });
+  assert.equal(p.logo.src, '/sample/logo.png');
+  assert.equal(p.logo.alt, 'Home Cleaner logo');
+});

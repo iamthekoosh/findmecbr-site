@@ -192,7 +192,8 @@ export function shapePlace(p) {
     exceptions: (p.hours_exceptions ?? []).map((x) => ({ date: x.on_date, closed: x.closed, opens: x.opens_at?.slice(0, 5), closes: x.closes_at?.slice(0, 5), note: x.note ?? '' })),
     actions: (p.action_tiles ?? []).filter((t) => t.active && t.checked_at && /^https:\/\//.test(t.url ?? ''))
       .map((t) => ({ action: t.action, label: t.label, provider: t.provider, url: t.url })),
-    logo: image(p.logo),
+    // The logo is a plain image: no alt text or permission to fill in.
+    logo: p.logo ? image({ file: p.logo, alt_text: p.logo.alternativeText || `${p.name} logo` }) : null,
     menu: shapeMenu(p),
     photos: (p.photos ?? []).map((ph) => ({ ...image(ph), primary: ph.is_primary })).filter((ph) => ph.src)
       .sort((a, b) => Number(b.primary) - Number(a.primary)),
@@ -237,7 +238,7 @@ export async function loadSite() {
         information: true,
         social_links: true,
         menu: { populate: ['images'] },
-        logo: { populate: ['file'] },
+        logo: true,
         photos: { populate: ['file'] },
       },
     }),
