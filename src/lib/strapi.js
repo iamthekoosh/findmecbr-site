@@ -185,8 +185,8 @@ export function shapePlace(p) {
       .filter((h) => h.open !== false && (h.all_day || (h.opens_at && h.closes_at)))
       // A 24 hours day is one session from midnight to midnight.
       .map((h) => (h.all_day
-        ? { day: WEEKDAYS.indexOf(h.weekday), opens: '00:00', closes: '24:00' }
-        : { day: WEEKDAYS.indexOf(h.weekday), opens: String(h.opens_at).slice(0, 5), closes: String(h.closes_at).slice(0, 5) }))
+        ? { day: WEEKDAYS.indexOf(h.weekday), opens: '00:00', closes: '24:00', label: h.label?.trim() || '' }
+        : { day: WEEKDAYS.indexOf(h.weekday), opens: String(h.opens_at).slice(0, 5), closes: String(h.closes_at).slice(0, 5), label: h.label?.trim() || '' }))
       .sort((a, b) => a.day - b.day || a.opens.localeCompare(b.opens)),
     closedDays: [...new Set((p.opening_hours ?? []).filter((h) => h.open === false).map((h) => WEEKDAYS.indexOf(h.weekday)))].sort(),
     exceptions: (p.hours_exceptions ?? []).map((x) => ({ date: x.on_date, closed: x.closed, opens: x.opens_at?.slice(0, 5), closes: x.closes_at?.slice(0, 5), note: x.note ?? '' })),

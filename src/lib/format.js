@@ -25,15 +25,20 @@ export function clock(hhmm) {
 // One row per weekday, Monday first. A day switched to Closed in Strapi says "Closed". Other days with
 // no hours say "Hours not confirmed", because no rows means unknown. Returns [] when nothing is recorded.
 // closedDays: day numbers (0 = Sunday) marked closed. Open sessions on the same day win.
+// A session with a label (a church's "Morning service") reads "9am to 10am · Morning service". lines has
+// one entry per session, and labelled says whether any has a label, so a day of named sessions can show
+// one session a line.
 export function weekHours(hours, closedDays = []) {
   if (!hours?.length && !closedDays.length) return [];
   const order = [1, 2, 3, 4, 5, 6, 0];
   return order.map((day) => {
     const sessions = (hours ?? []).filter((h) => h.day === day);
-    return {
-      day: DAY_NAMES[day],
-      text: sessions.length ? sessions.map((s) => (s.opens === '00:00' && s.closes === '24:00' ? '24 hours' : `${clock(s.opens)} to ${clock(s.closes)}`)).join(', ') : closedDays.includes(day) ? 'Closed' : 'Hours not confirmed',
-    };
+    const lines = sessions.map((s) => {
+      const time = s.opens === '00:00' && s.closes === '24:00' ? '24 hours' : `${clock(s.opens)} to ${clock(s.closes)}`;
+      return s.label ? `${time} · ${s.label}` : time;
+    });
+    const text = lines.length ? lines.join(', ') : closedDays.includes(day) ? 'Closed' : 'Hours not confirmed';
+    return { day: DAY_NAMES[day], text, lines: lines.length ? lines : [text], labelled: sessions.some((s) => s.label) };
   });
 }
 

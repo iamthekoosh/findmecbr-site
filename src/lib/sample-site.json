@@ -497,6 +497,18 @@
           "weekday": "saturday",
           "opens_at": "08:00:00.000",
           "closes_at": "12:30:00.000"
+        },
+        {
+          "weekday": "sunday",
+          "opens_at": "08:00:00.000",
+          "closes_at": "11:00:00.000",
+          "label": "Breakfast"
+        },
+        {
+          "weekday": "sunday",
+          "opens_at": "11:30:00.000",
+          "closes_at": "14:00:00.000",
+          "label": "Lunch"
         }
       ],
       "hours_exceptions": [

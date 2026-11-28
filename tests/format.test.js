@@ -22,6 +22,20 @@ test('missing days are not confirmed, never closed', () => {
   assert.deepEqual(weekHours([]), []);
 });
 
+test('labelled sessions read time then label, one per line', () => {
+  const rows = weekHours([
+    { day: 0, opens: '10:00', closes: '11:30', label: 'Contemporary service' },
+    { day: 0, opens: '08:00', closes: '09:00', label: 'Traditional service' },
+    { day: 0, opens: '18:00', closes: '19:00', label: '' },
+    { day: 1, opens: '09:00', closes: '17:00', label: '' },
+  ].sort((a, b) => a.day - b.day || a.opens.localeCompare(b.opens)));
+  const sunday = rows[6];
+  assert.deepEqual(sunday.lines, ['8am to 9am · Traditional service', '10am to 11:30am · Contemporary service', '6pm to 7pm']);
+  assert.equal(sunday.labelled, true);
+  assert.equal(rows[0].labelled, false);
+  assert.equal(rows[0].text, '9am to 5pm');
+});
+
 test('directions and calls', () => {
   assert.match(directionsUrl({ lat: -35.3, lng: 149.05 }), /destination=-35.3,149.05/);
   assert.match(directionsUrl({ address: '', suburb: { name: 'Weston' } }), /Weston%2C%20ACT/);

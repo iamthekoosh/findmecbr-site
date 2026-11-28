@@ -18,7 +18,7 @@ const DAY_INDEX = [1, 2, 3, 4, 5, 6, 0]; // weekHours lists Monday first.
       <Icon name="chevron-right" class="live-chev" />
     </summary>
     <dl class="hours live-hours">
-      {week.map((h, i) => <><dt data-day={DAY_INDEX[i]}>{h.day}</dt><dd data-day={DAY_INDEX[i]}>{h.text}</dd></>)}
+      {week.map((h, i) => <><dt data-day={DAY_INDEX[i]}>{h.day}</dt><dd data-day={DAY_INDEX[i]}>{h.labelled ? h.lines.map((l) => <span class="hours-line">{l}</span>) : h.text}</dd></>)}
     </dl>
     {exceptions.length > 0 && (
       <ul class="muted live-exceptions">{exceptions.map((x) => <li>{shortDate(x.date)}: {x.closed ? 'Closed' : `${x.opens} to ${x.closes}`}{x.note && ` (${x.note})`}</li>)}</ul>
