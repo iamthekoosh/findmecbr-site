@@ -55,6 +55,8 @@ export function parseQuery(raw, site) {
     ...site.suburbs.map((s) => ({ term: s.name.toLowerCase(), suburb: s.slug })),
     ...site.categories.flatMap((c) => [{ term: c.label.toLowerCase(), cat: c.slug }, { term: c.plural.toLowerCase(), cat: c.slug }]),
     ...site.tags.filter((t) => t.group === 'occasion').map((t) => ({ term: t.label.toLowerCase(), occ: t.slug })),
+    // A tile's own title, such as "Liquor" or "Free entry", finds places that have that tile.
+    ...site.tags.filter((t) => t.group !== 'occasion').map((t) => ({ term: t.label.toLowerCase(), tag: t.slug })),
   ].sort((a, b) => b.term.length - a.term.length);
 
   for (const t of terms) {

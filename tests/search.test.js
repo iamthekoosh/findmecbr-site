@@ -8,7 +8,7 @@ const site = {
     { slug: 'cafe', label: 'Cafe', plural: 'Cafes', kind: 'venue' },
     { slug: 'electrician', label: 'Electrician', plural: 'Electricians', kind: 'service' },
   ],
-  tags: [{ slug: 'with-kids', label: 'With kids', group: 'occasion', question: 'who' }, { slug: 'step-free-entry', label: 'Step-free entry', group: 'feature' }],
+  tags: [{ slug: 'with-kids', label: 'With kids', group: 'occasion', question: 'who' }, { slug: 'step-free-entry', label: 'Step-free entry', group: 'feature' }, { slug: 'liquor', label: 'Liquor', group: 'feature' }],
   synonyms: [{ term: 'sparky', category: 'electrician' }, { term: 'cooleman court', suburb: 'weston' }, { term: 'beer', tag: 'liquor' }],
   places: [
     { slug: 'a-cafe', name: 'A Cafe', cat: 'cafe', type: 'physical', sub: 'weston', lat: -35.336, lng: 149.059, areas: [], short: 'Coffee', phone: '1', website: '', hours: [[1, '07:00', '15:00']],
@@ -57,6 +57,14 @@ test('plain words search names and descriptions', () => {
 test('a synonym for a tile finds places that have it', () => {
   assert.equal(parseQuery('beer', site).has, 'liquor');
   assert.deepEqual(search({ q: 'beer' }, site).results.map((r) => r.slug), ['b-cafe']);
+});
+
+test('a tile title finds places that have that tile', () => {
+  assert.equal(parseQuery('liquor', site).has, 'liquor');
+  assert.deepEqual(search({ q: 'Liquor' }, site).results.map((r) => r.slug), ['b-cafe']);
+  assert.equal(parseQuery('step-free entry', site).step, true);
+  assert.deepEqual(search({ q: 'step-free entry' }, site).results.map((r) => r.slug), ['a-cafe']);
+  assert.deepEqual(search({ q: 'liquor rivett' }, site).results.map((r) => r.slug), ['b-cafe']);
 });
 
 test('near me puts the closest places first and leaves out far ones', () => {
